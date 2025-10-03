@@ -1,0 +1,40 @@
+# Core RAG Framework
+langchain==0.2.16
+langchain-community==0.2.16
+langchain-anthropic==0.1.23
+langgraph==0.2.28
+
+# Vector Databases
+chromadb==0.5.5
+# qdrant-client==1.11.2  # Uncomment if using Qdrant
+
+# Embeddings
+sentence-transformers==3.1.1
+# openai==1.12.0  # Uncomment if using OpenAI embeddings
+
+# LLM Providers
+anthropic==0.34.2
+
+# Document Processing
+pypdf==4.3.1
+pymupdf==1.24.10
+python-docx==1.1.2
+unstructured==0.15.12
+pdfplumber==0.11.4
+
+# Web Interface
+gradio==4.44.0
+
+# Utilities
+python-dotenv==1.0.1
+pydantic==2.9.2
+pydantic-settings==2.5.2
+tqdm==4.66.5
+
+# Data Processing
+pandas==2.2.3
+numpy==1.26.4
+
+# Testing
+pytest==8.3.3
+pytest-asyncio==0.24.0
