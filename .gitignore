@@ -1,0 +1,84 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environment
+venv/
+env/
+ENV/
+.venv
+
+# Environment Variables
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Data directories
+data/raw_pdfs/*.pdf
+data/processed/
+data/vector_db/
+*.sqlite
+*.db
+
+# Jupyter Notebooks
+.ipynb_checkpoints
+*.ipynb
+
+# Logs
+*.log
+logs/
+
+# ChromaDB
+chroma_db/
+*.chroma
+
+# Large files
+*.zip
+*.tar.gz
+*.rar
+
+# Model caches
+.cache/
+models/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Test outputs
+test_outputs/
+outputs/*.html
+outputs/*.json
+outputs/*.csv
+
+# API keys (double-check)
+*_api_key*
+credentials.json
+secrets.yaml
