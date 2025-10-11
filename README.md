@@ -111,12 +111,6 @@ Each includes:
 - PRISMA threshold recommendations
 - Customization examples
 
-#### **Code Templates** (`backend/core/`)
-Production-ready Python implementation:
-- **prisma_pipeline.py**: 4-stage PRISMA screening
-- **research_profile.py**: YAML-based profile management
-- **rag_graph.py**: LangGraph-based retrieval
-- **retrieval.py**: Vector DB query logic
 
 ---
 
@@ -313,12 +307,13 @@ L1 diversity.
 - ⏳ README and documentation updates
 - ⏳ Example project (ai_education_chatbot)
 
-### v1.2.0 (2025-11-15)
-- Bookdown-style online documentation site
-- 14-chapter comprehensive guide
-- Additional example projects (Medicine, Psychology)
-- Video tutorial series (10 x 15min)
-- Community forum launch
+### v1.2.0 (Current - 2025-10-11)
+- ✅ Interactive learning platform ([ResearcherRAG Helper](https://github.com/HosungYou/ResearcherRAG-helper))
+- ✅ Bookdown-style documentation site (Next.js + Tailwind CSS)
+- ✅ AI-powered chatbot (Claude 3.5 Sonnet RAG)
+- ✅ Cleaned repository structure for researchers
+- ⏳ Video tutorial series (coming soon)
+- ⏳ Additional example projects (Medicine, Psychology)
 
 ### v1.3.0 (2026-01-15)
 - Citation graph analysis
@@ -346,7 +341,6 @@ We welcome contributions!
 - **Improve Docs**: Fix typos, clarify instructions
 - **Success Stories**: Share your research using ResearcherRAG
 
-See [project_management/TODO.md](project_management/TODO.md) for current tasks.
 
 ---
 
@@ -356,17 +350,12 @@ See [project_management/TODO.md](project_management/TODO.md) for current tasks.
 - **[CLAUDE.md](CLAUDE.md)**: Complete guide for Claude Code
 - **[prompts/](prompts/)**: 5-stage prompt templates
 - **[workshop/hands_on_guide.md](workshop/hands_on_guide.md)**: 3-hour workshop
-- **[release-notes/v1.1.0.md](release-notes/v1.1.0.md)**: What's new
-
-### Project Management
-- **[TODO.md](project_management/TODO.md)**: Current tasks
-- **[ROADMAP.md](project_management/ROADMAP.md)**: Long-term vision
-- **[CHANGELOG.md](project_management/CHANGELOG.md)**: Version history
+### Interactive Platform
+- **[ResearcherRAG Helper](https://github.com/HosungYou/ResearcherRAG-helper)**: Web-based learning platform with chatbot
 
 ### Community
 - **GitHub Issues**: Bug reports and feature requests
 - **GitHub Discussions**: Questions and tips
-- **Workshop Forum**: [Discord/Slack] (coming in v1.2.0)
 
 ---
 
