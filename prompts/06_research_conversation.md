@@ -19,6 +19,70 @@ Now that your RAG system is built, it's time to conduct your actual research. Th
 
 ---
 
+## ⚠️ IMPORTANT: RAG vs General Knowledge
+
+### Why Use the ResearcherRAG Interface?
+
+When you ask questions directly to Claude Code without using the RAG interface scripts, Claude will answer from its **general knowledge** - NOT from your Vector Database!
+
+**❌ WITHOUT Interface (General Knowledge)**:
+```
+You: "Which methodologies are most commonly used?"
+Claude: "Based on my training data, common methodologies include surveys, experiments..."
+← This is NOT from your database!
+```
+
+**✅ WITH ResearcherRAG Interface (Your Database)**:
+```bash
+$ python interfaces/claude_code_interface.py
+
+System: Loaded 150 papers from your Vector DB
+
+You: "Which methodologies are most commonly used?"
+
+System:
+📚 Found 5 relevant papers from YOUR database:
+1. Smith et al. (2023) - Systematic Review of Research Methods
+2. Jones & Lee (2022) - Comparative Analysis of Methodologies
+...
+
+Claude: "Based on the 5 papers in YOUR database:
+- Qualitative methods: 3 papers [Smith, 2023; Jones, 2022]
+- Mixed methods: 2 papers [Lee, 2023]..."
+```
+
+### Key Differences
+
+| Aspect | Direct Claude Chat | ResearcherRAG Interface |
+|--------|-------------------|------------------------|
+| **Data Source** | General knowledge (training data) | YOUR Vector Database |
+| **Transparency** | No visibility into sources | Shows which papers were retrieved |
+| **Citations** | No paper citations | Every claim linked to specific papers |
+| **Verification** | Cannot verify sources | Can trace back to original papers |
+| **Limitations** | Doesn't know what it doesn't have | Explicitly says "not in your database" |
+
+### How to Ensure RAG Usage
+
+1. **Always run the interface script first**:
+   ```bash
+   python interfaces/claude_code_interface.py
+   ```
+
+2. **Look for explicit paper listings** - The system will show:
+   - "Found X relevant papers"
+   - Paper titles and authors
+   - Metadata from your database
+
+3. **Check for citations** - Answers should include `[Author, Year]` format
+
+4. **Test with specific questions** - Ask about papers you KNOW are in your DB:
+   ```
+   "Do I have any papers by [specific author]?"
+   "Show me papers from 2023"
+   ```
+
+---
+
 ## Part 1: Effective Query Strategies
 
 ### Query Types for Literature Review
