@@ -1,0 +1,71 @@
+name: "HRM AI Bias Research"
+description: "AI bias and fairness in human resource management"
+
+domain_keywords:
+  - "human resource management"
+  - "HRM"
+  - "employee selection"
+  - "recruitment"
+  - "hiring"
+  - "talent acquisition"
+  - "performance appraisal"
+  - "performance management"
+  - "people analytics"
+  - "HR analytics"
+  - "workforce analytics"
+
+method_keywords:
+  - "artificial intelligence"
+  - "AI"
+  - "machine learning"
+  - "ML"
+  - "algorithm"
+  - "automated decision"
+  - "predictive analytics"
+  - "natural language processing"
+  - "NLP"
+  - "computer vision"
+
+topic_keywords:
+  - "bias"
+  - "fairness"
+  - "discrimination"
+  - "disparate impact"
+  - "ethics"
+  - "transparency"
+  - "accountability"
+  - "explainability"
+  - "privacy"
+  - "data protection"
+  - "algorithmic bias"
+
+exclusion_keywords:
+  - "alzheimer"
+  - "dementia"
+  - "cancer"
+  - "clinical trial"
+  - "patient care"
+  - "medical imaging"
+  - "disease diagnosis"
+  - "federated learning"
+  - "edge computing"
+  - "IoT sensor"
+
+context_validators:
+  - "employee"
+  - "worker"
+  - "candidate"
+  - "applicant"
+  - "workplace"
+  - "organization"
+  - "company"
+  - "employer"
+  - "job seeker"
+  - "personnel"
+  - "staff"
+
+thresholds:
+  screening: 30
+  eligibility: 55
+  review: 45
+  min_inclusion: 60
