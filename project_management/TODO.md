@@ -42,6 +42,21 @@
 
 ## 📅 Medium Priority (v1.2.0 or later)
 
+### Bookdown Documentation Site 📚 NEW!
+- [ ] Set up Bookdown project structure (docs_site/)
+- [ ] Convert Chapters 1-5 (Getting Started, RAG Fundamentals, PRISMA, Research Scope, Search Queries)
+- [ ] Convert Chapters 6-8 (PRISMA Config, Vector DB, RAG Prompts)
+- [ ] Convert Chapters 9-14 (Troubleshooting, Multi-project, Advanced, Workshop, Templates, Community)
+- [ ] Add diagrams and screenshots
+- [ ] Custom CSS styling (match reference: https://bookdown.org/MathiasHarrer/Doing_Meta_Analysis_in_R/)
+- [ ] Set up GitHub Pages deployment
+- [ ] Test all code examples in documentation
+- [ ] PDF export functionality
+
+**Estimate**: 2.5 weeks (20-25 hours)
+**Target**: v1.2.0 release (2025-11-15)
+**Reference**: See `docs/bookdown_documentation_plan.md`
+
 ### Workshop Materials
 - [ ] `workshop/slides.pdf` - Presentation slides
 - [ ] `workshop/sample_data/50_sample_papers.zip` - Demo dataset
@@ -127,10 +142,11 @@
 - Some academic databases require VPN access
 
 ### Questions to Resolve
-1. Should web frontend be included in v1.1.0, or defer to v1.2.0?
-2. How many example projects are sufficient (1, 3, or 5)?
-3. What format for workshop slides (PDF, Google Slides, reveal.js)?
-4. Should we create video tutorials before or after first workshop?
+1. ~~Should web frontend be included in v1.1.0, or defer to v1.2.0?~~ **RESOLVED**: Defer to v1.2.0 as Bookdown documentation site
+2. How many example projects are sufficient (1, 3, or 5)? **Current stance**: 1 for v1.1.0, expand to 3 in v1.2.0
+3. What format for workshop slides (PDF, Google Slides, reveal.js)? **Resolved for now**: Simple PDF, enhance in v1.2.0
+4. Should we create video tutorials before or after first workshop? **Resolved**: After first workshop (capture live workshop as recordings)
+5. **NEW**: Bookdown vs. MkDocs vs. Quarto? **Resolved**: Bookdown (R-based, matches reference site)
 
 ---
 
