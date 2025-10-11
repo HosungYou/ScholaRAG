@@ -1,0 +1,133 @@
+# Education Research Profile Template
+# Use this template for educational technology, pedagogy, learning sciences research
+
+name: "Education Research Template"
+description: "Template for educational research projects (K-12, higher education, learning sciences)"
+
+# Domain keywords - Core educational concepts (max weight: 10)
+domain_keywords:
+  - education: 10
+  - learning: 10
+  - pedagogy: 9
+  - teaching: 9
+  - curriculum: 8
+  - instruction: 8
+  - student: 8
+  - educational technology: 8
+  - edtech: 7
+  - classroom: 7
+  - school: 7
+  - university: 7
+  - higher education: 7
+  - K-12: 6
+  - academic achievement: 6
+  - literacy: 6
+
+# Method keywords - Research methodologies (max weight: 5)
+method_keywords:
+  - experimental: 5
+  - RCT: 5
+  - randomized controlled trial: 5
+  - quasi-experimental: 4
+  - pre-test post-test: 4
+  - mixed methods: 3
+  - quantitative: 3
+  - survey: 3
+  - interview: 2
+  - case study: 2
+  - qualitative: 2
+
+# Topic keywords - Specific research focus (max weight: 5)
+# CUSTOMIZE these for your specific research question
+topic_keywords:
+  - learning outcomes: 5
+  - achievement: 5
+  - performance: 4
+  - engagement: 4
+  - motivation: 4
+  - retention: 3
+  - comprehension: 3
+  - assessment: 3
+
+# Context keywords - Research goals and frameworks (max weight: 10)
+context_keywords:
+  - effectiveness: 10
+  - impact: 10
+  - intervention: 9
+  - evaluation: 9
+  - implementation: 8
+  - outcomes: 8
+  - improvement: 7
+  - comparison: 7
+  - pilot study: 6
+
+# Exclusion keywords - Papers to exclude (negative weights)
+# CUSTOMIZE based on your specific scope
+exclusion_keywords:
+  - review article: -5  # Soft exclusion (not original research)
+  - meta-analysis: -5
+  - theoretical: -5
+  - commentary: -10
+  - editorial: -10
+  - book review: -10
+
+# Thresholds - Adjust based on your needs
+thresholds:
+  screening: 25        # Stage 2 cutoff (expect 50-60% pass)
+  eligibility: 45      # Stage 3 cutoff (expect 20-30% pass)
+  review_queue: 35     # Manual review needed (scores 35-44)
+  min_inclusion: 50    # Auto-include threshold (perfect matches)
+
+# Notes for customization:
+# 1. Replace topic_keywords with your specific research focus
+#    Examples:
+#    - For AI/chatbots: Add "artificial intelligence", "chatbot", "adaptive learning"
+#    - For language learning: Add "second language", "L2", "pronunciation", "vocabulary"
+#    - For STEM education: Add "mathematics", "science", "problem-solving", "inquiry-based"
+#
+# 2. Adjust exclusion_keywords based on scope:
+#    - If K-12 only: Add "higher education: -10", "university: -10", "college: -10"
+#    - If higher ed only: Add "K-12: -10", "elementary: -10", "secondary: -10"
+#    - If experimental only: Add "qualitative: -10", "case study: -10"
+#
+# 3. Tune thresholds after first run:
+#    - If too many papers pass (>70%): Increase screening to 30
+#    - If too few papers pass (<20%): Decrease screening to 20
+
+# Example Customizations:
+
+# Example 1: AI Chatbots in Language Learning (Higher Ed)
+# topic_keywords:
+#   - chatbot: 5
+#   - conversational agent: 5
+#   - language learning: 5
+#   - speaking proficiency: 4
+#   - oral fluency: 4
+# exclusion_keywords:
+#   - K-12: -5
+#   - elementary: -8
+#   - children: -8
+
+# Example 2: Gamification in K-12 Mathematics
+# topic_keywords:
+#   - gamification: 5
+#   - game-based learning: 5
+#   - mathematics: 5
+#   - problem-solving: 4
+#   - engagement: 4
+# exclusion_keywords:
+#   - higher education: -5
+#   - university: -5
+#   - college: -5
+
+# Example 3: Online Learning During Pandemic
+# topic_keywords:
+#   - online learning: 5
+#   - remote instruction: 5
+#   - COVID-19: 5
+#   - pandemic: 4
+#   - emergency remote teaching: 4
+# context_keywords:
+#   - challenges: 8
+#   - barriers: 7
+#   - adaptation: 7

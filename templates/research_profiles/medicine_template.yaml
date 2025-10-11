@@ -1,0 +1,114 @@
+# Medicine Research Profile Template
+# Use this template for clinical, biomedical, public health research
+
+name: "Medicine Research Template"
+description: "Template for medical and health sciences research"
+
+# Domain keywords - Core medical concepts (max weight: 10)
+domain_keywords:
+  - clinical: 10
+  - patient: 10
+  - treatment: 10
+  - medical: 9
+  - healthcare: 9
+  - diagnosis: 9
+  - therapy: 9
+  - disease: 8
+  - intervention: 8
+  - health: 8
+  - medicine: 8
+  - physician: 7
+  - hospital: 7
+  - care: 7
+
+# Method keywords - Research methodologies (max weight: 5)
+method_keywords:
+  - RCT: 5
+  - randomized controlled trial: 5
+  - clinical trial: 5
+  - cohort: 4
+  - prospective: 4
+  - case-control: 3
+  - retrospective: 3
+  - observational: 2
+  - cross-sectional: 2
+
+# Topic keywords - Specific research focus (max weight: 5)
+# CUSTOMIZE these for your specific research question
+topic_keywords:
+  - efficacy: 5
+  - safety: 5
+  - outcomes: 5
+  - mortality: 4
+  - morbidity: 4
+  - adverse events: 4
+  - quality of life: 3
+  - patient satisfaction: 3
+
+# Context keywords - Research goals (max weight: 10)
+context_keywords:
+  - effectiveness: 10
+  - impact: 10
+  - risk: 9
+  - benefit: 9
+  - assessment: 8
+  - evaluation: 8
+  - comparison: 7
+  - prevention: 7
+  - management: 7
+
+# Exclusion keywords - Papers to exclude (negative weights)
+# CUSTOMIZE based on your specific scope
+exclusion_keywords:
+  - animal study: -20  # Hard exclusion for human-only research
+  - in vitro: -20
+  - mouse: -15
+  - rat: -15
+  - review article: -5  # Soft exclusion
+  - meta-analysis: -5
+  - editorial: -10
+  - commentary: -10
+
+# Thresholds
+thresholds:
+  screening: 25
+  eligibility: 45
+  review_queue: 35
+  min_inclusion: 50
+
+# Example Customizations:
+
+# Example 1: EHR Alert Fatigue
+# topic_keywords:
+#   - alert fatigue: 5
+#   - clinical decision support: 5
+#   - electronic health record: 5
+#   - EHR: 5
+#   - physician burden: 4
+# method_keywords:
+#   - survey: 4
+#   - interview: 3
+#   - mixed methods: 4
+
+# Example 2: Diabetes Management
+# topic_keywords:
+#   - diabetes: 5
+#   - glucose control: 5
+#   - HbA1c: 4
+#   - glycemic control: 4
+#   - self-management: 4
+# exclusion_keywords:
+#   - type 1 diabetes: -10  # If studying type 2 only
+#   - pediatric: -8
+
+# Example 3: Telemedicine During Pandemic
+# topic_keywords:
+#   - telemedicine: 5
+#   - telehealth: 5
+#   - virtual care: 5
+#   - remote consultation: 4
+#   - COVID-19: 4
+# method_keywords:
+#   - qualitative: 3
+#   - interview: 3
+#   - survey: 4

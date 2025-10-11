@@ -1,0 +1,155 @@
+# Social Science Research Profile Template
+# Use this template for psychology, sociology, economics, political science research
+
+name: "Social Science Research Template"
+description: "Template for social science research (psychology, sociology, economics, etc.)"
+
+# Domain keywords - Core social science concepts (max weight: 10)
+domain_keywords:
+  - social: 10
+  - behavior: 10
+  - attitude: 9
+  - perception: 9
+  - psychology: 9
+  - sociological: 8
+  - economic: 8
+  - political: 8
+  - cultural: 8
+  - individual: 7
+  - group: 7
+  - society: 7
+  - community: 7
+
+# Method keywords - Research methodologies (max weight: 5)
+method_keywords:
+  - experimental: 5
+  - quasi-experimental: 4
+  - longitudinal: 4
+  - survey: 4
+  - questionnaire: 4
+  - mixed methods: 3
+  - quantitative: 3
+  - qualitative: 3
+  - interview: 2
+  - ethnography: 2
+
+# Topic keywords - Specific research focus (max weight: 5)
+# CUSTOMIZE these for your specific research question
+topic_keywords:
+  - intervention: 5
+  - effect: 5
+  - impact: 5
+  - relationship: 4
+  - association: 4
+  - influence: 4
+  - outcomes: 4
+  - wellbeing: 3
+
+# Context keywords - Research goals (max weight: 10)
+context_keywords:
+  - effectiveness: 10
+  - evaluation: 9
+  - assessment: 9
+  - analysis: 8
+  - comparison: 8
+  - investigation: 7
+  - examination: 7
+  - measurement: 7
+
+# Exclusion keywords - Papers to exclude (negative weights)
+# CUSTOMIZE based on your specific scope
+exclusion_keywords:
+  - review article: -5
+  - meta-analysis: -5
+  - theoretical: -5
+  - commentary: -10
+  - editorial: -10
+
+# Thresholds
+thresholds:
+  screening: 25
+  eligibility: 45
+  review_queue: 35
+  min_inclusion: 50
+
+# Example Customizations:
+
+# Example 1: Mindfulness and Teacher Burnout (Psychology/Education)
+# domain_keywords:
+#   - teacher: 10
+#   - educator: 9
+#   - burnout: 10
+#   - stress: 9
+#   - wellbeing: 9
+# topic_keywords:
+#   - mindfulness: 5
+#   - meditation: 5
+#   - intervention: 5
+#   - mental health: 4
+# exclusion_keywords:
+#   - student: -5  # Focusing on teachers, not students
+#   - children: -5
+
+# Example 2: Minimum Wage and Employment (Economics)
+# domain_keywords:
+#   - labor market: 10
+#   - employment: 10
+#   - wage: 10
+#   - economic: 9
+# topic_keywords:
+#   - minimum wage: 5
+#   - employment effect: 5
+#   - job loss: 4
+#   - policy: 4
+# method_keywords:
+#   - difference-in-differences: 5
+#   - regression discontinuity: 4
+#   - panel data: 4
+
+# Example 3: Social Media and Mental Health (Psychology/Sociology)
+# domain_keywords:
+#   - social media: 10
+#   - mental health: 10
+#   - adolescent: 9
+#   - youth: 9
+# topic_keywords:
+#   - depression: 5
+#   - anxiety: 5
+#   - wellbeing: 5
+#   - screen time: 4
+# method_keywords:
+#   - longitudinal: 5
+#   - survey: 4
+#   - self-report: 3
+
+# Example 4: Teletherapy Effectiveness (Clinical Psychology)
+# domain_keywords:
+#   - teletherapy: 10
+#   - online therapy: 10
+#   - psychotherapy: 9
+#   - mental health: 9
+# topic_keywords:
+#   - effectiveness: 5
+#   - outcomes: 5
+#   - depression: 4
+#   - anxiety: 4
+# method_keywords:
+#   - RCT: 5
+#   - randomized: 5
+#   - controlled: 4
+
+# Example 5: Immigration Policy Attitudes (Political Science)
+# domain_keywords:
+#   - immigration: 10
+#   - policy: 10
+#   - political: 9
+#   - attitude: 9
+# topic_keywords:
+#   - public opinion: 5
+#   - sentiment: 5
+#   - perception: 4
+#   - voting: 4
+# method_keywords:
+#   - survey: 5
+#   - experimental: 4
+#   - vignette: 3
