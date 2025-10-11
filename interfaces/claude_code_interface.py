@@ -1,11 +1,33 @@
 """
-ResearcherRAG Claude Code Interface
+ResearcherRAG Chat Interface
 
-Usage in Claude Code:
-    python claude_code_interface.py "What are the key findings?"
+This script lets you query your Vector Database through conversational AI.
 
-Or interactively:
-    python claude_code_interface.py
+USAGE:
+
+  Method 1: Interactive Mode (Recommended)
+    $ python interfaces/claude_code_interface.py
+
+    Then type questions when prompted:
+    You: What are the main adoption barriers?
+    You: Show me papers from 2023
+    You: exit
+
+  Method 2: Single Question Mode
+    $ python interfaces/claude_code_interface.py "What are the key findings?"
+
+  Method 3: From Claude Code
+    Tell Claude Code: "Run python interfaces/claude_code_interface.py"
+    Then interact with the prompts
+
+PREREQUISITES:
+  - Completed Stages 1-5 (Vector DB built in ./chroma_db)
+  - Environment variable: ANTHROPIC_API_KEY
+  - Dependencies: pip install chromadb anthropic
+
+WHY USE THIS?
+  Without this script, Claude uses GENERAL KNOWLEDGE.
+  With this script, Claude searches YOUR PAPERS and cites them!
 
 Author: ResearcherRAG Team
 License: MIT

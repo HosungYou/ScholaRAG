@@ -27,17 +27,41 @@ cd your-researcherrag-project/
 ```
 
 ### Usage
-```python
-# In Claude Code:
-User: "Run claude_code_interface.py and ask: What are the key adoption barriers in healthcare?"
 
-Claude Code executes:
-→ Loads your chroma_db/
-→ Searches 137 papers
-→ Generates answer with citations
-→ Returns: "Based on 5 relevant papers, the key barriers are..."
+**Method 1: Interactive Mode (Recommended)**
+```bash
+# Run the script in your terminal
+python interfaces/claude_code_interface.py
+
+# You'll see:
+📂 Loading Vector DB from ./chroma_db...
+✅ Loaded 137 papers from collection 'papers'
+✅ Connected to Claude API
+
+============================================================
+  ResearcherRAG Interactive Chat
+============================================================
+
+Type your questions (or 'exit' to quit)
+
+You: What are the main adoption barriers?
+```
+
+**Method 2: Single Question Mode**
+```bash
+# Ask one question and exit
+python interfaces/claude_code_interface.py "What methodologies are most common?"
+```
+
+**Method 3: Through Claude Code**
+```
+You (to Claude Code): "Run python interfaces/claude_code_interface.py in interactive mode"
+
+# Then type your questions when prompted
 ```
 
 ### Example Session
-```
-User: What methodologies are most common in my papers?
+```bash
+$ python interfaces/claude_code_interface.py
+
+You: What methodologies are most common in my papers?
