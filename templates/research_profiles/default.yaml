@@ -1,0 +1,52 @@
+name: "General Research"
+description: "Default profile for general academic research"
+
+domain_keywords:
+  - "research"
+  - "study"
+  - "investigation"
+  - "analysis"
+  - "experiment"
+  - "survey"
+  - "case study"
+
+method_keywords:
+  - "quantitative"
+  - "qualitative"
+  - "mixed methods"
+  - "statistical analysis"
+  - "regression"
+  - "correlation"
+  - "content analysis"
+  - "thematic analysis"
+
+topic_keywords:
+  - "finding"
+  - "result"
+  - "outcome"
+  - "effect"
+  - "relationship"
+  - "association"
+  - "impact"
+
+exclusion_keywords:
+  - "review article"
+  - "editorial"
+  - "commentary"
+  - "book review"
+  - "conference abstract"
+
+context_validators:
+  - "participant"
+  - "sample"
+  - "data"
+  - "measure"
+  - "instrument"
+  - "variable"
+  - "hypothesis"
+
+thresholds:
+  screening: 25
+  eligibility: 45
+  review: 35
+  min_inclusion: 50
