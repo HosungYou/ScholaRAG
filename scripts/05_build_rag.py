@@ -1,15 +1,33 @@
 #!/usr/bin/env python3
 """
-Stage 5: Build RAG System from Downloaded PDFs
+Stage 5: Build RAG System from PRISMA-Selected Papers
 
-Processes PDFs, generates embeddings, and creates vector database
-for semantic search and question answering.
+Takes papers that passed PRISMA screening (Stage 3) and were downloaded (Stage 4),
+then builds a vector database for semantic search and AI-powered analysis.
+
+**Why this order?**
+1. PRISMA (Stages 1-4): Systematically narrows 500+ papers → 50-150 relevant papers
+2. RAG (Stage 5-6): Analyzes ONLY the PRISMA-selected papers for data extraction
+
+This ensures RAG searches high-quality, relevant papers only (not all 500+ original results).
+
+**What this script does**:
+- Extracts text from PDFs (PyMuPDF)
+- Chunks documents into semantic units (~1000 tokens with 200 overlap)
+- Generates embeddings (sentence-transformers by default)
+- Stores in ChromaDB vector database
+- Enables semantic search across PRISMA-selected literature
 
 Usage:
     python scripts/05_build_rag.py --project <project_path>
 
 Example:
-    python scripts/05_build_rag.py --project projects/2025-10-13_AI-Chatbots
+    python scripts/05_build_rag.py --project examples/ai-chatbots-language-learning
+
+Expected:
+    - Input: data/03_pdfs/*.pdf (from Stage 4)
+    - Output: data/04_rag/chroma_db/ (vector database)
+    - Output: data/04_rag/rag_config.json (configuration)
 """
 
 import argparse

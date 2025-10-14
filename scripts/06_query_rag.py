@@ -1,24 +1,42 @@
 #!/usr/bin/env python3
 """
-Stage 6: Query RAG System for Literature Review
+Stage 6: Query RAG System for PRISMA-Selected Literature
 
-Interactive and batch query interface for the RAG system.
-Generates answers with proper citations and evidence.
+Interactive query interface for the RAG system built from PRISMA-selected papers.
+Generates citation-backed answers from the curated paper collection.
+
+**What you're querying**: Papers that passed PRISMA screening (typically 50-150 papers).
+NOT the original database search results (500+).
+
+**Why this matters**:
+- PRISMA ensured papers are high-quality and relevant to your research question
+- RAG searches only these vetted papers, ensuring domain-relevant answers
+- All answers include citations to specific papers from your curated collection
+
+**Effective query examples**:
+- "What methodologies are used across my papers?"
+- "Which studies show positive outcomes for [intervention]?"
+- "Extract all correlation coefficients related to [outcome]"
+- "What are the research gaps in my PRISMA-selected literature?"
 
 Usage:
-    # Interactive mode
+    # Interactive mode (recommended)
     python scripts/06_query_rag.py --project <project_path> --interactive
 
     # Single query mode
     python scripts/06_query_rag.py --project <project_path> --query "What are the main findings?"
 
-    # Batch mode
+    # Batch mode (multiple queries from file)
     python scripts/06_query_rag.py --project <project_path> --queries queries.txt
 
 Example:
     python scripts/06_query_rag.py \
-        --project projects/2025-10-13_AI-Chatbots \
+        --project examples/ai-chatbots-language-learning \
         --interactive
+
+Expected:
+    - Input: data/04_rag/chroma_db/ (from Stage 5)
+    - Output: Answers with paper citations (console or saved to file)
 """
 
 import argparse

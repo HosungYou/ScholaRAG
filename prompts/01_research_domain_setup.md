@@ -82,7 +82,14 @@ Copy and paste this prompt to Claude Code to start your RAG project:
 
 ---
 
-I want to build a RAG (Retrieval-Augmented Generation) system for my research project.
+I want to conduct a PRISMA 2020 systematic literature review enhanced with RAG analysis for my research project.
+
+**What is PRISMA + RAG?**
+- **PRISMA 2020**: Systematic method to identify, screen, and select relevant papers (ensures rigor and transparency)
+- **RAG (Retrieval-Augmented Generation)**: AI-powered system to query and extract insights from selected papers (enables depth)
+- **Together**: Rigorous paper selection + intelligent analysis = Comprehensive literature review in days, not months
+
+---
 
 **My Research Topic**: [Describe your research topic in 1-2 sentences]
 
@@ -109,9 +116,9 @@ I want to build a RAG (Retrieval-Augmented Generation) system for my research pr
 
 **My Technical Background**:
 - Programming experience: [None / Basic Python / Comfortable with code]
-- RAG/AI experience: [First time / Familiar with concepts / Have built RAG before]
+- PRISMA/RAG experience: [First time / Familiar with concepts / Have done systematic reviews before]
 
-Please help me design an effective literature search strategy and PRISMA systematic review pipeline for this research project.
+Please help me design an effective PRISMA 2020 systematic review pipeline enhanced with RAG for deep analysis.
 
 ---
 
