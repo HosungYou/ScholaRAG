@@ -2,7 +2,12 @@
 
 Project: Active ResearcherRAG systematic literature review
 Domain: Education (Applied Linguistics, Educational Technology)
-Framework: PRISMA 2020
+Framework: PRISMA 2020 + RAG (Retrieval-Augmented Generation)
+
+**Methodology**:
+1. **PRISMA 2020** (Stages 1-4): Systematic paper identification, screening, selection
+2. **RAG Analysis** (Stages 5-6): Semantic search and data extraction from selected papers
+3. **Documentation** (Stage 7): PRISMA flowchart and synthesis report
 
 ---
 
@@ -13,10 +18,11 @@ This is an **academic systematic literature review project**, NOT a software dev
 **Research Question**: How do AI chatbots improve speaking skills in language learning, and what are the key factors contributing to their effectiveness?
 
 **Your role as Codex agent**:
-- Execute ResearcherRAG pipeline scripts in correct sequence
+- Execute ResearcherRAG pipeline scripts in correct sequence (PRISMA → RAG → Documentation)
 - Validate outputs against expected statistical ranges
 - Run all programmatic checks before marking tasks complete
 - Preserve scientific integrity (NEVER modify result counts)
+- Build and query RAG system for data extraction (Stages 5-6)
 
 ---
 

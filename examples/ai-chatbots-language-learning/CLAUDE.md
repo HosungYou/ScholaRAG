@@ -1,6 +1,6 @@
 # AI Chatbots for Language Learning - Research Project Context
 
-**🎯 Project Type**: Active ResearcherRAG systematic literature review
+**🎯 Project Type**: Active ResearcherRAG systematic literature review (PRISMA 2020 + RAG analysis)
 **📊 Research Domain**: Education (Applied Linguistics, EdTech)
 **🔬 Research Question**: How do AI chatbots improve speaking skills in language learning?
 
@@ -10,7 +10,15 @@
 
 This is NOT a software development project. This is an **academic systematic literature review** using the ResearcherRAG framework.
 
-**Your role**: Help the researcher conduct a PRISMA 2020 systematic review through conversation-driven automation.
+**ResearcherRAG Methodology**:
+1. **PRISMA 2020 Protocol** (Stages 1-4): Systematic paper identification, screening, selection
+2. **RAG Analysis** (Stages 5-6): AI-powered data extraction from selected papers using semantic search
+3. **Documentation** (Stage 7): Generate PRISMA flowchart and synthesis report
+
+**Your role**:
+- Guide researcher through PRISMA stages (1-4) for rigorous paper selection
+- Execute RAG pipeline (5-6) to extract correlations, themes, methodologies from papers
+- Ensure scientific integrity throughout the process
 
 ---
 
