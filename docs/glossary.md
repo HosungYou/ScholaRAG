@@ -11,6 +11,23 @@ description: "Searchable glossary of key terms in ResearcherRAG"
 Searchable reference for all key terms, concepts, and components in ResearcherRAG.
 {: .fs-6 .fw-300 }
 
+---
+
+## 🔍 Quick Search Tips
+
+**Use the search box above to find terms instantly!**
+
+**Popular searches**:
+- `PRISMA` → PRISMA 2020, PRISMA Flowchart, 6-Dimension Criteria
+- `RAG` → RAG System, Vector Database, Embeddings, Semantic Search
+- `Stage` → Stage 1-6, Stage Mapping Table
+- `Script` → 01-07 scripts, Execution, Query
+- `Metrics` → Relevance Rate, PDF Success Rate, Chunks per Paper
+
+[View full search guide]({{ site.baseurl }}{% link search-guide.md %}) for advanced search techniques.
+
+---
+
 ## Table of contents
 {: .no_toc .text-delta }
 

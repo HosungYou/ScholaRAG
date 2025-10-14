@@ -11,16 +11,20 @@ url: "https://hosungyou.github.io/researcherRAG" # Update with your GitHub Pages
 theme: just-the-docs
 color_scheme: light
 
-# Search
+# Search (Enhanced)
 search_enabled: true
 search:
   heading_level: 2
-  previews: 3
-  preview_words_before: 5
-  preview_words_after: 10
-  tokenizer_separator: /[\s/]+/
+  previews: 5
+  preview_words_before: 8
+  preview_words_after: 12
+  tokenizer_separator: /[\s\-/]+/
   rel_url: true
   button: true
+
+# Mermaid diagrams support
+mermaid:
+  version: "10.6.0"
 
 # Navigation
 nav_sort: case_insensitive
