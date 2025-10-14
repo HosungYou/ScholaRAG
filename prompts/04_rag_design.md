@@ -90,18 +90,26 @@ After completing Stage 3 (PRISMA Configuration), copy this prompt to Claude Code
 
 ---
 
-Now that we have our PRISMA criteria, I need help designing a RAG system to query the final papers effectively.
+Now that we've configured PRISMA screening criteria (Stages 1-3), I need help designing a RAG system to analyze the papers that pass PRISMA screening.
 
-**Expected Papers**: [Estimated from Stage 3]
+**Context: How PRISMA and RAG Work Together**
+1. **PRISMA (Stages 1-4)**: Narrows ~500 papers → ~50-150 relevant papers through systematic screening
+2. **RAG (Stages 5-6)**: Builds semantic search over PRISMA-selected papers → Enables deep analysis
 
-**Research Questions**:
+**Why this order matters**: RAG searches only high-quality, PRISMA-vetted papers (not the original 500+), ensuring relevant, citation-backed answers.
+
+---
+
+**Expected Papers After PRISMA**: [Estimated from Stage 3, e.g., "~75 papers from original 400"]
+
+**Research Questions** (for RAG to answer):
 1. [Your primary research question]
 2. [Secondary questions, if any]
 
 **Goals for RAG System**:
-- [e.g., "Generate evidence-based answers with citations"]
-- [e.g., "Compare findings across studies"]
-- [e.g., "Identify research gaps"]
+- [e.g., "Generate evidence-based answers with citations from PRISMA-selected papers"]
+- [e.g., "Compare findings across the ~75 vetted studies"]
+- [e.g., "Identify research gaps in high-quality literature"]
 
 Please help me configure:
 1. **PDF download strategy** (Open Access, institutional access, fallbacks)

@@ -76,7 +76,10 @@ python scripts/06_query_rag.py
 
 ## 🚀 Start Research Conversations
 
-Now that RAG is built, query your literature:
+Now that RAG is built from your **PRISMA-selected papers**, query your curated literature:
+
+**What you're querying**: Only the ~50-150 papers that **passed PRISMA screening** (not the original 500+).
+This ensures high-quality, relevant answers backed by rigorous paper selection.
 
 ```bash
 python scripts/06_query_rag.py
@@ -84,8 +87,13 @@ python scripts/06_query_rag.py
 # Interactive mode starts
 > What methodologies are most commonly used in my papers?
 > Which studies show positive outcomes for chatbot interventions?
-> What are the research gaps?
+> What are the research gaps in the PRISMA-vetted literature?
 ```
+
+**Example workflow**:
+- PRISMA identified 403 papers → screened to 79 relevant → downloaded 45 PDFs
+- RAG now searches those 45 PRISMA-selected papers (not all 403)
+- Result: Answers from high-quality, domain-relevant literature only
 
 ---
 
