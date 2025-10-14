@@ -1,70 +1,209 @@
-# Stage 3: PRISMA Configuration Prompt
+<!-- METADATA
+stage: 3
+stage_name: "PRISMA Configuration"
+stage_goal: "Design inclusion/exclusion criteria and screening thresholds"
+expected_duration: "20-30 minutes"
+conversation_mode: "interactive"
+prerequisites:
+  - stage: 2
+    requirement: "Search query designed and saved to config.yaml"
+outputs:
+  - prisma_criteria: "Inclusion/exclusion keyword lists with weights"
+  - thresholds: "Screening, eligibility, and review queue cutoffs"
+  - research_profile: "YAML configuration for automated screening"
+validation_rules:
+  domain_keywords:
+    required: true
+    min_count: 3
+    validation: "Must cover core research domain"
+  exclusion_keywords:
+    required: false
+    validation: "Should include hard exclusions (e.g., animal studies, K-12 if irrelevant)"
+  screening_threshold:
+    required: true
+    range: [15, 35]
+    default: 25
+    validation: "Should result in 50-70% pass rate"
+  eligibility_threshold:
+    required: true
+    range: [35, 55]
+    default: 45
+    validation: "Should result in 20-40% final inclusion rate"
+cli_commands:
+  - command: "researcherrag test-prisma --profile config/research_profile.yaml"
+    when: "User wants to preview PRISMA results before committing"
+    auto_execute: false
+scripts_triggered:
+  - none (configuration only, PRISMA runs in Stage 5)
+next_stage:
+  stage: 4
+  condition: "User confirms PRISMA profile and thresholds are appropriate"
+  prompt_file: "04_rag_design.md"
+divergence_handling:
+  common_divergences:
+    - pattern: "User wants to run PRISMA screening immediately"
+      response: "PRISMA execution happens in Stage 5. Right now in Stage 3, let's design the criteria. We'll run all scripts together in Stage 5."
+    - pattern: "User asks about PDF downloading"
+      response: "PDF downloading is part of Stage 5 execution. Let's first finish designing PRISMA criteria in Stage 3, then RAG design in Stage 4."
+    - pattern: "User confused about scoring system"
+      response: "The scoring system is multi-dimensional (domain, method, topic, context, exclusion, title). Each dimension contributes points, total range -20 to 50. Papers scoring ≥screening threshold pass to next stage."
+    - pattern: "User wants to skip PRISMA and manually select papers"
+      response: "Manual selection is fine for exploratory research, but ResearcherRAG is designed for PRISMA 2020 systematic reviews. If you prefer manual selection, this might not be the right tool."
+conversation_flow:
+  expected_turns: 6-12
+  typical_pattern:
+    - turn: 1
+      user_action: "Provides paper collection details (count, sources)"
+      claude_action: "Analyze metadata if available, ask about preferred methodologies"
+    - turn: 2-4
+      user_action: "Specifies inclusion preferences (methods, contexts, exclusions)"
+      claude_action: "Design keyword lists across 6 dimensions with weights"
+    - turn: 5-7
+      user_action: "Reviews keyword lists, requests adjustments"
+      claude_action: "Refine weights, add synonyms, adjust exclusions"
+    - turn: 8-10
+      user_action: "Tests preview or adjusts thresholds"
+      claude_action: "Estimate pass rates, explain trade-offs, show sample scores"
+    - turn: "final"
+      user_action: "Confirms PRISMA profile"
+      claude_action: "Save research_profile.yaml to config/, show Stage 4 prompt"
+validation_checklist:
+  - "Domain keywords cover core research area (3+ keywords)"
+  - "Method keywords reflect preferred study designs"
+  - "Exclusion keywords prevent irrelevant papers"
+  - "Thresholds are realistic (screening: 50-70% pass, eligibility: 20-40% pass)"
+  - "User understands multi-dimensional scoring system"
+  - "Research profile saved to config/research_profile.yaml"
+-->
 
-After completing Stage 1 (Research Domain Setup) and Stage 2 (Query Strategy), use this prompt to configure your PRISMA systematic review pipeline:
+# Stage 3: PRISMA Configuration
+
+**🎯 Your Current Stage**: Stage 3 of 7
+**⏱️ Expected Time**: 20-30 minutes
+**💬 Format**: Interactive conversation with Claude Code
+**📋 Prerequisites**: Stages 1-2 completed (research scope + query designed)
 
 ---
 
-I've collected papers using our search query. Now I need help configuring PRISMA (Preferred Reporting Items for Systematic Reviews and Meta-Analyses) screening.
+## 🚀 Quick Start
 
-**Papers Collected**: [number] papers from [data source(s)]
-**Saved at**: `data/raw/papers_metadata.csv`
-
-Please help me:
-1. Analyze the paper metadata (year distribution, keywords, methodologies)
-2. Generate a research profile (YAML configuration) with appropriate keywords and weights
-3. Set reasonable thresholds for each PRISMA stage
-4. Create and run the PRISMA screening pipeline
+After completing Stages 1-2, copy this prompt to Claude Code:
 
 ---
 
-## What Claude Code Will Do
+Now that we have our search queries, I need help configuring PRISMA (Preferred Reporting Items for Systematic Reviews and Meta-Analyses) screening criteria.
 
-Claude will guide you through building a customized PRISMA configuration:
+**Research Focus**: [Brief summary from Stage 1]
 
-1. **Analyze Metadata**: Extract patterns from collected papers
-2. **Propose Keywords**: Domain, method, topic keywords with weights
-3. **Set Thresholds**: Screening, eligibility, and inclusion cutoffs
-4. **Generate Code**: Python script to run PRISMA pipeline
-5. **Interpret Results**: Explain pass rates and suggest adjustments
+**Search Query**: [Your selected query from Stage 2]
+
+**Expected Paper Count**: [Estimated from Stage 2]
+
+Please help me design:
+1. **Inclusion criteria** (domain, method, topic, context keywords with weights)
+2. **Exclusion criteria** (keywords to filter out irrelevant papers)
+3. **Screening thresholds** (cutoffs for each PRISMA stage)
+4. **Research profile** (YAML configuration for automated screening)
+
+**My Preferences**:
+- Preferred study designs: [e.g., experimental only, any quantitative, include qualitative]
+- Must include: [e.g., specific outcomes, populations, interventions]
+- Must exclude: [e.g., animal studies, K-12 if focusing on higher ed, specific contexts]
 
 ---
 
-## PRISMA Overview
+## 📋 What Happens in This Stage
 
-PRISMA 2020 consists of 4 stages:
+### Claude Code Will:
+
+1. **Explain PRISMA 2020 Workflow** (Turn 1)
+   - 4 stages: Identification → Screening → Eligibility → Inclusion
+   - Multi-dimensional scoring system (6 dimensions)
+   - Threshold-based filtering
+
+2. **Design Keyword Lists** (Turn 2-4)
+   - **Domain keywords** (0-10 points): Core research area
+   - **Method keywords** (0-5 points): Study designs
+   - **Topic keywords** (0-5 points): Specific focus areas
+   - **Context keywords** (0-10 points): Outcomes, settings
+   - **Exclusion keywords** (-20 to 0 points): Papers to filter out
+   - **Title bonus** (0 or 10 points): Keywords in title
+
+3. **Set Thresholds** (Turn 5-7)
+   - Screening threshold (recommended: 25 points, expect 50-70% pass)
+   - Eligibility threshold (recommended: 45 points, expect 20-40% final)
+   - Review queue range (35-44 points, manual review needed)
+
+4. **Preview Results** (if requested)
+   - Estimate pass rates based on keyword analysis
+   - Show sample papers from each score range
+   - Adjust thresholds if needed
+
+5. **Save Research Profile** (automatic)
+   - Create `config/research_profile.yaml`
+   - Include all keyword lists and thresholds
+   - Ready for Stage 5 execution
+
+### ✅ Stage Completion Checklist
+
+Before moving to Stage 4, ensure:
+
+- [ ] **Domain keywords** cover core research area (3+ keywords)
+- [ ] **Method keywords** reflect preferred study designs
+- [ ] **Exclusion keywords** filter out irrelevant papers
+- [ ] **Thresholds** are realistic (screening: 50-70% pass, eligibility: 20-40% final)
+- [ ] You **understand scoring system** (6 dimensions, -20 to 50 range)
+- [ ] **Research profile saved** to `config/research_profile.yaml`
+
+---
+
+## 🔍 PRISMA 2020 Workflow
 
 ```
 Stage 1: Identification
-├─ Records identified from database (X papers)
-└─ Records after duplicates removed (Y papers)
+├─ Papers fetched from databases (X papers)
+└─ Duplicates removed (Y papers)
     ↓
 Stage 2: Screening (Title/Abstract)
-├─ Records screened (Y papers)
-├─ Records excluded (too low relevance score)
-└─ Records passing to eligibility (Z papers)
+├─ Score ≥25 points → PASS (50-70% of Y)
+└─ Score <25 points → EXCLUDE
     ↓
 Stage 3: Eligibility (Detailed Assessment)
-├─ Records assessed for eligibility (Z papers)
-├─ Records excluded (detailed screening)
-├─ Records needing manual review (borderline scores)
-└─ Records eligible (W papers)
+├─ Score ≥45 points → INCLUDE (20-40% of Y)
+├─ Score 35-44 points → MANUAL REVIEW (10-15% of Y)
+└─ Score <35 points → EXCLUDE
     ↓
 Stage 4: Inclusion
-└─ Studies included in synthesis (W papers)
+└─ Final papers for RAG system (W papers)
 ```
 
 ---
 
-## Multi-Dimensional Scoring System
+## 📊 Multi-Dimensional Scoring System
 
-Your papers will be scored across 6 dimensions:
+Papers are scored across **6 dimensions** (total range: **-20 to 50 points**):
 
 ### 1. Domain Match (0-10 points)
-**Keywords**: Core research domain
-- Example (Education): "education", "learning", "pedagogy"
-- Example (Medicine): "clinical", "patient", "treatment"
 
-**Scoring**:
+Core research domain keywords
+
+**Example (Education):**
+```yaml
+domain_keywords:
+  - "language learning": 10
+  - "education": 9
+  - "pedagogy": 8
+```
+
+**Example (Medicine):**
+```yaml
+domain_keywords:
+  - "clinical": 10
+  - "patient": 9
+  - "treatment": 8
+```
+
+**Scoring:**
 - 10 points: Perfect match (3+ domain keywords)
 - 7-9 points: Good match (2 domain keywords)
 - 4-6 points: Moderate match (1 domain keyword)
@@ -73,22 +212,41 @@ Your papers will be scored across 6 dimensions:
 ---
 
 ### 2. Method Match (0-5 points)
-**Keywords**: Research methodology
-- Example: "RCT", "randomized", "experimental", "survey"
 
-**Scoring**:
-- 5 points: Preferred method (e.g., RCT)
-- 3-4 points: Acceptable method (e.g., quasi-experimental)
-- 1-2 points: Weak method (e.g., case study)
+Research methodology preferences
+
+**Example:**
+```yaml
+method_keywords:
+  - "RCT": 5
+  - "experimental": 5
+  - "quasi-experimental": 4
+  - "survey": 3
+  - "case study": 2
+```
+
+**Scoring:**
+- 5 points: Preferred method (RCT, experimental)
+- 3-4 points: Acceptable method (survey, quasi-experimental)
+- 1-2 points: Weak method (case study, descriptive)
 - 0 points: No method mentioned
 
 ---
 
 ### 3. Topic Match (0-5 points)
-**Keywords**: Specific research focus
-- Example: "chatbot", "learning outcomes", "engagement"
 
-**Scoring**:
+Specific research focus
+
+**Example:**
+```yaml
+topic_keywords:
+  - "chatbot": 5
+  - "conversational agent": 5
+  - "learning outcomes": 4
+  - "engagement": 3
+```
+
+**Scoring:**
 - 5 points: Highly relevant (3+ topic keywords)
 - 3-4 points: Relevant (2 topic keywords)
 - 1-2 points: Somewhat relevant (1 topic keyword)
@@ -97,11 +255,20 @@ Your papers will be scored across 6 dimensions:
 ---
 
 ### 4. Context Match (0-10 points)
-**Keywords**: Research context/outcomes
-- Example: "effectiveness", "impact", "performance"
 
-**Scoring**:
-- 10 points: Perfect context (strong outcomes focus)
+Research context and outcomes
+
+**Example:**
+```yaml
+context_keywords:
+  - "effectiveness": 10
+  - "impact": 9
+  - "speaking proficiency": 8
+  - "higher education": 7
+```
+
+**Scoring:**
+- 10 points: Perfect context (strong outcomes + setting)
 - 7-9 points: Good context
 - 4-6 points: Moderate context
 - 0-3 points: Poor context
@@ -109,28 +276,36 @@ Your papers will be scored across 6 dimensions:
 ---
 
 ### 5. Exclusion Penalty (-20 to 0 points)
-**Keywords**: Papers to exclude
-- Example: "K-12" (if focusing on higher education)
-- Example: "animal study" (if human-only research)
 
-**Scoring**:
-- -20 points: Hard exclusion (automatically fails)
-- -10 points: Strong exclusion
-- -5 points: Soft exclusion
+Papers to filter out
+
+**Example:**
+```yaml
+exclusion_keywords:
+  - "animal study": -20  # Hard exclusion (auto-fail)
+  - "K-12": -10          # Strong exclusion
+  - "children": -5       # Soft exclusion (penalty)
+```
+
+**Scoring:**
+- -20 points: Hard exclusion (paper automatically fails)
+- -10 points: Strong exclusion (very hard to recover)
+- -5 points: Soft exclusion (penalty, not elimination)
 - 0 points: No exclusion keywords
 
 ---
 
 ### 6. Title Bonus (0 or 10 points)
-**Logic**: Keywords in title are stronger signals than in abstract
 
-**Scoring**:
+Keywords in title are stronger signals
+
+**Scoring:**
 - +10 points: Domain keyword appears in title
 - 0 points: No domain keyword in title
 
 ---
 
-## Total Score Calculation
+## 🎯 Total Score Calculation
 
 ```
 Total Score =
@@ -144,507 +319,241 @@ Total Score =
 Range: -20 to 50 points
 ```
 
+**Example paper:**
+- Domain: "language learning" + "education" in abstract (8 points)
+- Method: "experimental" mentioned (5 points)
+- Topic: "chatbot" + "engagement" (4 points)
+- Context: "effectiveness" + "higher education" (8 points)
+- Exclusion: No exclusion keywords (0 penalty)
+- Title: "language learning" in title (+10 bonus)
+
+**Total: 8 + 5 + 4 + 8 + 0 + 10 = 35 points** (Manual review queue)
+
 ---
 
-## Threshold Settings
-
-### Recommended Thresholds
+## ⚙️ Threshold Settings
 
 | Stage | Threshold | Expected Pass Rate | Purpose |
 |-------|-----------|-------------------|---------|
-| **Screening** | 25 points | 50-60% | Remove obviously irrelevant |
-| **Eligibility** | 45 points | 20-30% | High-quality papers only |
+| **Screening** | 25 points | 50-70% | Remove obviously irrelevant |
+| **Eligibility** | 45 points | 20-40% | High-quality papers only |
 | **Review Queue** | 35-44 points | 10-15% | Manual review needed |
 | **Auto-include** | 50 points | 5-10% | Perfect matches |
 
-### How to Adjust
+### How to Adjust Thresholds
 
-**If too many papers pass (>70%)**:
-- Increase screening threshold (25 → 30)
+**Too many papers passing (>70%)?**
+- Increase screening threshold (25 → 30 or 35)
 - Add more exclusion keywords
-- Increase method/topic weights
+- Increase method/topic weight requirements
 
-**If too few papers pass (<20%)**:
-- Decrease screening threshold (25 → 20)
+**Too few papers passing (<20%)?**
+- Decrease screening threshold (25 → 20 or 15)
 - Remove or soften exclusion keywords
-- Add more inclusive domain keywords
+- Add more synonyms for domain/topic keywords
+- Lower method requirements (allow surveys, case studies)
 
 ---
 
-## Research Profile Template
+## 📚 Example: Education Research
 
-Claude will generate a YAML file like this:
+### Research Focus
+"Effectiveness of AI chatbots in improving speaking proficiency for language learners in higher education"
+
+### Research Profile (YAML)
 
 ```yaml
-name: "Your Research Project Name"
-description: "Brief description of research focus"
+name: "AI Chatbots for Language Learning Speaking Skills"
+description: "Systematic review of chatbot interventions for speaking proficiency in higher education"
 
 # Domain keywords (max weight: 10)
 domain_keywords:
-  - keyword1: 10
-  - keyword2: 9
-  - keyword3: 8
+  - "language learning": 10
+  - "second language acquisition": 10
+  - "foreign language": 9
+  - "L2": 8
+  - "education": 7
 
 # Method keywords (max weight: 5)
 method_keywords:
-  - experimental: 5
-  - RCT: 5
-  - survey: 3
+  - "RCT": 5
+  - "randomized": 5
+  - "experimental": 5
+  - "quasi-experimental": 4
+  - "survey": 3
+  - "mixed methods": 3
 
 # Topic keywords (max weight: 5)
 topic_keywords:
-  - topic1: 5
-  - topic2: 4
-  - topic3: 3
+  - "chatbot": 5
+  - "conversational agent": 5
+  - "dialogue system": 4
+  - "virtual agent": 4
+  - "AI tutor": 4
 
 # Context keywords (max weight: 10)
 context_keywords:
-  - effectiveness: 10
-  - impact: 9
-  - outcomes: 8
+  - "speaking proficiency": 10
+  - "oral proficiency": 10
+  - "fluency": 9
+  - "pronunciation": 8
+  - "higher education": 7
+  - "university": 7
+  - "college": 6
+  - "effectiveness": 8
+  - "learning outcomes": 7
 
 # Exclusion keywords (negative weights)
 exclusion_keywords:
-  - exclude1: -20  # Hard exclusion
-  - exclude2: -10  # Strong exclusion
-  - exclude3: -5   # Soft exclusion
+  - "animal study": -20
+  - "in vitro": -20
+  - "K-12": -5              # Soft (some papers compare K-12 + university)
+  - "children": -10
+  - "elementary": -10
+  - "secondary school": -5
+  - "review article": -15  # Exclude meta-analyses/reviews
+  - "opinion": -15
 
 # Thresholds
 thresholds:
-  screening: 25        # Stage 2 cutoff
-  eligibility: 45      # Stage 3 cutoff
+  screening: 25        # Stage 2 cutoff (expect 60% pass)
+  eligibility: 45      # Stage 3 cutoff (expect 30% final)
   review_queue: 35     # Manual review needed
-  min_inclusion: 50    # Auto-include threshold
+  min_inclusion: 50    # Auto-include threshold (perfect matches)
 ```
 
----
+### Expected Conversation Flow
 
-## Example Conversation
+**Claude**: "Based on your research focus, I've designed a PRISMA profile emphasizing:
 
-### Education Research Example
-
-```
-You: "I've collected 568 papers on AI chatbots in language learning.
-     Please analyze the metadata and create a PRISMA profile."
-
-Claude: "Let me analyze your papers...
-
-📊 Year Distribution:
-   2020-2024: 342 papers (60%)
-   2015-2019: 168 papers (30%)
-   2010-2014: 58 papers (10%)
-
-📊 Top Keywords (from abstracts):
-   - language learning: 423 mentions
-   - chatbot: 389
-   - conversational agent: 267
-   - learning outcomes: 198
-   - engagement: 156
-   - higher education: 134
-
-📊 Estimated Methodologies:
-   - Experimental/RCT: ~234 papers (41%)
-   - Survey: ~189 papers (33%)
-   - Case study: ~145 papers (26%)
-
-Based on this analysis, I'll create a PRISMA profile optimized for
-experimental studies on chatbot language learning in higher education.
-
-[Claude generates YAML file]
+1. **Domain**: Language learning + higher education contexts
+2. **Methods**: Experimental studies preferred (RCT=5), but surveys allowed (3)
+3. **Topics**: Chatbots and conversational agents (high weights)
+4. **Contexts**: Speaking proficiency outcomes (10), university settings (7)
+5. **Exclusions**: K-12 softly excluded (-5 to allow comparative studies)
 
 With these settings, I estimate:
-- Stage 2 pass: ~340 papers (60%)
-- Stage 3 pass: ~170 papers (30%)
-- Final inclusion: ~115 papers (20%)
+- Screening pass: ~60% (if you collect 500 papers → 300 pass)
+- Eligibility pass: ~30% (500 → 150 final papers)
+- Manual review: ~12% (500 → 60 borderline papers)
 
 Does this align with your research goals?"
 
-You: "Yes, but I'm worried about excluding K-12 studies too harshly.
-     Some papers compare K-12 and university settings."
+**You**: "Yes, but I'm worried we're being too strict on methods. Some good qualitative studies might be excluded."
 
-Claude: "Excellent point! That's a common issue in education research.
+**Claude**: "Excellent point! Qualitative studies can provide rich insights. I'll add qualitative methods:
 
-I'll adjust the exclusion:
-
-BEFORE:
-  exclusion_keywords:
-    - K-12: -20  # Hard exclusion
-
-AFTER:
-  exclusion_keywords:
-    - K-12: -5   # Soft exclusion (penalty, not elimination)
-
-This way, papers focused solely on K-12 get penalized, but comparative
-studies (K-12 + university) can still pass if they have strong scores
-in other dimensions.
+```yaml
+method_keywords:
+  - "RCT": 5
+  - "experimental": 5
+  - "quasi-experimental": 4
+  - "survey": 3
+  - "mixed methods": 3
+  - "interview": 3         # Added
+  - "case study": 2        # Added
+  - "qualitative": 2       # Added
+```
 
 New estimates:
-- Stage 2 pass: ~380 papers (67%)
-- Stage 3 pass: ~195 papers (34%)
-- Final inclusion: ~130 papers (23%)
+- Screening pass: ~65% (500 → 325 papers)
+- Eligibility pass: ~35% (500 → 175 papers)
 
-Better?"
+This allows strong qualitative studies to pass if they score well in other dimensions."
 
-You: "Perfect! Let's run the screening."
-
-Claude: "I'll create and run the PRISMA pipeline script now..."
-
-[Claude writes scripts/2_run_prisma.py]
-
-```
+**You**: "Perfect! Let's proceed."
 
 ---
 
-## Step-by-Step Process
+## 🔄 What Happens Next
 
-### Step 1: Metadata Analysis (Claude does this)
+### After This Conversation
 
-Claude will read your `data/raw/papers_metadata.csv` and extract:
-- Year distribution
-- Top 20 keywords from titles/abstracts
-- Methodology patterns (based on keyword occurrences)
-- Author affiliations (if available)
-- Journal/venue patterns
+1. **Research Profile Saved** ✓
+   - `config/research_profile.yaml` created
+   - All keyword lists and thresholds configured
+   - Ready for Stage 5 automated screening
 
-**Example Output**:
-```
-Analyzing 568 papers...
+2. **You Receive Stage 4 Prompt** ➡️
+   - Copy/paste to continue conversation
+   - Design RAG system (chunking, embeddings, retrieval)
+   - Expected time: 20-30 minutes
 
-Year distribution:
-  2020-2024: ████████████████ 60%
-  2015-2019: ████████ 30%
-  2010-2014: ████ 10%
-
-Top keywords:
-  1. language learning (423)
-  2. chatbot (389)
-  3. conversational agent (267)
-  ...
-
-Methodologies (estimated from keywords):
-  - "experiment/RCT": 234 papers
-  - "survey/questionnaire": 189 papers
-  - "case study/interview": 145 papers
-```
+3. **Progress Tracking**
+   - Conversation context updated in `.researcherrag/context.json`
+   - PRISMA configuration saved for execution in Stage 5
 
 ---
 
-### Step 2: Profile Generation (Claude proposes, you adjust)
+## 🚨 Troubleshooting
 
-Claude generates a research profile YAML and explains the reasoning:
+### "I don't understand the scoring system"
 
-```
-I've created a profile emphasizing:
+Think of it like a college application:
+- **Domain** (0-10): Is this the right field? (like major fit)
+- **Method** (0-5): Is the methodology rigorous? (like GPA)
+- **Topic** (0-5): Is it about your specific interest? (like extracurriculars)
+- **Context** (0-10): Is it the right setting/outcome? (like location preference)
+- **Exclusion** (-20 to 0): Deal-breakers? (like "must not be X")
+- **Title bonus** (+10): Keywords in title = stronger signal
 
-1. Domain: Language learning + higher education (high weights)
-2. Methods: Experimental studies preferred (RCT=5, survey=3)
-3. Topics: Chatbots and learning outcomes (high weights)
-4. Exclusions: K-12 softly excluded (-5), children excluded (-10)
+Papers need to score well across MULTIPLE dimensions to pass.
 
-Key decisions:
-- "chatbot" weighted same as "conversational agent" (synonyms)
-- "engagement" lower weight (4) than "learning outcomes" (5)
-  because outcomes are more relevant to your RQ
-- "higher education" = 7 to prioritize but not hard require
-  (some good papers might not mention it explicitly)
+### "How do I choose keyword weights?"
 
-Thresholds set conservatively:
-- Screening: 25 (expect 60% pass)
-- Eligibility: 45 (expect 30% final)
-```
+**High weight (8-10)**: Core to your research question
+**Medium weight (5-7)**: Important but not essential
+**Low weight (2-4)**: Nice to have, slightly relevant
 
-**You can adjust**:
-- "Can you increase the weight of 'speaking proficiency'? That's my main focus."
-- "Let's exclude 'review article' papers (-10 penalty)."
-- "What if I lower screening threshold to 20? How many would pass?"
+**Example**: If studying "chatbot speaking proficiency in universities":
+- "speaking proficiency" = 10 (core outcome)
+- "university" = 7 (important context)
+- "engagement" = 4 (nice to have, but not core)
 
----
+### "Should I use hard exclusions (-20) or soft (-5)?"
 
-### Step 3: Run PRISMA Pipeline
+**Hard exclusion (-20)**: Use for completely irrelevant contexts
+- Animal studies (if human-only research)
+- K-12 (if ONLY interested in higher education)
+- Review articles (if want primary research only)
 
-Claude creates `scripts/2_run_prisma.py`:
+**Soft exclusion (-5 to -10)**: Use when context is mostly irrelevant but exceptions exist
+- K-12 (if some papers compare K-12 + university)
+- Specific diseases (if medical research with narrow focus)
 
-```python
-from backend.core.prisma_pipeline import LiteratureReviewPRISMA
-from backend.core.research_profile import ResearchProfile
+**Test**: If you'd NEVER include a paper with this keyword, use -20. If exceptions are possible, use -5 or -10.
 
-# Load your custom profile
-profile = ResearchProfile.from_yaml(
-    "config/research_profiles/your_project.yaml"
-)
+### "What if I want to test before committing?"
 
-# Initialize PRISMA pipeline
-prisma = LiteratureReviewPRISMA(profile)
-
-# Load papers from CSV
-import pandas as pd
-papers_df = pd.read_csv("data/raw/papers_metadata.csv")
-
-# Convert to Document format
-from langchain.schema import Document
-documents = [
-    Document(
-        page_content=f"{row['title']} {row['abstract']}",
-        metadata={
-            'title': row['title'],
-            'authors': row['authors'],
-            'year': row['year'],
-            'doi': row['doi']
-        }
-    )
-    for _, row in papers_df.iterrows()
-]
-
-# Run PRISMA stages
-print("Stage 1: Identification")
-stage1 = prisma.stage1_identification(documents)
-print(f"  Total collected: {len(stage1.documents)}")
-
-print("\nStage 2: Screening (title/abstract)")
-stage2 = prisma.stage2_screening(stage1.documents)
-print(f"  Passed: {len(stage2.documents_passed)} ({stage2.pass_rate:.1f}%)")
-
-print("\nStage 3: Eligibility (detailed assessment)")
-stage3 = prisma.stage3_eligibility(stage2.documents_passed)
-print(f"  Passed: {len(stage3.documents_passed)} ({stage3.pass_rate:.1f}%)")
-print(f"  Manual review needed: {len(stage3.review_queue)}")
-
-print("\nStage 4: Inclusion")
-stage4 = prisma.stage4_inclusion(stage3.documents_passed)
-print(f"  Final included: {len(stage4.documents)}")
-
-# Save results
-included_df = pd.DataFrame([
-    {
-        'title': doc.metadata['title'],
-        'authors': doc.metadata['authors'],
-        'year': doc.metadata['year'],
-        'doi': doc.metadata['doi'],
-        'prisma_score': doc.metadata.get('prisma_score', 0)
-    }
-    for doc in stage4.documents
-])
-included_df.to_csv("data/processed/included_papers.csv", index=False)
-
-# Save review queue
-review_df = pd.DataFrame([
-    {
-        'title': doc.metadata['title'],
-        'prisma_score': doc.metadata.get('prisma_score', 0),
-        'reason': 'Borderline score (manual review recommended)'
-    }
-    for doc in stage3.review_queue
-])
-review_df.to_csv("data/processed/review_queue.csv", index=False)
-
-print(f"\n✅ PRISMA screening complete!")
-print(f"   Included: data/processed/included_papers.csv ({len(included_df)} papers)")
-print(f"   Review queue: data/processed/review_queue.csv ({len(review_df)} papers)")
-```
+Ask Claude: "Can you show me example scores for these papers?" Provide 3-5 paper titles/abstracts, and Claude will calculate their PRISMA scores using your profile.
 
 ---
 
-### Step 4: Review Results
+## 🎯 Stage 3 Success Criteria
 
-Claude will help you interpret the output:
+You're ready to move to Stage 4 when:
 
-```
-PRISMA Results:
-
-Stage 1: Identification
-  Total collected: 568 papers
-
-Stage 2: Screening
-  Threshold: ≥25 points
-  Passed: 342 papers (60.2%)
-  Failed: 226 papers
-
-Stage 3: Eligibility
-  Threshold: ≥45 points
-  Passed: 139 papers (24.5%)
-  Failed: 203 papers
-  Manual review: 23 papers (scores 35-44)
-
-Stage 4: Inclusion
-  Final included: 139 papers
-  Auto-included (score ≥50): 67 papers
-
-📊 Score Distribution:
-  50-60 points: ████████ 67 papers (perfect matches)
-  45-49 points: ██████ 72 papers (high quality)
-  35-44 points: ██ 23 papers (manual review)
-  25-34 points: ████████████ 203 papers (borderline, excluded)
-  <25 points: ████████████████ 226 papers (clearly irrelevant)
-
-✅ These results look reasonable:
-   - 24.5% final inclusion rate (good for focused research)
-   - 60% passed initial screening (not too strict)
-   - 23 papers need manual review (manageable workload)
-
-Would you like to:
-[A] Accept these results and move to Stage 4 (PDF download)
-[B] Adjust thresholds and re-run
-[C] Review the 23 borderline papers before deciding
-[D] See example papers from each score range
-```
+✅ **Domain keywords** cover core research area (3+ keywords)
+✅ **Method keywords** reflect preferred study designs
+✅ **Exclusion keywords** filter out irrelevant contexts
+✅ **Thresholds** are realistic (screening: 50-70% pass, eligibility: 20-40% final)
+✅ You **understand the scoring system** (6 dimensions)
+✅ **Research profile saved** to `config/research_profile.yaml`
 
 ---
 
-### Step 5: Iterate (if needed)
-
-If results don't match expectations, Claude will help adjust:
+## 📍 Your Progress
 
 ```
-You: "Only 24.5% inclusion seems low. Can we be less strict?"
-
-Claude: "Let's analyze why papers were excluded:
-
-Top exclusion reasons:
-1. Missing experimental methodology (103 papers)
-   → These are descriptive/theoretical papers
-2. Low topic relevance (67 papers)
-   → Mentions chatbots but not language learning
-3. K-12 focus (34 papers)
-   → Your soft exclusion (-5) is working
-4. Older papers (22 papers)
-   → Pre-2015 with low scores
-
-Options:
-A) Lower eligibility threshold (45 → 40)
-   → Would add ~45 papers (mostly surveys)
-   → New inclusion rate: 32%
-
-B) Allow non-experimental studies
-   → Lower method weight requirement
-   → Would add ~80 papers
-   → New inclusion rate: 38%
-
-C) Keep current settings
-   → 24.5% is actually good for focused research
-   → Quality > quantity
-
-Which approach fits your research goals?"
-
-You: "Option C - I want high-quality experimental studies only."
-
-Claude: "Great! Proceeding with 139 papers to Stage 4 (PDF download)."
+[●●●○○○○] Stage 3/7: PRISMA Configuration
 ```
+
+**Next**: Stage 4 - RAG Design (20-30 min)
+**After That**: Stage 5 - Execution Plan & Run (2-4 hours)
+
+**Progress So Far**: ~55-80 minutes
+**Remaining Time**: ~3-6 hours across stages 4-7
 
 ---
 
-## Common Pitfalls & Solutions
-
-### Pitfall 1: Too Many Papers Pass (>80%)
-**Problem**: Thresholds too lenient, will read too many irrelevant papers
-
-**Solution**:
-```
-1. Increase screening threshold (25 → 30 or 35)
-2. Add exclusion keywords for irrelevant contexts
-3. Increase required method match (experimental only)
-```
-
----
-
-### Pitfall 2: Too Few Papers Pass (<10%)
-**Problem**: Thresholds too strict, missing relevant papers
-
-**Solution**:
-```
-1. Decrease screening threshold (25 → 20 or 15)
-2. Remove or soften exclusion keywords
-3. Add synonyms for domain/topic keywords
-4. Lower method requirements (allow surveys)
-```
-
----
-
-### Pitfall 3: Wrong Papers Passing
-**Problem**: High scores but not actually relevant
-
-**Solution**:
-```
-1. Review high-scoring papers manually (sample 10)
-2. Identify why they scored high but are irrelevant
-3. Adjust keyword weights or add exclusions
-4. Example: "learning" too broad → replace with "language learning"
-```
-
----
-
-### Pitfall 4: Good Papers Failing
-**Problem**: Relevant papers getting low scores
-
-**Solution**:
-```
-1. Check if using synonyms (e.g., "conversational agent" vs "chatbot")
-2. Lower title bonus requirement (not all good papers have keywords in title)
-3. Check exclusion keywords (might be too aggressive)
-4. Review failed papers with scores 20-24 (near threshold)
-```
-
----
-
-## Tips for Success
-
-### 1. Start Conservative
-- Use recommended thresholds (25/45) first
-- Review sample papers from each score range
-- Adjust based on actual content, not just numbers
-
-### 2. Iterate Quickly
-- Run screening multiple times with different settings
-- Compare results (which papers change categories?)
-- Converge on settings that match your judgment
-
-### 3. Use Manual Review Queue
-- Don't auto-exclude borderline papers (35-44 points)
-- Review them manually (usually 20-50 papers)
-- This catches edge cases and improves your profile
-
-### 4. Document Your Decisions
-- Keep notes on why you set thresholds
-- Explain keyword choices in YAML comments
-- This helps with reproducibility and paper writing
-
-### 5. Validate with Pilot Set
-- If you know 10-20 papers that SHOULD be included
-- Check if they pass your PRISMA screening
-- Adjust if good papers are failing
-
----
-
-## Output Files
-
-After running PRISMA, you'll have:
-
-```
-data/
-├── raw/
-│   └── papers_metadata.csv (568 papers)
-├── processed/
-│   ├── included_papers.csv (139 papers) ← For Stage 4
-│   ├── review_queue.csv (23 papers) ← Manual review
-│   ├── excluded_papers.csv (406 papers) ← Reference
-│   └── prisma_flow_diagram.png ← Visual summary
-└── config/
-    └── research_profiles/
-        └── your_project.yaml ← Saved configuration
-```
-
----
-
-## Next Steps
-
-Once PRISMA screening is complete:
-
-1. **Review Manual Queue** (if any): Check `data/processed/review_queue.csv`
-2. **Move to Stage 4**: [prompts/04_rag_design.md](./04_rag_design.md)
-3. **Download PDFs**: Prepare for full-text analysis
-4. **Build Vector Database**: Create your RAG system
-
----
-
-**Estimated Time**: 20-30 minutes (including iterations)
-**Prerequisites**: Completed Stage 1-2, collected papers
-**Next Stage**: [Stage 4: RAG Design](./04_rag_design.md)
+**Ready to continue?** Copy the prompt template above, fill in your research details, and paste it to Claude Code!
