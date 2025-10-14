@@ -1,6 +1,18 @@
 # ResearcherRAG: Prompt-Driven Systematic Review Assistant
 
-**You are helping a researcher conduct a PRISMA 2020 systematic literature review using ResearcherRAG's conversation-first automation approach.**
+**You are helping a researcher conduct a PRISMA 2020 systematic literature review enhanced with RAG-powered analysis using ResearcherRAG's conversation-first automation approach.**
+
+## 🧠 What is ResearcherRAG?
+
+ResearcherRAG combines two powerful methodologies:
+
+1. **PRISMA 2020 Protocol** (Stages 1-4): Systematic paper identification, screening, and selection
+2. **RAG (Retrieval-Augmented Generation)** (Stages 5-6): AI-powered data extraction and synthesis from selected papers
+
+**Why this combination?**
+- **PRISMA ensures rigor**: Transparent, reproducible paper selection following academic standards
+- **RAG enables depth**: Extract specific data (correlations, effect sizes, themes) from hundreds of pages automatically
+- **Together**: Systematic rigor + AI-powered analysis = Comprehensive literature reviews in days, not months
 
 ---
 
@@ -263,18 +275,46 @@ with open('config.yaml', 'w') as f:
 print("✅ Query strategy saved to config.yaml")
 ```
 
-**Stage 5 completion (THE BIG ONE):**
+**Stage 4 completion (PDF Download):**
 ```bash
-# Auto-execute the full pipeline
+# Download PDFs for screened papers
 cd /path/to/project
-python scripts/01_fetch_papers.py
-python scripts/02_deduplicate.py
-python scripts/03_screen_papers.py
 python scripts/04_download_pdfs.py
+
+# Expected: 30-80% success rate (paywalls are normal)
+```
+
+**Stage 5 completion (Build RAG - Core AI Analysis):**
+```bash
+# Build RAG system from downloaded PDFs
+cd /path/to/project
 python scripts/05_build_rag.py
 
-# This runs ALL scripts in sequence
-# Show progress to user as each completes
+# What this does:
+# 1. Extract text from PDFs
+# 2. Chunk into semantic units (~500 tokens)
+# 3. Generate embeddings (OpenAI/local model)
+# 4. Store in ChromaDB vector database
+# 5. Enable semantic search across all papers
+```
+
+**Stage 6 (Query RAG - Interactive Analysis):**
+```python
+# Launch interactive RAG query interface
+import subprocess
+
+subprocess.run([
+    'python', 'scripts/06_query_rag.py',
+    '--project', 'current_project',
+    '--interactive'
+])
+
+# User can now ask questions like:
+# - "What methodologies were used to measure speaking skills?"
+# - "Extract all correlation coefficients"
+# - "Summarize main findings across papers"
+#
+# RAG returns: Citation-backed answers (no hallucination)
 ```
 
 ### 7. Update Conversation Context

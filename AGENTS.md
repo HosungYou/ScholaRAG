@@ -1,8 +1,14 @@
 # ResearcherRAG - Codex Agent Instructions
 
-Framework: Conversation-first systematic literature review automation
-Target users: Academic researchers conducting PRISMA 2020 reviews
-Architecture: 7-stage pipeline (Identification → Documentation)
+Framework: PRISMA 2020 + RAG-powered systematic literature review automation
+Target users: Academic researchers conducting rigorous literature reviews with AI-enhanced analysis
+Architecture: 7-stage pipeline (PRISMA selection → RAG analysis → Documentation)
+
+**Key Technologies**:
+- **PRISMA 2020**: Paper identification, screening, eligibility assessment (Stages 1-4)
+- **RAG (Retrieval-Augmented Generation)**: Data extraction, synthesis from PDFs (Stages 5-6)
+- **ChromaDB**: Vector database for semantic search across paper collections
+- **LLM Integration**: Claude/GPT for intelligent screening and data extraction
 
 ---
 
@@ -10,9 +16,17 @@ Architecture: 7-stage pipeline (Identification → Documentation)
 
 This is an **academic research automation framework**, NOT traditional software development.
 
+**What ResearcherRAG Does**:
+1. **PRISMA Protocol** (Stages 1-4): Systematically identify, screen, and select relevant papers
+2. **RAG Analysis** (Stages 5-6): Build semantic search index → Extract data from selected papers
+3. **Documentation** (Stage 7): Generate PRISMA flowchart and synthesis report
+
 **Core philosophy**: Researchers interact through prompts → Codex executes scripts → Results validated → Next stage
 
-**Your role**: Execute ResearcherRAG pipeline scripts, validate outputs, maintain scientific integrity.
+**Your role**:
+- Execute pipeline scripts (PRISMA workflow + RAG building)
+- Validate outputs programmatically
+- Maintain scientific integrity (never fabricate results)
 
 ---
 
@@ -133,16 +147,41 @@ python scripts/04_download_pdfs.py --project <project_path>
 ```
 **Validation**: 30-80% success rate normal (many papers paywalled)
 
-### Stage 5: Build RAG
+### Stage 5: Build RAG (Core AI Analysis)
 ```bash
 python scripts/05_build_rag.py --project <project_path>
 ```
-**Validation**: Test RAG with sample query, verify citations
 
-### Stage 6: Query RAG
+**What this does**:
+- Extracts text from PDFs (Stage 4 outputs)
+- Chunks documents into semantic units (~500 tokens)
+- Generates embeddings using OpenAI/local model
+- Stores in ChromaDB vector database
+
+**Validation**:
+```bash
+# Test RAG with sample query
+python scripts/06_query_rag.py --project <project_path> \
+  --query "What are the main findings about speaking skills?"
+
+# Should return: Relevant excerpts with citations
+```
+
+### Stage 6: Query RAG (Data Extraction)
 ```bash
 python scripts/06_query_rag.py --project <project_path> --interactive
 ```
+
+**What this does**:
+- Semantic search across selected papers
+- LLM-powered synthesis of findings
+- Citation-backed answers (no hallucination)
+
+**Common queries**:
+- "Extract all correlation coefficients for X"
+- "What methodologies were used?"
+- "Summarize main themes across papers"
+
 **Validation**: Answers include paper citations in format 【F:path†L123】
 
 ### Stage 7: Generate PRISMA Diagram
