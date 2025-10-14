@@ -1,0 +1,122 @@
+# ResearcherRAG Example Project Configuration
+# Project: AI Chatbots for Language Learning Speaking Skills
+
+project_name: "AI Chatbots for Language Learning Speaking Skills"
+created_date: "2025-10-13"
+author: "Your Name"
+
+# ============================================================
+# Research Question
+# ============================================================
+research_question: |
+  How do AI chatbots improve speaking skills in language learning,
+  and what are the key factors contributing to their effectiveness?
+
+# ============================================================
+# Search Strategy
+# ============================================================
+databases:
+  - semantic_scholar
+  - openalex
+  - arxiv
+
+search_query: "chatbot language learning speaking"
+
+# Alternative queries to try:
+alternative_queries:
+  - "conversational AI language acquisition oral proficiency"
+  - "chatbot second language speaking skills"
+  - "AI tutor spoken language practice"
+
+# ============================================================
+# Inclusion/Exclusion Criteria
+# ============================================================
+inclusion_criteria:
+  - "Studies investigating AI chatbots/conversational agents for language learning"
+  - "Papers focusing on speaking skill development or oral proficiency"
+  - "Research with quantitative or qualitative evidence of effectiveness"
+  - "Published between 2015-2025"
+  - "Peer-reviewed journal articles or conference papers"
+
+exclusion_criteria:
+  - "Studies on text-based chatbots only (no speaking component)"
+  - "Non-empirical studies (opinion pieces, editorials)"
+  - "Studies on non-educational chatbots"
+  - "Papers without full text available"
+  - "Duplicate publications"
+
+# ============================================================
+# Date Range
+# ============================================================
+year_start: 2015
+year_end: 2025
+
+# Rationale:
+# - 2015: Emergence of modern conversational AI (Alexa, Google Assistant)
+# - 2025: Include most recent research
+
+# ============================================================
+# Language
+# ============================================================
+languages:
+  - English  # Primary language of papers
+
+# Target languages studied (for metadata):
+target_languages:
+  - English as Second Language (ESL)
+  - Spanish
+  - Mandarin Chinese
+  - French
+  - German
+  - Japanese
+  - Korean
+
+# ============================================================
+# RAG Configuration
+# ============================================================
+rag_settings:
+  # Chunking
+  chunk_size: 1000
+  chunk_overlap: 200
+
+  # Embedding
+  embedding_model: "sentence-transformers/all-MiniLM-L6-v2"
+
+  # Retrieval
+  retrieval_k: 10  # Number of chunks to retrieve per query
+  similarity_threshold: 0.7
+
+  # LLM
+  llm_model: "claude-3-5-sonnet-20241022"
+  max_tokens: 4096
+  temperature: 0.0  # Deterministic for research
+
+# ============================================================
+# Expected Outcomes (for validation)
+# ============================================================
+expected_outcomes:
+  total_papers_identified: 400  # Rough estimate
+  papers_after_screening: 80    # ~20% relevance rate
+  papers_with_pdfs: 45          # ~55% PDF availability
+
+  # Key themes expected (to validate findings):
+  expected_themes:
+    - "Pronunciation improvement"
+    - "Fluency development"
+    - "Anxiety reduction"
+    - "Learner motivation"
+    - "Conversational practice"
+    - "Feedback mechanisms"
+    - "Natural language processing"
+
+# ============================================================
+# Notes
+# ============================================================
+notes: |
+  This is an example project demonstrating the full ResearcherRAG workflow
+  from paper identification to PRISMA diagram generation.
+
+  Use this as a template for your own systematic literature review projects.
+
+  Expected runtime: 3-4 hours for full pipeline
+  Expected cost: $15-25 (Claude API)
