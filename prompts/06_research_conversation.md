@@ -81,19 +81,204 @@ Now that RAG is built from your **PRISMA-selected papers**, query your curated l
 **What you're querying**: Only the ~50-150 papers that **passed PRISMA screening** (not the original 500+).
 This ensures high-quality, relevant answers backed by rigorous paper selection.
 
-```bash
-python scripts/06_query_rag.py
+### Starting the RAG Interface
 
-# Interactive mode starts
-> What methodologies are most commonly used in my papers?
-> Which studies show positive outcomes for chatbot interventions?
-> What are the research gaps in the PRISMA-vetted literature?
+```bash
+python scripts/06_query_rag.py --project /path/to/project
+
+╔═══════════════════════════════════════════════════════════╗
+║           ResearcherRAG - Research Conversation            ║
+║                                                           ║
+║  📚 Database: 45 PRISMA-selected papers                   ║
+║  🔢 Chunks: 2,250 semantic units                          ║
+║  🤖 Model: Claude 3.5 Sonnet + text-embedding-3-small    ║
+╚═══════════════════════════════════════════════════════════╝
+
+Type your research question (or 'quit' to exit):
+>
 ```
 
-**Example workflow**:
-- PRISMA identified 403 papers → screened to 79 relevant → downloaded 45 PDFs
-- RAG now searches those 45 PRISMA-selected papers (not all 403)
-- Result: Answers from high-quality, domain-relevant literature only
+### Example Research Session
+
+**Query 1: Exploratory Overview**
+```
+> What methodologies are most commonly used in my papers?
+
+🔍 Retrieving relevant chunks... (5 chunks found)
+📝 Generating answer...
+
+Based on the 45 PRISMA-selected papers, three main methodologies emerge:
+
+1. **Randomized Controlled Trials (RCTs)** - 60%
+   Most studies employ experimental designs with control groups:
+   - Smith et al. (2023): 120 participants, pre-post design
+   - Chen et al. (2023): 85 students, treatment vs. control
+   - Lee et al. (2024): 200 learners, 3-arm RCT
+
+2. **Qualitative Studies** - 25%
+   Interview and observation-based approaches:
+   - Jones et al. (2022): Semi-structured interviews (n=30)
+   - Kim et al. (2023): Ethnographic study in classrooms
+
+3. **Mixed Methods** - 15%
+   Combining quantitative and qualitative data:
+   - Wang et al. (2024): RCT + follow-up interviews
+
+📖 Citations:
+[1] Smith, J. et al. (2023). AI Chatbots in Language Learning. p.3-5
+[2] Chen, L. et al. (2023). Experimental Study of... p.8
+[3] Lee, M. et al. (2024). Three-arm RCT... p.2-4
+[4] Jones, A. et al. (2022). Qualitative Analysis... p.5-7
+[5] Kim, S. et al. (2023). Ethnographic Exploration... p.3
+
+⏱️  Response time: 4.2 seconds
+```
+
+**Query 2: Specific Outcomes**
+```
+> Which studies show positive learning outcomes?
+
+🔍 Retrieving relevant chunks... (8 chunks found)
+📝 Generating answer...
+
+Of the 45 papers, 31 studies (69%) reported positive learning outcomes
+for chatbot interventions:
+
+**Strong Evidence (Effect Size > 0.5)**:
+1. Smith et al. (2023): d=0.72
+   - Vocabulary acquisition improved by 18%
+   - Speaking fluency gains: +2.1 on IELTS scale
+
+2. Martinez et al. (2023): d=0.68
+   - Grammar test scores: +15% vs. control
+   - Retention after 3 months: 85%
+
+**Moderate Evidence (Effect Size 0.3-0.5)**:
+3. Lee et al. (2024): d=0.42
+   - Writing scores improved (+12%)
+   - Student engagement: +25%
+
+**Mixed or No Effect**:
+- 8 studies (18%) showed no significant difference
+- 6 studies (13%) had methodological limitations
+
+**Key Success Factors** identified across positive studies:
+✓ Personalized feedback mechanisms
+✓ Integration with curriculum (not standalone)
+✓ Teacher guidance + chatbot support
+✓ Duration: minimum 8 weeks for measurable effects
+
+📖 Citations: [Full list of 31 studies with page numbers]
+
+💡 Research Gap: No long-term studies (>6 months) found.
+
+⏱️  Response time: 5.8 seconds
+```
+
+**Query 3: Research Gaps**
+```
+> What are the research gaps in this PRISMA-vetted literature?
+
+🔍 Retrieving relevant chunks... (12 chunks found)
+📝 Generating answer...
+
+Analysis of the 45 PRISMA-selected papers reveals 7 major research gaps:
+
+1. **Lack of Long-term Studies** (CRITICAL GAP)
+   - Longest study duration: 16 weeks (Wang 2024)
+   - No studies examining effects beyond 6 months
+   - Retention and sustained benefits unknown
+
+2. **Limited Diversity in Contexts** (HIGH PRIORITY)
+   - 82% focus on higher education
+   - Only 3 studies (7%) examine K-12 settings
+   - Corporate training: 2 studies (4%)
+
+3. **Methodological Weaknesses** (MEDIUM PRIORITY)
+   - Small sample sizes: avg n=78 (range 20-200)
+   - 67% lack statistical power analysis
+   - Control for teacher effects: only 5 studies (11%)
+
+4. **Technology-Specific Gaps**
+   - Most use rule-based chatbots (60%)
+   - LLM-based chatbots: only 8 studies (18%)
+   - Multimodal chatbots (voice+text): 2 studies (4%)
+
+5. **Outcome Measurement Issues**
+   - Standardized tests: 31 studies (69%)
+   - Authentic communication tasks: only 9 studies (20%)
+   - Affective outcomes underexplored
+
+6. **Theoretical Frameworks**
+   - 58% atheoretical (no explicit theory)
+   - SLA theories: 12 studies (27%)
+   - Learning sciences frameworks: 7 studies (16%)
+
+7. **Equity and Access**
+   - Socioeconomic diversity: rarely reported
+   - Special education needs: 0 studies
+   - Non-English languages: 6 studies (13%)
+
+**Recommended Future Research Directions**:
+→ Longitudinal RCTs (12+ months)
+→ K-12 and workplace contexts
+→ LLM-based chatbot interventions
+→ Authentic assessment measures
+→ Theory-driven designs
+
+📖 Based on comprehensive analysis of all 45 papers
+
+⏱️  Response time: 7.3 seconds
+```
+
+### Example Workflow
+
+**Your Pipeline Journey**:
+```
+PRISMA identified:    403 papers
+↓ Screening
+PRISMA selected:      79 papers (20%)
+↓ PDF Download
+Successfully downloaded: 45 PDFs (57%)
+↓ RAG Building
+Vector database:      2,250 chunks
+
+✅ NOW QUERYING: Those 45 PRISMA-vetted papers only
+```
+
+**Result**: Every answer comes from high-quality, domain-relevant, systematically-selected literature.
+
+### Advanced Query Techniques
+
+**1. Comparative Queries**
+```
+> Compare chatbot effectiveness in K-12 vs. higher education
+> How do rule-based chatbots differ from LLM-based ones?
+```
+
+**2. Methodological Queries**
+```
+> What sample sizes are typical in RCT studies?
+> Which assessment tools are most commonly used?
+```
+
+**3. Temporal Queries**
+```
+> How have chatbot designs evolved from 2018 to 2024?
+> What are the emerging trends in recent papers (2023-2024)?
+```
+
+**4. Gap Identification**
+```
+> What contexts are underrepresented in this literature?
+> Which theoretical frameworks are rarely used?
+```
+
+**5. Citation Extraction**
+```
+> List all studies that use vocabulary acquisition as primary outcome
+> Which papers cite Krashen's Input Hypothesis?
+```
 
 ---
 
