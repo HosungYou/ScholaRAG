@@ -163,10 +163,24 @@ What took 6-8 weeks now takes 2-3 weeks. Proven across Education, Medicine, and 
 
 ## Documentation Structure
 
+### 🔍 Search Documentation
+
+**Use the search box at the top of any page** to quickly find what you need!
+
+**Popular searches**:
+- `PRISMA` - PRISMA 2020 methodology, screening, flowchart
+- `RAG` - RAG system, vector database, semantic search
+- `Stage 4` - Execution, automated pipeline, scripts
+- `config.yaml` - Configuration, setup, criteria
+- `troubleshooting` - Common issues and solutions
+
+[View complete search guide]({{ site.baseurl }}{% link search-guide.md %}) - Tips for effective searching
+
 ### Getting Started
-- [Installation]({{ site.baseurl }}{% link getting-started.md %}) - Set up your environment
-- [Glossary]({{ site.baseurl }}{% link glossary.md %}) - Key terms and concepts
-- [FAQ]({{ site.baseurl }}{% link faq.md %}) - Common questions
+- [Search Guide]({{ site.baseurl }}{% link search-guide.md %}) - 🔍 How to search effectively
+- [Glossary]({{ site.baseurl }}{% link glossary.md %}) - 📚 Searchable key terms (120+ definitions)
+- [Installation]({{ site.baseurl }}{% link getting-started.md %}) - ⚙️ Set up your environment
+- [FAQ]({{ site.baseurl }}{% link faq.md %}) - ❓ Common questions
 
 ### 5-Stage Workflow
 - [Stage 1: Planning]({{ site.baseurl }}{% link stages/01-planning.md %}) - Research question and query design
