@@ -1,6 +1,92 @@
-# Stage 2: Query Strategy Design Prompt
+<!-- METADATA
+stage: 2
+stage_name: "Query Strategy Design"
+stage_goal: "Design effective search queries with optimal precision/recall trade-off"
+expected_duration: "20-30 minutes"
+conversation_mode: "interactive"
+prerequisites:
+  - stage: 1
+    requirement: "Research scope and data sources confirmed"
+outputs:
+  - query_strategies: "2-3 query options (broad/focused/narrow)"
+  - estimated_counts: "Expected paper count for each query"
+  - selected_query: "Final query choice with rationale"
+  - database_mapping: "Query syntax adapted for each database"
+validation_rules:
+  query_completeness:
+    required: true
+    validation: "Query must include core concepts, domain context, and scope constraints"
+  synonym_coverage:
+    required: true
+    validation: "Must use OR for synonyms (e.g., 'chatbot OR conversational agent')"
+  estimated_papers:
+    required: true
+    range: [20, 5000]
+    validation: "Realistic paper count between 20-5000"
+  boolean_syntax:
+    required: true
+    validation: "Proper use of AND, OR, NOT, parentheses"
+cli_commands:
+  - command: "researcherrag test-query --query '[QUERY]' --database semantic_scholar"
+    when: "User wants to preview results before committing"
+    auto_execute: false
+scripts_triggered:
+  - none (query design only, execution happens in Stage 5)
+next_stage:
+  stage: 3
+  condition: "User confirms query strategy and estimated counts are acceptable"
+  prompt_file: "03_prisma_configuration.md"
+divergence_handling:
+  common_divergences:
+    - pattern: "User wants to start fetching papers immediately"
+      response: "Great enthusiasm! But we need to complete Stage 3 (PRISMA configuration) first to set up inclusion/exclusion criteria. This ensures we screen papers systematically."
+    - pattern: "User asks about API keys or technical setup"
+      response: "API setup happens in Stage 5 (Execution). Right now in Stage 2, let's focus on designing the best possible queries. We'll handle technical setup later."
+    - pattern: "User asks about screening or deduplication"
+      response: "Excellent question! That's Stage 3 (PRISMA configuration). Let's finalize your queries first in Stage 2, then we'll design screening criteria."
+    - pattern: "User wants only 1 query option"
+      response: "I recommend seeing 2-3 options to understand precision/recall trade-offs. We can always adjust later if the initial query isn't working well."
+    - pattern: "User unsure about boolean operators"
+      response: "No problem! I'll design the queries for you and explain each component simply. You can also choose 'Just give me the final query' if you prefer not to understand the syntax."
+conversation_flow:
+  expected_turns: 5-10
+  typical_pattern:
+    - turn: 1
+      user_action: "Provides confirmed research focus and preferences (broad/focused/narrow)"
+      claude_action: "Ask about must-include/must-exclude keywords, technical comfort level"
+    - turn: 2-3
+      user_action: "Specifies additional constraints (keywords, exclusions)"
+      claude_action: "Design 2-3 query options with different breadth levels"
+    - turn: 4-6
+      user_action: "Reviews queries, asks for adjustments (add/remove keywords)"
+      claude_action: "Refine queries, explain trade-offs, estimate paper counts"
+    - turn: 7-8
+      user_action: "Tests query preview or requests narrow/broad variants"
+      claude_action: "Show top 10 paper titles, adjust query based on feedback"
+    - turn: "final"
+      user_action: "Confirms final query choice"
+      claude_action: "Save query to config.yaml, summarize decisions, show Stage 3 prompt"
+validation_checklist:
+  - "Query includes all core concepts (using OR for synonyms)"
+  - "Query has proper boolean syntax (AND, OR, NOT, parentheses)"
+  - "Estimated paper count is realistic (20-5000 papers)"
+  - "User understands precision/recall trade-off"
+  - "Query has been tested or previewed with sample results"
+  - "Final query choice is confirmed and saved to config.yaml"
+-->
 
-After completing Stage 1 (Research Domain Setup), use this prompt to design your search queries:
+# Stage 2: Query Strategy Design
+
+**🎯 Your Current Stage**: Stage 2 of 7
+**⏱️ Expected Time**: 20-30 minutes
+**💬 Format**: Interactive conversation with Claude Code
+**📋 Prerequisites**: Stage 1 completed (research scope defined)
+
+---
+
+## 🚀 Quick Start
+
+After completing Stage 1 (Research Domain Setup), copy this prompt to Claude Code:
 
 ---
 
@@ -38,165 +124,367 @@ Please design 2-3 query options (broad/focused/narrow) and estimate the expected
 
 ---
 
-## What Claude Code Will Do
+## 📋 What Happens in This Stage
 
-Claude will:
+### Claude Code Will:
 
-1. Analyze your research domain and suggest relevant databases
-2. Design 2-3 query strategies with different precision/recall trade-offs
-3. Explain boolean operators and search syntax
-4. Estimate paper counts for each query (using API preview if possible)
-5. Recommend a starting point based on your goals
-6. Offer to test queries before committing
+1. **Analyze Your Research Domain** (Turn 1-2)
+   - Identify core concepts and their synonyms
+   - Understand field-specific terminology
+   - Map research questions to searchable terms
 
-## Understanding Query Trade-offs
+2. **Design 2-3 Query Strategies** (Turn 3-4)
+   - **Broad**: High recall, comprehensive coverage (1500+ papers)
+   - **Focused**: Balanced precision/recall (500-800 papers) ⭐ **RECOMMENDED**
+   - **Narrow**: High precision, minimal noise (100-200 papers)
+
+3. **Explain Boolean Operators** (if requested)
+   - How AND, OR, NOT work
+   - Why parentheses matter
+   - How to read complex queries
+
+4. **Estimate Paper Counts** (Turn 5-6)
+   - Preview results using database APIs
+   - Show top 10 paper titles for validation
+   - Adjust if counts are way off target
+
+5. **Save Final Query** (automatic)
+   - Update `config.yaml` with selected query
+   - Save alternative queries as backups
+   - Prepare for Stage 3 PRISMA configuration
+
+### ✅ Stage Completion Checklist
+
+Before moving to Stage 3, ensure:
+
+- [ ] Query includes **all core concepts** (not just one keyword)
+- [ ] Synonyms are grouped with **OR** (e.g., "chatbot OR conversational agent")
+- [ ] Boolean syntax is **correct** (proper use of AND, OR, NOT, parentheses)
+- [ ] Estimated paper count is **realistic** (20-5000 papers, ideally 100-800)
+- [ ] You've **tested or previewed** results (top 10 papers look relevant)
+- [ ] Final query is **confirmed and saved** to config.yaml
+
+---
+
+## 📊 Understanding Query Trade-offs
 
 | Query Type | Papers Found | Relevance Rate | Screening Time | Risk |
 |------------|--------------|----------------|----------------|------|
-| **Broad** | 2000+ | 20-30% relevant | High (days) | Miss nothing |
-| **Focused** | 500-800 | 50-70% relevant | Medium (hours) | Balanced |
-| **Narrow** | 100-200 | 80-90% relevant | Low (minutes) | May miss papers |
+| **Broad** | 1500-3000 | 20-30% relevant | High (3-5 days) | Miss nothing |
+| **Focused** ⭐ | 500-800 | 50-70% relevant | Medium (1 day) | Balanced |
+| **Narrow** | 100-200 | 80-90% relevant | Low (2-3 hours) | May miss papers |
 
-**Recommendation**: Start with **Focused**, then broaden if needed.
+**💡 Recommendation**: Start with **Focused**, then broaden if you're missing important papers after screening.
 
-## Example Queries
+### When to Choose Each Strategy
 
-### Education Research (AI Chatbots in Language Learning)
-
-**Broad Query (~2000 papers)**:
 ```
-AI chatbot language learning
-```
-
-**Focused Query (~600 papers, RECOMMENDED)**:
-```
-(conversational agent OR chatbot OR dialogue system) AND
-(language learning OR second language acquisition OR L2 OR foreign language) AND
-(university OR college OR higher education OR postsecondary)
-```
-
-**Narrow Query (~150 papers)**:
-```
-[Focused Query] AND
-(experimental OR RCT OR randomized OR quasi-experimental OR controlled trial)
+Do you want comprehensive literature coverage (e.g., systematic review for publication)?
+├─ YES → Use Broad query
+│   └─ Trade-off: 3-5 days of screening, but won't miss important papers
+│
+└─ NO → Do you know your exact research question with specific methods?
+    ├─ YES → Use Narrow query
+    │   └─ Trade-off: Fast screening (2-3 hours), but might miss relevant papers
+    │
+    └─ NO → Use Focused query ⭐ RECOMMENDED
+        └─ Trade-off: Balanced screening time (1 day) with good coverage
 ```
 
-### Medical Research (EHR Alert Fatigue)
+---
 
-**Broad Query (~1500 papers)**:
-```
-alert fatigue electronic health record
-```
+## 🔍 Boolean Operator Guide
 
-**Focused Query (~400 papers, RECOMMENDED)**:
-```
-(alert fatigue OR alarm fatigue OR alert override) AND
-(electronic health record OR EHR OR clinical decision support OR CDSS) AND
-(physician OR clinician OR provider)
-```
-
-**Narrow Query (~80 papers)**:
-```
-[Focused Query] AND
-(intervention OR trial OR cohort OR prospective) NOT
-(editorial OR commentary OR letter)
-```
-
-## Boolean Operator Cheat Sheet
+### Quick Reference
 
 | Operator | Meaning | Example | Result |
 |----------|---------|---------|--------|
-| **AND** | Both terms must appear | chatbot AND learning | Papers with BOTH words |
-| **OR** | Either term can appear | chatbot OR agent | Papers with EITHER word |
-| **NOT** | Exclude term | learning NOT animal | Papers WITHOUT "animal" |
-| **( )** | Group terms | (A OR B) AND C | A+C or B+C, not just A+B |
-| **" "** | Exact phrase | "language learning" | Exact phrase only |
+| **AND** | Both terms must appear | `chatbot AND learning` | Papers with BOTH words |
+| **OR** | Either term can appear | `chatbot OR agent` | Papers with EITHER word |
+| **NOT** | Exclude term | `learning NOT animal` | Papers WITHOUT "animal" |
+| **( )** | Group terms | `(A OR B) AND C` | A+C or B+C, not just A+B |
+| **" "** | Exact phrase | `"language learning"` | Exact phrase only |
 
-## Tips
+### Best Practices
 
-### 1. Use Synonyms with OR
+#### ✅ DO: Use Synonyms with OR
+
 ```
 ✅ Good: (chatbot OR conversational agent OR dialogue system)
 ❌ Bad: chatbot
 ```
-Why: Different papers use different terms for the same concept.
+**Why**: Different papers use different terms for the same concept.
 
-### 2. Use AND to Narrow Scope
+#### ✅ DO: Use AND to Narrow Scope
+
 ```
 ✅ Good: chatbot AND "language learning" AND university
 ❌ Bad: chatbot education
 ```
-Why: Ensures all key concepts are present.
+**Why**: Ensures all key concepts are present.
 
-### 3. Exclude Irrelevant Areas with NOT
+#### ✅ DO: Exclude Irrelevant Areas with NOT
+
 ```
 ✅ Good: language learning NOT (animal OR mouse OR rat)
 ❌ Bad: (forgetting to exclude irrelevant contexts)
 ```
-Why: Removes papers from completely different domains.
+**Why**: Removes papers from completely different domains.
 
-### 4. Test Queries Incrementally
+#### ✅ DO: Test Queries Incrementally
+
 ```
 Step 1: Start with core concept (e.g., "chatbot")
+        → Check: ~50,000 papers (too broad)
+
 Step 2: Add domain (e.g., + "language learning")
+        → Check: ~2,000 papers (still broad)
+
 Step 3: Add context (e.g., + "university")
+        → Check: ~600 papers (good!)
+
 Step 4: Refine with methods (e.g., + "experimental")
+        → Check: ~150 papers (narrow option)
 ```
 
-## Decision Tree
+---
+
+## 📚 Example: Education Research
+
+### Research Focus
+"Effectiveness of AI-powered chatbots in improving speaking proficiency for second language learners in higher education contexts"
+
+### Query Option 1: Broad (~2000 papers)
 
 ```
-Do you want comprehensive coverage of the literature?
-├─ YES → Use Broad query
-│   └─ Expected: 1500+ papers, 3-5 days of screening
-│
-└─ NO → Do you know your research question precisely?
-    ├─ YES → Use Narrow query
-    │   └─ Expected: 100-200 papers, 2-3 hours of screening
-    │
-    └─ NO → Use Focused query (RECOMMENDED)
-        └─ Expected: 500-800 papers, 1 day of screening
+(chatbot OR "conversational agent" OR "dialogue system" OR "virtual agent") AND
+(language OR languages OR "second language" OR L2 OR "foreign language")
 ```
 
-## After Claude Responds
+**Pros**: Won't miss any relevant papers
+**Cons**: 3-5 days of screening, many irrelevant papers about general chatbots
 
-Claude will provide you with:
-- 2-3 query options
-- Estimated paper counts
-- Recommended starting point
-- Explanation of each query component
+---
 
-**Your next actions**:
-1. Review the queries - do they capture your research focus?
-2. Ask Claude to adjust if needed:
-   - "Can you add [keyword]?"
-   - "This seems too broad, can you narrow it?"
-   - "I'm worried about missing papers on [topic]"
-3. Once satisfied, confirm: "Let's use Query 2"
-4. Move to Stage 3: PRISMA Configuration
+### Query Option 2: Focused ⭐ (~600 papers, RECOMMENDED)
 
-## Common Questions
+```
+(chatbot OR "conversational agent" OR "dialogue system" OR "virtual agent") AND
+("language learning" OR "second language acquisition" OR "L2 acquisition" OR "foreign language learning") AND
+(university OR college OR "higher education" OR postsecondary OR undergraduate)
+```
 
-### Q: How do I know if my query is too broad or too narrow?
-A: Ask Claude: "Can you test this query and show me the top 10 paper titles?" This will give you a sense of relevance.
+**Pros**: Balanced relevance (~60%), manageable screening (1 day)
+**Cons**: Might miss a few papers that don't mention education level
 
-### Q: What if I want papers from multiple sub-topics?
-A: Use OR to combine them:
+---
+
+### Query Option 3: Narrow (~150 papers)
+
+```
+(chatbot OR "conversational agent" OR "dialogue system") AND
+("language learning" OR "second language acquisition") AND
+(university OR college OR "higher education") AND
+(speaking OR "oral proficiency" OR fluency OR pronunciation) AND
+(experimental OR RCT OR "quasi-experimental" OR "controlled trial")
+```
+
+**Pros**: High relevance (~80%), fast screening (2-3 hours)
+**Cons**: Will miss qualitative studies, surveys, non-experimental designs
+
+---
+
+### Expected Conversation Flow
+
+**Claude**: "I've designed 3 query options for you. The Focused query (Option 2) with ~600 papers is recommended for your dissertation lit review. Would you like to see sample results from this query?"
+
+**You**: "Yes, please show me the top 10 papers from Option 2."
+
+**Claude**: "Here are the top 10 papers:
+1. 'Chatbot-assisted language learning for Chinese EFL students...'
+2. 'Effectiveness of AI conversational agents in improving speaking skills...'
+[...shows 10 titles...]
+
+These look highly relevant! About 70% directly address your research question. Shall we use Option 2?"
+
+**You**: "Perfect! But can you also exclude papers about children (K-12)?"
+
+**Claude**: "Absolutely! I'll add `NOT (children OR K-12 OR elementary OR secondary)`. New estimate: ~520 papers. Still a good range!"
+
+---
+
+## 📚 Example: Medical Research
+
+### Research Focus
+"Impact of electronic health record (EHR) alert fatigue on physician clinical decision-making and patient safety outcomes"
+
+### Query Option 1: Broad (~1500 papers)
+
+```
+("alert fatigue" OR "alarm fatigue") AND
+("electronic health record" OR EHR)
+```
+
+**Pros**: Comprehensive coverage
+**Cons**: Includes many papers about technical alert systems without clinical outcomes
+
+---
+
+### Query Option 2: Focused ⭐ (~400 papers, RECOMMENDED)
+
+```
+("alert fatigue" OR "alarm fatigue" OR "alert override") AND
+("electronic health record" OR EHR OR "clinical decision support" OR CDSS) AND
+(physician OR clinician OR provider OR doctor)
+```
+
+**Pros**: Focused on clinical decision-making context
+**Cons**: Might miss some nursing/pharmacist studies
+
+---
+
+### Query Option 3: Narrow (~80 papers)
+
+```
+("alert fatigue" OR "alarm fatigue") AND
+("electronic health record" OR EHR OR "clinical decision support") AND
+(physician OR clinician) AND
+(intervention OR trial OR cohort OR prospective) NOT
+(editorial OR commentary OR letter)
+```
+
+**Pros**: Only high-quality empirical studies
+**Cons**: Will miss descriptive studies and qualitative research
+
+---
+
+## 🔄 What Happens Next
+
+### After This Conversation
+
+1. **Queries Saved** ✓
+   - `config.yaml` updated with selected query
+   - Alternative queries saved as backups
+   - Database-specific syntax adaptations saved
+
+2. **You Receive Stage 3 Prompt** ➡️
+   - Copy/paste to continue conversation
+   - Design PRISMA inclusion/exclusion criteria
+   - Expected time: 10-15 minutes
+
+3. **Progress Tracking**
+   - Conversation context updated in `.researcherrag/context.json`
+   - Query preview results saved for reference
+   - Can test query anytime with `researcherrag test-query`
+
+---
+
+## 🚨 Troubleshooting
+
+### "How do I know if my query is too broad or too narrow?"
+
+Ask Claude: "Can you test this query and show me the top 10 paper titles?" This will give you a sense of relevance rate.
+
+**Signs of too broad**:
+- Paper count >2000
+- Top 10 titles have <50% relevance to your research question
+- Seeing papers from unrelated fields
+
+**Signs of too narrow**:
+- Paper count <50
+- Missing obvious papers you know should be included
+- Query has 5+ AND constraints
+
+---
+
+### "What if I want papers from multiple sub-topics?"
+
+Use OR to combine them:
+
 ```
 (topic1 OR topic2 OR topic3) AND [rest of your query]
 ```
 
-### Q: Can I search multiple databases?
-A: Yes! Ask Claude: "Can you design queries for both Semantic Scholar and PubMed?" Claude will adapt syntax for each database.
+Example: Studying chatbots in BOTH language learning AND mathematics?
 
-### Q: What if the paper count is way off from my target?
-A: Adjust iteratively:
-- Too many papers (>1000)? Add more AND constraints
-- Too few papers (<100)? Remove some constraints or add OR synonyms
+```
+(chatbot OR "conversational agent") AND
+("language learning" OR "mathematics education") AND
+(university OR college)
+```
 
 ---
 
-## Next Steps
+### "Can I search multiple databases with different syntax?"
 
-Once your query is finalized:
-→ Proceed to [Stage 3: PRISMA Configuration](./03_prisma_configuration.md)
+Yes! Claude will adapt syntax for each database:
+
+**Semantic Scholar / OpenAlex / arXiv**:
+```
+(chatbot OR agent) AND learning
+```
+
+**PubMed (uses MeSH terms)**:
+```
+("Conversational Agents"[MeSH] OR chatbot[tiab]) AND
+("Education"[MeSH] OR learning[tiab])
+```
+
+Ask Claude: "Can you adapt this query for both Semantic Scholar and PubMed?"
+
+---
+
+### "What if the paper count is way off from my target?"
+
+Adjust iteratively:
+
+**Too many papers (>1000)?**
+- Add more AND constraints (e.g., + "university")
+- Make terms more specific (e.g., "chatbot" → "AI chatbot")
+- Add NOT exclusions (e.g., NOT "children")
+
+**Too few papers (<100)?**
+- Remove some AND constraints
+- Add more OR synonyms (e.g., "chatbot OR agent OR assistant")
+- Broaden year range
+- Remove method constraints (e.g., remove "experimental")
+
+---
+
+### "I'm not comfortable with boolean operators"
+
+No problem! Choose this option in your prompt:
+- [ ] Just give me the final query (I don't need to understand the syntax)
+
+Claude will design optimized queries for you without explaining every detail. You can always ask "What does this query mean in plain English?" if you're curious.
+
+---
+
+## 🎯 Stage 2 Success Criteria
+
+You're ready to move to Stage 3 when:
+
+✅ Query includes **all core concepts** (not just 1-2 keywords)
+✅ Synonyms are properly grouped with **OR**
+✅ Boolean syntax is **correct** (parentheses balanced)
+✅ Estimated paper count is **realistic** (20-5000, ideally 100-800)
+✅ You've **previewed results** and they look relevant
+✅ Query is **saved to config.yaml**
+
+---
+
+## 📍 Your Progress
+
+```
+[●●○○○○○] Stage 2/7: Query Strategy Design
+```
+
+**Next**: Stage 3 - PRISMA Configuration (10-15 min)
+**After That**: Stage 4 - RAG Design (20-30 min)
+
+**Progress So Far**: ~35-50 minutes
+**Remaining Time**: ~3-7 hours across stages 3-7
+
+---
+
+**Ready to continue?** Copy the prompt template above, fill in your research focus and preferences, and paste it to Claude Code!
