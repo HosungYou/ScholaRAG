@@ -4,6 +4,29 @@
 
 ---
 
+## 📁 Hierarchical Context System
+
+ResearcherRAG uses **multi-level CLAUDE.md files** for optimal context:
+
+```
+ResearcherRAG/
+├── CLAUDE.md (THIS FILE - system-level behavior)
+├── AGENTS.md (for OpenAI Codex compatibility)
+└── examples/ai-chatbots-language-learning/
+    ├── CLAUDE.md (project-specific context)
+    ├── AGENTS.md (project-specific Codex instructions)
+    └── .researcherrag/context.json (runtime state)
+```
+
+**Precedence**: Project-specific > System-level > Default behavior
+
+**IMPORTANT**: When working in a project folder (`examples/*/`):
+1. **ALWAYS check for project-specific CLAUDE.md FIRST**
+2. Use project CLAUDE.md for expected results, domain terminology
+3. Use THIS file for general ResearcherRAG workflow behavior
+
+---
+
 ## 🎯 Core Philosophy
 
 **IMPORTANT**: ResearcherRAG is designed for **conversation-first research automation**.
