@@ -882,9 +882,203 @@ def next_stage():
             click.echo(f"   - {output}")
         click.echo()
 
+    # Stage 6 특화: 예시 프롬프트 추천
+    if current_stage == 6:
+        click.echo("🎯 Stage 6 특화 기능:")
+        click.echo("   ResearcherRAG v1.0.8에서 7가지 연구 시나리오를 제공합니다.")
+        click.echo()
+        click.echo("   예시 프롬프트 보기:")
+        click.echo("   $ researcherrag stage6-examples")
+        click.echo()
+        click.echo("   특정 시나리오 프롬프트 복사:")
+        click.echo("   $ researcherrag stage6-prompt hypothesis")
+        click.echo("   $ researcherrag stage6-prompt statistics")
+        click.echo()
+
     click.echo("💡 Tip: Open prompt file with:")
     click.echo(f"   cat {stage_info['prompt_file']}")
     click.echo("\n" + "="*60 + "\n")
+
+
+@cli.command('stage6-examples')
+def stage6_examples():
+    """
+    Show available Stage 6 research scenarios (v1.0.8+).
+
+    Lists all 7 research conversation scenarios with descriptions.
+
+    Example:
+        researcherrag stage6-examples
+    """
+    click.echo("\n" + "="*70)
+    click.echo("🎯 Stage 6: Research Conversation Scenarios (v1.0.8)")
+    click.echo("="*70 + "\n")
+
+    scenarios = {
+        "overview": {
+            "name": "Context Scanning",
+            "description": "Get high-level overview of literature themes, methods, findings",
+            "use_case": "Initial exploration, understanding corpus structure"
+        },
+        "hypothesis": {
+            "name": "Hypothesis Validation",
+            "description": "Test hypothesis with supporting/refuting evidence + effect sizes",
+            "use_case": "Validate research assumptions, build argument"
+        },
+        "statistics": {
+            "name": "Statistical Extraction",
+            "description": "Extract RCT data (tools, effect sizes, samples) in table format",
+            "use_case": "Meta-analysis preparation, quantitative synthesis"
+        },
+        "methods": {
+            "name": "Methodology Comparison",
+            "description": "Compare RCT vs quasi-experimental vs mixed methods",
+            "use_case": "Choose methodology, understand trade-offs"
+        },
+        "contradictions": {
+            "name": "Contradiction Detection",
+            "description": "Find conflicting results, analyze reasons, propose follow-up",
+            "use_case": "Resolve inconsistencies, identify moderators"
+        },
+        "policy": {
+            "name": "Policy Translation",
+            "description": "Create policy memo with recommendations and checklists",
+            "use_case": "Stakeholder communication, implementation"
+        },
+        "grant": {
+            "name": "Future Research Design",
+            "description": "Design follow-up study with hypotheses, methods, budget",
+            "use_case": "Grant proposals, identifying research gaps"
+        }
+    }
+
+    for key, info in scenarios.items():
+        click.echo(f"📌 {info['name']}")
+        click.echo(f"   설명: {info['description']}")
+        click.echo(f"   활용: {info['use_case']}")
+        click.echo(f"   프롬프트 복사: researcherrag stage6-prompt {key}")
+        click.echo()
+
+    click.echo("💡 팁:")
+    click.echo("   - 각 시나리오는 프롬프트 예시입니다 (자동 실행 아님)")
+    click.echo("   - 프롬프트를 복사해서 연구 상황에 맞게 수정하세요")
+    click.echo("   - 전체 가이드: prompts/06_research_conversation.md")
+    click.echo("\n" + "="*70 + "\n")
+
+
+@cli.command('stage6-prompt')
+@click.argument('scenario', type=click.Choice([
+    'overview', 'hypothesis', 'statistics', 'methods',
+    'contradictions', 'policy', 'grant'
+]))
+def stage6_prompt(scenario):
+    """
+    Copy example prompt for a specific Stage 6 scenario.
+
+    Scenarios:
+        overview        Context Scanning (literature overview)
+        hypothesis      Hypothesis Validation (evidence for/against)
+        statistics      Statistical Extraction (RCT data table)
+        methods         Methodology Comparison (RCT vs quasi vs mixed)
+        contradictions  Contradiction Detection (conflicting results)
+        policy          Policy Translation (actionable recommendations)
+        grant           Future Research Design (grant proposal)
+
+    Example:
+        researcherrag stage6-prompt hypothesis
+    """
+    prompts = {
+        "overview": """Analyze the papers in my database and provide a structured overview of:
+1. Core themes and topics
+2. Methodological approaches
+3. Key findings and outcomes
+
+Organize the response hierarchically with citations and page ranges for each category.""",
+
+        "hypothesis": """My hypothesis: "[여기에 가설을 입력하세요]"
+
+Please:
+1. List evidence SUPPORTING this hypothesis
+2. List evidence REFUTING or contradicting this hypothesis
+3. Provide reasoning for each piece of evidence
+4. Include effect sizes, statistical values, and page numbers""",
+
+        "statistics": """Extract from all RCT studies:
+1. Measurement tools used for [outcome] assessment
+2. Effect sizes (Cohen's d or similar)
+3. Sample sizes (intervention and control groups)
+4. Organize in a table format
+
+For missing values, indicate "Not reported".""",
+
+        "methods": """Compare the three main methodologies used in my papers:
+1. Experimental (RCT)
+2. Quasi-experimental
+3. Mixed methods
+
+For each, provide:
+- Strengths
+- Limitations
+- Recommended use scenarios
+- Cite specific papers as examples""",
+
+        "contradictions": """Identify cases where studies report conflicting results (e.g., positive vs. negative outcomes).
+
+For each contradiction:
+1. Describe the conflicting findings
+2. Analyze potential reasons (sample, duration, tools, context)
+3. Provide direct quotes from the papers
+4. Suggest follow-up research to resolve the contradiction""",
+
+        "policy": """Based on my RAG database, create a policy memo for education administrators.
+
+Include:
+1. Executive summary (3 key takeaways)
+2. Policy recommendations (3-5 actionable items)
+3. Implementation checklist for practitioners
+4. Evidence citations supporting each recommendation""",
+
+        "grant": """Based on the research gaps identified in my database, propose a follow-up study design.
+
+Include:
+1. Research question and hypotheses
+2. Study design (methodology, sample, measures)
+3. Analysis plan
+4. Expected contributions to the field
+5. Budget estimate and timeline"""
+    }
+
+    scenario_names = {
+        "overview": "Context Scanning",
+        "hypothesis": "Hypothesis Validation",
+        "statistics": "Statistical Extraction",
+        "methods": "Methodology Comparison",
+        "contradictions": "Contradiction Detection",
+        "policy": "Policy Translation",
+        "grant": "Future Research Design"
+    }
+
+    click.echo("\n" + "="*70)
+    click.echo(f"📋 Stage 6 Prompt: {scenario_names[scenario]}")
+    click.echo("="*70 + "\n")
+
+    click.echo("아래 프롬프트를 복사해서 RAG 인터페이스에 붙여넣으세요:")
+    click.echo("(필요시 대괄호 [] 부분을 수정하세요)\n")
+    click.echo("-" * 70)
+    click.echo(prompts[scenario])
+    click.echo("-" * 70)
+    click.echo()
+
+    click.echo("💡 사용 방법:")
+    click.echo("   1. 위 프롬프트를 복사 (Ctrl+C / Cmd+C)")
+    click.echo("   2. RAG 인터페이스 시작: python scripts/06_query_rag.py")
+    click.echo("   3. 프롬프트 붙여넣기 (Ctrl+V / Cmd+V)")
+    click.echo("   4. 연구 상황에 맞게 수정 후 실행")
+    click.echo()
+
+    click.echo("📖 전체 예시 및 최적 응답 구조:")
+    click.echo("   prompts/06_research_conversation.md")
+    click.echo("\n" + "="*70 + "\n")
 
 
 @cli.command('upgrade')
