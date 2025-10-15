@@ -122,13 +122,15 @@ Complete guide for Claude Code on how to assist researchers. Covers:
 - Troubleshooting common issues
 - Best practices for research RAG
 
-#### **5-Stage Prompt Templates** (`prompts/`)
+#### **7-Stage Prompt Templates** (`prompts/`)
 Copy-paste prompts for each stage:
 1. **Research Domain Setup**: Define scope, questions, constraints
 2. **Query Strategy**: Design boolean queries, choose data sources
 3. **PRISMA Configuration**: Build multi-dimensional screening
-4. **RAG Design**: PDF acquisition, text extraction, vector DB, prompts
-5. **Execution Plan**: Run pipeline, troubleshoot, validate
+4. **Paper Retrieval**: Fetch papers from databases (Semantic Scholar, OpenAlex, arXiv)
+5. **RAG Building**: PDF processing, chunking, embedding, vector DB creation
+6. **Research Conversation**: Query your RAG system with specialized prompts ([7 scenarios](prompts/06_research_conversation/README.md))
+7. **Documentation Writing**: Generate PRISMA diagrams, write systematic review
 
 #### **Workshop Guide** (3 hours, `workshop/hands_on_guide.md`)
 Complete curriculum for teaching ResearcherRAG:
@@ -388,7 +390,8 @@ We welcome contributions!
 
 ### Documentation
 - **[CLAUDE.md](CLAUDE.md)**: Complete guide for Claude Code
-- **[prompts/](prompts/)**: 5-stage prompt templates
+- **[prompts/](prompts/)**: 7-stage prompt templates
+  - **[Stage 6 Scenarios](prompts/06_research_conversation/README.md)**: 7 specialized research conversation prompts
 - **[workshop/hands_on_guide.md](workshop/hands_on_guide.md)**: 3-hour workshop
 ### Interactive Platform
 - **[ResearcherRAG Helper](https://github.com/HosungYou/ResearcherRAG-helper)**: Web-based learning platform with chatbot
