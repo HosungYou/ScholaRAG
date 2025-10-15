@@ -1,0 +1,214 @@
+# ResearcherRAG Example Project Configuration
+# Project: AI-Powered Personalized Tutoring Systems in K-12 Education
+
+project_name: "AI-Powered Personalized Tutoring Systems in K-12 Education"
+created_date: "2025-10-14"
+author: "ResearcherRAG Example"
+
+# ============================================================
+# Research Question
+# ============================================================
+research_question: |
+  What is the effectiveness of AI-powered personalized tutoring systems
+  on student learning outcomes in K-12 education, and what factors
+  contribute to their success or failure?
+
+# ============================================================
+# Search Strategy
+# ============================================================
+databases:
+  - semantic_scholar
+  - openalex
+  - arxiv
+  - pubmed  # Include for cognitive science perspective
+
+search_query: "AI tutoring personalized learning K-12 education"
+
+# Alternative queries to try:
+alternative_queries:
+  - "artificial intelligence adaptive learning elementary secondary school"
+  - "intelligent tutoring systems student achievement K12"
+  - "personalized AI education outcomes primary middle high school"
+  - "machine learning individualized instruction academic performance"
+
+# ============================================================
+# Inclusion/Exclusion Criteria
+# ============================================================
+inclusion_criteria:
+  - "Studies investigating AI-powered tutoring or personalized learning systems"
+  - "Focus on K-12 education (elementary, middle, or high school)"
+  - "Papers reporting learning outcomes (test scores, grades, completion rates, engagement)"
+  - "Empirical research with quantitative or qualitative data"
+  - "Published between 2018-2025"
+  - "Peer-reviewed journal articles or conference papers"
+
+exclusion_criteria:
+  - "Higher education or adult learning only (university, professional training)"
+  - "Non-AI systems (traditional CAI, LMS without adaptive algorithms)"
+  - "Theoretical papers without empirical validation"
+  - "Non-English publications"
+  - "Papers without full text available"
+  - "Duplicate publications or preprints with published versions"
+
+# ============================================================
+# Date Range
+# ============================================================
+year_start: 2018
+year_end: 2025
+
+# Rationale:
+# - 2018: Widespread adoption of deep learning in education technology
+# - 2020-2021: COVID-19 accelerated AI tutoring system deployment
+# - 2023-2025: Large language models (GPT-4, Claude) in education
+
+# ============================================================
+# Language
+# ============================================================
+languages:
+  - English  # Primary language of papers
+
+# Subject domains of interest (for metadata):
+subject_domains:
+  - Mathematics (arithmetic, algebra, geometry, calculus)
+  - Science (physics, chemistry, biology)
+  - Reading comprehension and literacy
+  - Computer science and programming
+  - Foreign language learning
+  - STEM subjects (general)
+
+# ============================================================
+# RAG Configuration
+# ============================================================
+rag_settings:
+  # Chunking
+  chunk_size: 1200  # Larger for education papers with tables/figures
+  chunk_overlap: 300
+
+  # Embedding
+  embedding_model: "text-embedding-3-small"  # OpenAI embedding
+  embedding_dimension: 1536
+
+  # Retrieval
+  retrieval_k: 15  # More chunks for comprehensive context
+  similarity_threshold: 0.65  # Lower for broader coverage
+
+  # LLM
+  llm_model: "claude-3-5-sonnet-20241022"
+  max_tokens: 8000  # Allow longer responses for analysis
+  temperature: 0.0  # Deterministic for research reproducibility
+
+# ============================================================
+# Expected Outcomes (for validation)
+# ============================================================
+expected_outcomes:
+  total_papers_identified: 800  # Large corpus expected
+  papers_after_screening: 120   # ~15% relevance rate
+  papers_with_pdfs: 75          # ~60% PDF availability
+
+  # Key themes expected (to validate findings):
+  expected_themes:
+    - "Learning gains and achievement"
+    - "Personalization algorithms"
+    - "Student engagement and motivation"
+    - "Equity and accessibility"
+    - "Teacher perspectives and integration"
+    - "Subject-specific effectiveness (math, reading)"
+    - "Socioeconomic factors"
+    - "Implementation challenges"
+    - "Comparison with human tutoring"
+
+  # Expected effect sizes (for meta-analysis validation):
+  expected_effect_sizes:
+    mean_cohens_d: 0.45  # Moderate positive effect
+    range_cohens_d: [-0.1, 1.2]
+    median_sample_size: 250
+
+# ============================================================
+# PRISMA Configuration
+# ============================================================
+prisma_settings:
+  # Screening stages
+  title_abstract_screening: true
+  full_text_screening: true
+
+  # Quality assessment criteria
+  quality_criteria:
+    - "Clear research question"
+    - "Appropriate methodology"
+    - "Valid outcome measures"
+    - "Adequate sample size (n > 30)"
+    - "Statistical analysis reported"
+    - "Limitations discussed"
+
+  # Data extraction fields
+  data_extraction_fields:
+    - study_design
+    - sample_size
+    - grade_level
+    - subject_domain
+    - ai_system_type
+    - intervention_duration
+    - outcome_measures
+    - effect_sizes
+    - statistical_significance
+
+# ============================================================
+# Research Context
+# ============================================================
+research_context:
+  motivation: |
+    AI-powered personalized tutoring represents a potentially transformative
+    approach to addressing the 2-sigma problem identified by Bloom (1984):
+    students receiving one-on-one tutoring perform two standard deviations
+    better than those in traditional classrooms.
+
+    With teacher shortages, growing class sizes, and diverse learning needs,
+    AI tutoring systems offer scalability while maintaining individualization.
+    However, empirical evidence of effectiveness remains fragmented.
+
+  policy_relevance:
+    - "U.S. Department of Education AI in Education initiatives"
+    - "OECD Digital Education Outlook"
+    - "UNESCO AI and Education policy recommendations"
+
+  practical_applications:
+    - "School district procurement decisions"
+    - "EdTech product development"
+    - "Teacher professional development"
+    - "Curriculum integration strategies"
+
+# ============================================================
+# Example RAG Queries
+# ============================================================
+example_rag_queries:
+  - "What are the average effect sizes of AI tutoring on math achievement in elementary schools?"
+  - "How do AI tutoring systems perform compared to human tutors in reading comprehension?"
+  - "What implementation challenges are most frequently reported by teachers?"
+  - "Which personalization algorithms show the strongest correlation with learning gains?"
+  - "How does student engagement with AI tutors vary by socioeconomic status?"
+  - "What are the best practices for integrating AI tutoring into existing curricula?"
+
+# ============================================================
+# Notes
+# ============================================================
+notes: |
+  This is a COMPLETE EXAMPLE demonstrating the full ResearcherRAG workflow
+  for an education research question.
+
+  Designed to showcase:
+  1. Research question formulation for policy-relevant education topic
+  2. Comprehensive search strategy across multiple databases
+  3. Rigorous PRISMA inclusion/exclusion criteria
+  4. RAG configuration optimized for education literature
+  5. Example queries for extracting actionable insights
+
+  Use this as a template for systematic reviews in:
+  - Educational technology
+  - Learning sciences
+  - K-12 education policy
+  - Instructional design
+
+  Expected runtime: 4-6 hours (larger corpus)
+  Expected API cost: $25-40 (Claude + OpenAI embeddings)
+
+  Compatible with ResearcherRAG v1.0.5+
