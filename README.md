@@ -40,11 +40,13 @@ In 3 hours, you'll create:
 
 ### Prerequisites
 
-- **VS Code** with **Claude Code extension** installed
 - **Python 3.9+**
+- **AI Assistant**: Claude Code (recommended) or any AI assistant (Codex, Cursor, etc.)
 - **3 hours** for initial setup
 
-### 5-Minute Start
+### Option A: With Claude Code (Automatic - Recommended)
+
+Claude Code automatically tracks stages and runs commands for you.
 
 ```bash
 # 1. Clone repository
@@ -54,7 +56,7 @@ cd ResearcherRAG
 # 2. Install dependencies
 pip install -r requirements.txt
 
-# 3. Open in VS Code
+# 3. Open in VS Code with Claude Code extension
 code .
 
 # 4. Start Claude Code chat (Cmd+Shift+P → "Claude: Open Chat")
@@ -62,12 +64,50 @@ code .
 # 5. Copy-paste prompt from prompts/01_research_domain_setup.md
 ```
 
-**That's it!** Claude Code will guide you through:
+**That's it!** Claude Code will automatically:
+- Track your current stage via `.claude/context.json`
+- Run CLI commands when needed
+- Guide you through all 7 stages
+
+### Option B: Manual CLI Usage (For Other AI Assistants)
+
+If you're using Codex, Cursor, or working without an AI assistant, use CLI commands directly.
+
+```bash
+# 1. Clone and install (same as above)
+git clone https://github.com/HosungYou/ResearcherRAG.git
+cd ResearcherRAG
+pip install -r requirements.txt
+
+# 2. Initialize project
+python researcherrag_cli.py init
+
+# 3. Check current stage
+python researcherrag_cli.py stage-status
+
+# 4. See what to do next
+python researcherrag_cli.py next
+
+# 5. Run specific stage (after completing prerequisites)
+python researcherrag_cli.py run-stage 1
+
+# 6. Continue through stages 1-7
+```
+
+**CLI Commands Available:**
+- `stage-status` - Show current progress and completed stages
+- `next` - Display next stage instructions and requirements
+- `run-stage <N>` - Execute specific stage with prerequisite validation
+- `upgrade` - Migrate existing project to v1.0.6+ structure
+
+**Workflow:**
 - Stage 1: Define research scope (15 min)
-- Stage 2: Design search queries (10 min)
+- Stage 2: Design search queries (20 min)
 - Stage 3: Configure PRISMA screening (20 min)
-- Stage 4: Design RAG system (15 min)
-- Stage 5: Execute pipeline (3-4 hours, mostly waiting)
+- Stage 4: Build RAG system (15 min)
+- Stage 5: Execute pipeline (30 min)
+- Stage 6: Query and validate (15 min)
+- Stage 7: Generate PRISMA diagram (10 min)
 
 ---
 
