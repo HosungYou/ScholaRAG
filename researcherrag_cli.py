@@ -987,7 +987,45 @@ def stage6_prompt(scenario):
     Example:
         researcherrag stage6-prompt hypothesis
     """
-    prompts = {
+    import os
+
+    # Map scenario names to file numbers
+    scenario_files = {
+        "overview": "01_overview.md",
+        "hypothesis": "02_hypothesis.md",
+        "statistics": "03_statistics.md",
+        "methods": "04_methods.md",
+        "contradictions": "05_contradictions.md",
+        "policy": "06_policy.md",
+        "grant": "07_grant.md"
+    }
+
+    # Try to read from new file structure (v1.0.10+)
+    scenario_dir = os.path.join(os.path.dirname(__file__), 'prompts', '06_research_conversation')
+    scenario_file = os.path.join(scenario_dir, scenario_files[scenario])
+
+    if os.path.exists(scenario_file):
+        # Read prompt from file and extract the "Optimal Prompt" section
+        try:
+            with open(scenario_file, 'r', encoding='utf-8') as f:
+                content = f.read()
+                # Extract prompt between ```  markers after "Optimal Prompt"
+                import re
+                match = re.search(r'\*\*Optimal Prompt\*\*:\s*```\s*\n(.*?)\n```', content, re.DOTALL)
+                if match:
+                    prompt_text = match.group(1).strip()
+                else:
+                    # Fallback: use hardcoded prompts below
+                    prompt_text = None
+        except Exception as e:
+            click.echo(f"⚠️  Could not read scenario file: {e}")
+            prompt_text = None
+    else:
+        prompt_text = None
+
+    # Fallback: Hardcoded prompts (for backwards compatibility)
+    if not prompt_text:
+        prompts = {
         "overview": """Analyze the papers in my database and provide a structured overview of:
 1. Core themes and topics
 2. Methodological approaches
@@ -1058,6 +1096,10 @@ Include:
         "grant": "Future Research Design"
     }
 
+    # Use prompt from file if found, otherwise use fallback
+    if not prompt_text:
+        prompt_text = prompts[scenario]
+
     click.echo("\n" + "="*70)
     click.echo(f"📋 Stage 6 Prompt: {scenario_names[scenario]}")
     click.echo("="*70 + "\n")
@@ -1065,7 +1107,7 @@ Include:
     click.echo("아래 프롬프트를 복사해서 RAG 인터페이스에 붙여넣으세요:")
     click.echo("(필요시 대괄호 [] 부분을 수정하세요)\n")
     click.echo("-" * 70)
-    click.echo(prompts[scenario])
+    click.echo(prompt_text)
     click.echo("-" * 70)
     click.echo()
 
@@ -1077,7 +1119,8 @@ Include:
     click.echo()
 
     click.echo("📖 전체 예시 및 최적 응답 구조:")
-    click.echo("   prompts/06_research_conversation.md")
+    click.echo("   prompts/06_research_conversation/README.md")
+    click.echo(f"   prompts/06_research_conversation/{scenario_files[scenario]}")
     click.echo("\n" + "="*70 + "\n")
 
 
