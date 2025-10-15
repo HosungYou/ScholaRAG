@@ -82,3 +82,6 @@ outputs/*.csv
 *_api_key*
 credentials.json
 secrets.yaml
+
+# ResearcherRAG v1.0.6+ context (runtime state, not version-controlled)
+.claude/context.json
