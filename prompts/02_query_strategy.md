@@ -103,12 +103,10 @@ Now that we've defined my research scope, please help me design effective search
    - [ ] Narrow (high precision) - I want only the most relevant papers
 
 2. **Data Sources**:
-   - [ ] Semantic Scholar (good for CS, Engineering, General)
-   - [ ] OpenAlex (comprehensive metadata, all fields)
-   - [ ] arXiv (preprints in STEM)
-   - [ ] PubMed (Medicine, Life Sciences)
-   - [ ] ERIC (Education)
-   - [ ] Let Claude recommend based on my field
+   - [ ] Semantic Scholar (CS, Engineering, Sciences - 40% open access PDFs)
+   - [ ] OpenAlex (All fields, comprehensive - 50% open access)
+   - [ ] arXiv (STEM preprints - 100% PDF access)
+   - [ ] Let Claude recommend the best combination for my field
 
 3. **Technical Comfort**:
    - [ ] I'm comfortable with boolean operators (AND, OR, NOT)
@@ -424,13 +422,13 @@ Yes! Claude will adapt syntax for each database:
 (chatbot OR agent) AND learning
 ```
 
-**PubMed (uses MeSH terms)**:
+**OpenAlex (supports field-specific search)**:
 ```
-("Conversational Agents"[MeSH] OR chatbot[tiab]) AND
-("Education"[MeSH] OR learning[tiab])
+title.search:(chatbot OR "conversational agent") AND
+abstract.search:(education OR learning)
 ```
 
-Ask Claude: "Can you adapt this query for both Semantic Scholar and PubMed?"
+Ask Claude: "Can you adapt this query for all three databases (Semantic Scholar, OpenAlex, arXiv)?"
 
 ---
 
