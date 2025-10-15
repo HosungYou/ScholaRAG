@@ -16,7 +16,9 @@ import os
 import sys
 from datetime import datetime
 import yaml
+import json
 import shutil
+import subprocess
 from pathlib import Path
 
 
@@ -579,6 +581,392 @@ def _calculate_project_stats(project_path):
         stats['RAG system'] = '⏳ Not built'
 
     return stats
+
+
+# ============================================================================
+# Stage Management Commands (v1.0.6+)
+# ============================================================================
+
+@cli.command('stage-status')
+def stage_status():
+    """
+    Show current stage and progress in the workflow.
+
+    This command reads .claude/context.json to determine which stage
+    the researcher is currently in and displays completion status.
+
+    Example:
+        researcherrag stage-status
+    """
+    context_file = '.claude/context.json'
+    stages_file = '.claude/stages.yaml'
+
+    # Check if .claude/ exists
+    if not os.path.exists('.claude'):
+        click.echo("\n❌ No .claude/ folder found.")
+        click.echo("   This command requires ResearcherRAG v1.0.6+")
+        click.echo("   Run: researcherrag upgrade\n")
+        sys.exit(1)
+
+    # Load context
+    if not os.path.exists(context_file):
+        click.echo("\n📍 No active project detected.")
+        click.echo("   Start a new project with: researcherrag init\n")
+        sys.exit(0)
+
+    with open(context_file, 'r') as f:
+        context = json.load(f)
+
+    # Load stages config
+    if not os.path.exists(stages_file):
+        click.echo("\n❌ Missing .claude/stages.yaml")
+        click.echo("   Run: researcherrag upgrade\n")
+        sys.exit(1)
+
+    with open(stages_file, 'r') as f:
+        stages_config = yaml.safe_load(f)
+
+    # Display current status
+    click.echo("\n" + "="*60)
+    click.echo("📍 RESEARCHERRAG STAGE STATUS")
+    click.echo("="*60 + "\n")
+
+    project = context.get('project', {})
+    click.echo(f"📁 Project: {project.get('name', 'Unknown')}")
+    click.echo(f"📅 Created: {project.get('created', 'Unknown')}")
+    click.echo()
+
+    current_stage_info = context.get('current_stage', {})
+    current_stage = current_stage_info.get('stage', 1)
+    current_status = current_stage_info.get('status', 'not_started')
+
+    click.echo(f"📍 Current Stage: {current_stage} - {stages_config['stages'][current_stage]['name']}")
+    click.echo(f"   Status: {current_status}")
+    click.echo(f"   Duration: {stages_config['stages'][current_stage]['duration']}")
+    click.echo()
+
+    # Show completed stages
+    completed = context.get('completed_stages', [])
+    click.echo("✅ Completed Stages:")
+    if completed:
+        for stage_info in completed:
+            stage_num = stage_info['stage']
+            stage_name = stages_config['stages'][stage_num]['name']
+            completed_at = stage_info.get('completed_at', 'Unknown')
+            click.echo(f"   ✓ Stage {stage_num}: {stage_name} (completed: {completed_at})")
+    else:
+        click.echo("   (none yet)")
+    click.echo()
+
+    # Show next stage
+    if current_stage < 7:
+        next_stage = current_stage + 1
+        next_stage_name = stages_config['stages'][next_stage]['name']
+        click.echo(f"➡️  Next Stage: {next_stage} - {next_stage_name}")
+        click.echo(f"   Prompt: {stages_config['stages'][next_stage]['prompt_file']}")
+    else:
+        click.echo("🎉 All stages complete!")
+
+    click.echo("\n" + "="*60 + "\n")
+
+
+@cli.command('run-stage')
+@click.argument('stage', type=int)
+@click.option('--force', is_flag=True, help='Skip prerequisite validation')
+def run_stage(stage, force):
+    """
+    Execute a specific stage with prerequisite validation.
+
+    This command checks prerequisites, runs the stage command,
+    and updates .claude/context.json upon completion.
+
+    Arguments:
+        STAGE: Stage number (1-7)
+
+    Options:
+        --force: Skip prerequisite checks (use with caution)
+
+    Example:
+        researcherrag run-stage 2
+        researcherrag run-stage 3 --force
+    """
+    stages_file = '.claude/stages.yaml'
+    context_file = '.claude/context.json'
+
+    # Validate stage number
+    if stage < 1 or stage > 7:
+        click.echo(f"\n❌ Invalid stage: {stage}")
+        click.echo("   Valid stages: 1-7\n")
+        sys.exit(1)
+
+    # Load stages config
+    if not os.path.exists(stages_file):
+        click.echo("\n❌ Missing .claude/stages.yaml")
+        click.echo("   Run: researcherrag upgrade\n")
+        sys.exit(1)
+
+    with open(stages_file, 'r') as f:
+        stages_config = yaml.safe_load(f)
+
+    stage_info = stages_config['stages'][stage]
+
+    click.echo(f"\n🚀 Running Stage {stage}: {stage_info['name']}")
+    click.echo(f"⏱️  Expected duration: {stage_info['duration']}\n")
+
+    # Check prerequisites
+    if not force:
+        prerequisites = stage_info.get('prerequisites', [])
+        if prerequisites:
+            click.echo("🔍 Checking prerequisites...")
+            for prereq in prerequisites:
+                prereq_stage = prereq.get('stage')
+                required_files = prereq.get('files', [])
+
+                # Check if prerequisite stage is completed
+                if os.path.exists(context_file):
+                    with open(context_file, 'r') as f:
+                        context = json.load(f)
+                    completed_stages = [s['stage'] for s in context.get('completed_stages', [])]
+
+                    if prereq_stage not in completed_stages:
+                        click.echo(f"\n❌ Prerequisite not met: Stage {prereq_stage} not completed")
+                        click.echo(f"   Complete Stage {prereq_stage} first, or use --force to skip\n")
+                        sys.exit(1)
+
+                # Check required files
+                for required_file in required_files:
+                    if not os.path.exists(required_file):
+                        click.echo(f"\n❌ Missing required file: {required_file}")
+                        click.echo(f"   Complete Stage {prereq_stage} first\n")
+                        sys.exit(1)
+
+            click.echo("✅ All prerequisites met\n")
+
+    # Check if auto-execute or needs approval
+    auto_execute = stage_info.get('auto_execute', False)
+
+    if not auto_execute and not force:
+        click.echo("⚠️  This stage requires approval to execute.")
+        click.echo(f"   Command: {stage_info.get('cli_command', 'N/A')}")
+
+        if 'cli_commands' in stage_info:
+            click.echo("   Commands:")
+            for cmd in stage_info['cli_commands']:
+                click.echo(f"   - {cmd}")
+
+        click.echo()
+        if not click.confirm('Proceed with execution?'):
+            click.echo("\n❌ Cancelled by user\n")
+            sys.exit(0)
+
+    # Execute command
+    click.echo("▶️  Executing stage command...\n")
+
+    commands_to_run = []
+    if 'cli_command' in stage_info:
+        commands_to_run.append(stage_info['cli_command'])
+    elif 'cli_commands' in stage_info:
+        commands_to_run.extend(stage_info['cli_commands'])
+
+    for command in commands_to_run:
+        click.echo(f"   $ {command}")
+        try:
+            result = subprocess.run(command, shell=True, check=True, capture_output=False)
+        except subprocess.CalledProcessError as e:
+            click.echo(f"\n❌ Command failed with exit code {e.returncode}")
+            click.echo(f"   Command: {command}\n")
+            sys.exit(e.returncode)
+
+    # Update context
+    if os.path.exists(context_file):
+        with open(context_file, 'r') as f:
+            context = json.load(f)
+    else:
+        context = {
+            'project': {},
+            'current_stage': {},
+            'completed_stages': [],
+            'conversation_history': [],
+            'checkpoints': {}
+        }
+
+    # Mark stage as completed
+    context['completed_stages'].append({
+        'stage': stage,
+        'name': stage_info['name'],
+        'completed_at': datetime.now().isoformat(),
+        'outputs': stage_info.get('outputs', [])
+    })
+
+    # Update current stage
+    if stage < 7:
+        context['current_stage'] = {
+            'stage': stage + 1,
+            'name': stages_config['stages'][stage + 1]['name'],
+            'started_at': datetime.now().isoformat(),
+            'status': 'not_started'
+        }
+    else:
+        context['current_stage'] = {
+            'stage': 7,
+            'name': 'All stages complete',
+            'status': 'completed'
+        }
+
+    # Save context
+    with open(context_file, 'w') as f:
+        json.dump(context, f, indent=2)
+
+    click.echo(f"\n✅ Stage {stage} completed successfully!")
+
+    if stage < 7:
+        next_stage = stage + 1
+        click.echo(f"➡️  Next: Stage {next_stage} - {stages_config['stages'][next_stage]['name']}")
+        click.echo(f"   Prompt: {stages_config['stages'][next_stage]['prompt_file']}\n")
+    else:
+        click.echo("🎉 All stages complete! Your systematic review is ready.\n")
+
+
+@cli.command('next')
+def next_stage():
+    """
+    Show the next stage to work on.
+
+    Displays the next prompt file and expected actions.
+
+    Example:
+        researcherrag next
+    """
+    context_file = '.claude/context.json'
+    stages_file = '.claude/stages.yaml'
+
+    if not os.path.exists(context_file):
+        click.echo("\n📍 No active project. Next step: Initialize project")
+        click.echo("   Run: researcherrag init\n")
+        sys.exit(0)
+
+    with open(context_file, 'r') as f:
+        context = json.load(f)
+
+    with open(stages_file, 'r') as f:
+        stages_config = yaml.safe_load(f)
+
+    current_stage_info = context.get('current_stage', {})
+    current_stage = current_stage_info.get('stage', 1)
+
+    if current_stage > 7:
+        click.echo("\n🎉 All stages complete!")
+        click.echo("   Your systematic review is finished.\n")
+        sys.exit(0)
+
+    stage_info = stages_config['stages'][current_stage]
+
+    click.echo("\n" + "="*60)
+    click.echo(f"➡️  NEXT STAGE: {current_stage} - {stage_info['name']}")
+    click.echo("="*60 + "\n")
+
+    click.echo(f"⏱️  Expected duration: {stage_info['duration']}")
+    click.echo(f"📄 Prompt file: {stage_info['prompt_file']}")
+    click.echo()
+
+    click.echo("📋 To complete this stage:")
+    click.echo(f"   1. Read the prompt: {stage_info['prompt_file']}")
+    click.echo("   2. Paste prompt content to Claude Code")
+    click.echo("   3. Follow the conversation")
+    click.echo(f"   4. Claude will auto-execute: {stage_info.get('cli_command', 'N/A')}")
+    click.echo()
+
+    if stage_info.get('outputs'):
+        click.echo("📤 Expected outputs:")
+        for output in stage_info['outputs']:
+            click.echo(f"   - {output}")
+        click.echo()
+
+    click.echo("💡 Tip: Open prompt file with:")
+    click.echo(f"   cat {stage_info['prompt_file']}")
+    click.echo("\n" + "="*60 + "\n")
+
+
+@cli.command('upgrade')
+def upgrade():
+    """
+    Upgrade existing project to v1.0.6+ with .claude/ folder.
+
+    This command adds:
+    - .claude/stages.yaml (stage configuration)
+    - .claude/context.json (state tracking)
+    - .gitignore entry for context.json
+
+    Example:
+        researcherrag upgrade
+    """
+    click.echo("\n🔧 Upgrading to ResearcherRAG v1.0.6+\n")
+
+    # Check if already upgraded
+    if os.path.exists('.claude/stages.yaml'):
+        click.echo("✅ Already upgraded to v1.0.6+")
+        click.echo("   .claude/ folder exists\n")
+        sys.exit(0)
+
+    # Create .claude/ folder
+    os.makedirs('.claude', exist_ok=True)
+    click.echo("✓ Created .claude/ folder")
+
+    # Copy stages.yaml if exists in repo root
+    if os.path.exists('.claude/stages.yaml') is False:
+        click.echo("❌ Missing .claude/stages.yaml template in repository")
+        click.echo("   This should be included in ResearcherRAG v1.0.6+")
+        click.echo("   Please update your ResearcherRAG installation\n")
+        sys.exit(1)
+
+    click.echo("✓ stages.yaml configuration ready")
+
+    # Create initial context.json
+    initial_context = {
+        "version": "1.0",
+        "project": {
+            "name": "Unknown",
+            "created": datetime.now().isoformat(),
+            "last_active": datetime.now().isoformat()
+        },
+        "current_stage": {
+            "stage": 1,
+            "name": "Research Domain Setup",
+            "status": "not_started"
+        },
+        "completed_stages": [],
+        "conversation_history": [],
+        "checkpoints": {}
+    }
+
+    with open('.claude/context.json', 'w') as f:
+        json.dump(initial_context, f, indent=2)
+
+    click.echo("✓ Created context.json")
+
+    # Update .gitignore
+    gitignore_entry = "\n# ResearcherRAG v1.0.6+ context\n.claude/context.json\n"
+
+    if os.path.exists('.gitignore'):
+        with open('.gitignore', 'r') as f:
+            gitignore_content = f.read()
+
+        if '.claude/context.json' not in gitignore_content:
+            with open('.gitignore', 'a') as f:
+                f.write(gitignore_entry)
+            click.echo("✓ Updated .gitignore")
+        else:
+            click.echo("✓ .gitignore already configured")
+    else:
+        with open('.gitignore', 'w') as f:
+            f.write(gitignore_entry)
+        click.echo("✓ Created .gitignore")
+
+    click.echo("\n✅ Upgrade complete!")
+    click.echo("\n💡 Try these new commands:")
+    click.echo("   researcherrag stage-status  # Show current progress")
+    click.echo("   researcherrag next          # Show next stage")
+    click.echo("   researcherrag run-stage 1   # Execute specific stage\n")
 
 
 if __name__ == '__main__':

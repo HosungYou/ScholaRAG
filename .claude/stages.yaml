@@ -1,0 +1,124 @@
+# ResearcherRAG Stage Configuration
+# This file defines the 7-stage workflow for Claude Code automation
+
+version: "1.0"
+project_type: "researcherrag"
+
+# Stage definitions
+stages:
+  1:
+    name: "Research Domain Setup"
+    prompt_file: "prompts/01_research_domain_setup.md"
+    duration: "15-20 min"
+    cli_command: "researcherrag init"
+    auto_execute: true
+    outputs:
+      - "config.yaml"
+      - "projects/{project_name}/README.md"
+    prerequisites: []
+    validation:
+      - research_question: "required, min 20 chars"
+      - research_field: "required"
+
+  2:
+    name: "Query Strategy Design"
+    prompt_file: "prompts/02_query_strategy.md"
+    duration: "20-30 min"
+    cli_command: "python scripts/01_fetch_papers.py --project {project_name}"
+    auto_execute: false  # Requires user approval (API calls)
+    outputs:
+      - "data/papers.json"
+    prerequisites:
+      - stage: 1
+        files: ["config.yaml"]
+    validation:
+      - search_query: "required, min 5 words"
+      - databases: "at least 2 selected"
+
+  3:
+    name: "PRISMA Screening"
+    prompt_file: "prompts/03_prisma_configuration.md"
+    duration: "30-45 min"
+    cli_command: "python scripts/02_screen_papers.py --input data/papers.json"
+    auto_execute: false  # Requires user approval (Claude API cost)
+    outputs:
+      - "data/screened_papers.json"
+      - "prisma_flowchart.png"
+    prerequisites:
+      - stage: 2
+        files: ["data/papers.json"]
+    validation:
+      - inclusion_criteria: "required, at least 3"
+      - exclusion_criteria: "required, at least 3"
+
+  4:
+    name: "PDF Download & RAG Setup"
+    prompt_file: "prompts/04_rag_design.md"
+    duration: "20-30 min active, 60-90 min processing"
+    cli_commands:
+      - "python scripts/03_download_pdfs.py --input data/screened_papers.json"
+      - "python scripts/04_build_rag.py --pdfs data/pdfs/ --output data/vector_db/"
+    auto_execute: false
+    outputs:
+      - "data/pdfs/"
+      - "data/vector_db/"
+    prerequisites:
+      - stage: 3
+        files: ["data/screened_papers.json"]
+
+  5:
+    name: "Research Conversation"
+    prompt_file: "prompts/05_execution_plan.md"
+    duration: "Ongoing (hours to weeks)"
+    cli_command: "python scripts/05_query_rag.py --vector-db data/vector_db/"
+    auto_execute: false  # Interactive mode
+    outputs:
+      - "conversations/*.md"
+    prerequisites:
+      - stage: 4
+        files: ["data/vector_db/"]
+
+  6:
+    name: "Advanced RAG Queries"
+    prompt_file: "prompts/06_research_conversation.md"
+    duration: "Ongoing"
+    cli_command: "python scripts/05_query_rag.py"
+    auto_execute: false
+    outputs:
+      - "conversations/*.md"
+    prerequisites:
+      - stage: 5
+
+  7:
+    name: "Documentation & Reporting"
+    prompt_file: "prompts/07_documentation_writing.md"
+    duration: "1-2 hours"
+    cli_command: "researcherrag export --format markdown"
+    auto_execute: false
+    outputs:
+      - "reports/systematic_review.md"
+      - "reports/prisma_diagram.png"
+      - "reports/bibliography.bib"
+    prerequisites:
+      - stage: 6
+
+# Divergence detection rules
+divergence_rules:
+  - pattern: "pdf|download"
+    current_stage: [1, 2, 3]
+    redirect: "Stage 4 handles PDF downloads. Let's complete current stage first."
+
+  - pattern: "rag|vector|embedding"
+    current_stage: [1, 2, 3]
+    redirect: "RAG setup happens in Stage 4. Current focus: {current_stage_name}"
+
+  - pattern: "query|question|ask"
+    current_stage: [1, 2, 3, 4]
+    redirect: "Research queries start in Stage 5 after RAG is built."
+
+# CLI behavior
+cli:
+  auto_execute_safe_commands: true  # Stage 1 auto-runs
+  require_approval_for_api_calls: true  # Stages 2-3 ask first
+  track_state: true  # Save to .claude/context.json
+  verbose: true  # Show progress updates
