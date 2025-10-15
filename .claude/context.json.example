@@ -1,0 +1,45 @@
+{
+  "$schema": "https://researcherrag.io/schemas/context.json",
+  "version": "1.0",
+  "project": {
+    "name": "AI-Chatbots-Language-Learning",
+    "created": "2025-10-14T10:30:00Z",
+    "last_active": "2025-10-14T15:45:00Z"
+  },
+  "current_stage": {
+    "stage": 2,
+    "name": "Query Strategy Design",
+    "started_at": "2025-10-14T10:45:00Z",
+    "status": "in_progress"
+  },
+  "completed_stages": [
+    {
+      "stage": 1,
+      "name": "Research Domain Setup",
+      "completed_at": "2025-10-14T10:42:00Z",
+      "outputs": [
+        "config.yaml",
+        "projects/2025-10-14_AI-Chatbots-Language-Learning/README.md"
+      ],
+      "validation": {
+        "research_question": "How do AI chatbots improve speaking skills in language learning?",
+        "research_field": "Education",
+        "year_range": "2015-2025"
+      }
+    }
+  },
+  "conversation_history": [
+    {
+      "stage": 1,
+      "turn": 1,
+      "timestamp": "2025-10-14T10:30:00Z",
+      "user": "I want to research AI chatbots for language learning speaking skills",
+      "assistant": "Great topic! Let me ask some clarifying questions..."
+    }
+  ],
+  "checkpoints": {
+    "last_command": "researcherrag init",
+    "last_output": "config.yaml",
+    "ready_for_next_stage": true
+  }
+}
