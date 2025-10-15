@@ -1,0 +1,44 @@
+# ResearcherRAG Dependencies
+# Python 3.9+ required
+
+# Core AI/ML Libraries
+anthropic>=0.18.0              # Claude AI for PRISMA screening
+openai>=1.12.0                 # OpenAI embeddings (alternative to HuggingFace)
+langchain>=0.1.0               # LangChain framework for RAG
+langchain-community>=0.0.20    # Community integrations (Chroma, loaders)
+
+# Vector Database
+chromadb>=0.4.22               # Vector database for semantic search
+sentence-transformers>=2.2.0   # For HuggingFace embeddings
+
+# Document Processing
+PyMuPDF>=1.23.0                # PDF text extraction
+pypdf>=3.17.0                  # Alternative PDF library
+
+# Data Processing
+pandas>=2.0.0                  # Data manipulation and CSV handling
+numpy>=1.24.0                  # Numerical operations
+
+# Web & API
+requests>=2.31.0               # HTTP requests for API calls
+beautifulsoup4>=4.12.0         # HTML parsing (if needed)
+urllib3>=2.0.0                 # HTTP client
+
+# Configuration & Environment
+python-dotenv>=1.0.0           # .env file support for API keys
+pyyaml>=6.0                    # YAML configuration files
+
+# Visualization
+matplotlib>=3.7.0              # PRISMA flowchart generation
+
+# CLI
+click>=8.1.0                   # Command-line interface framework
+argparse                       # Built-in, but explicit for clarity
+
+# Utilities
+tqdm>=4.66.0                   # Progress bars for long-running operations
+colorama>=0.4.6                # Colored terminal output
+
+# Optional: Additional document loaders
+# python-docx>=1.1.0           # Word document support
+# openpyxl>=3.1.0              # Excel file support
