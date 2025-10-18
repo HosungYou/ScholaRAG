@@ -44,21 +44,54 @@ In **3 hours of active work** + **3-4 hours of automated processing**, you'll cr
 
 ### Prerequisites
 
-- **VS Code** with **Claude Code** or **GitHub Copilot** extension
-- **Claude Pro** ($20/month) or **OpenAI API** account
+- **VS Code** installed
+- **AI Coding Assistant**: Choose one:
+  - **Claude Code** (recommended) - $20/month Claude Pro
+  - **GitHub Copilot** - $10/month
+  - **Cursor** with GPT-5-Codex
 - **Python 3.9+** (your AI assistant will handle installation)
 
 ### Conversation-First Setup (Recommended)
 
 **You don't need to run commands yourself.** Simply talk to your AI assistant in VS Code:
 
-#### Step 1: Open AI Assistant in VS Code
+#### Step 1: Install AI Assistant Extension
 
-Press Cmd+Shift+P (Mac) or Ctrl+Shift+P (Windows/Linux), then:
-- For Claude Code: Type "Claude: Open Chat"
-- For Copilot: Type "GitHub Copilot: Open Chat"
+**Option A: Claude Code (Recommended)**
+1. Open VS Code
+2. Press Cmd+Shift+X (Mac) or Ctrl+Shift+X (Windows/Linux) to open Extensions
+3. Search for "Claude Code"
+4. Click "Install"
+5. Sign in with your Anthropic account (Claude Pro required)
 
-#### Step 2: Copy-Paste This Prompt
+**Option B: GitHub Copilot**
+1. Open VS Code
+2. Press Cmd+Shift+X (Mac) or Ctrl+Shift+X (Windows/Linux)
+3. Search for "GitHub Copilot"
+4. Click "Install"
+5. Sign in with your GitHub account (Copilot subscription required)
+
+**Option C: Cursor with Codex**
+1. Download Cursor from https://cursor.sh
+2. Install and open Cursor
+3. Go to Settings > Models
+4. Enable GPT-5-Codex (API key required)
+
+#### Step 2: Open AI Chat
+
+**For Claude Code:**
+- Press Cmd+Shift+P (Mac) or Ctrl+Shift+P (Windows/Linux)
+- Type "Claude: Open Chat" and press Enter
+
+**For GitHub Copilot:**
+- Press Cmd+Shift+P (Mac) or Ctrl+Shift+P (Windows/Linux)
+- Type "GitHub Copilot: Open Chat" and press Enter
+
+**For Cursor:**
+- Press Cmd+K (Mac) or Ctrl+K (Windows/Linux)
+- Chat interface opens automatically
+
+#### Step 3: Copy-Paste This Prompt
 
 ```
 Please set up ResearcherRAG for me:
@@ -74,7 +107,7 @@ Please set up ResearcherRAG for me:
 My research topic: [Describe your research question here]
 ```
 
-#### Step 3: Follow the Conversation
+#### Step 4: Follow the Conversation
 
 Your AI assistant will:
 - Execute all setup commands automatically
