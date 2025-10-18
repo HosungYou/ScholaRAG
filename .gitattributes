@@ -1,0 +1,10 @@
+# Git attributes for proper handling of files
+
+# Ensure .mailmap is always used
+.mailmap text
+
+# Markdown files
+*.md text
+
+# Python files
+*.py text
