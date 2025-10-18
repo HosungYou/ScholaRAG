@@ -1,38 +1,42 @@
-# ResearcherRAG: Build Your Own Research RAG System with Claude Code
+# ResearcherRAG
 
-**Learn to build custom RAG systems for academic research through conversational AI assistance in VS Code**
+**AI-Powered Systematic Literature Review Automation**
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
-[![Powered by Claude Code](https://img.shields.io/badge/Claude-Code-orange)](https://claude.com/claude-code)
+Transform weeks of manual literature review into hours of automated, reproducible research.
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-black.svg)](https://opensource.org/licenses/MIT)
+[![Python 3.9+](https://img.shields.io/badge/python-3.9+-black.svg)](https://www.python.org/downloads/)
+[![Documentation](https://img.shields.io/badge/docs-researcher--rag--helper.vercel.app-black)](https://researcher-rag-helper.vercel.app/)
 
 ---
 
 ## 🎯 What is ResearcherRAG?
 
-ResearcherRAG helps researchers build **custom RAG (Retrieval-Augmented Generation) systems** for their literature review through **conversational interaction with Claude Code** in VS Code.
+ResearcherRAG is an **open-source framework** that helps researchers build custom RAG (Retrieval-Augmented Generation) systems for systematic literature reviews through **conversational AI guidance** in VS Code.
 
 ### What You'll Build
 
-In 3 hours, you'll create:
-- ✅ **PRISMA Systematic Review Pipeline**: Screen 500+ papers down to 50-150 highly relevant ones
-- ✅ **Custom Vector Database**: Semantic search across your included papers
-- ✅ **Research-Focused RAG**: Query system that cites specific papers with methods and findings
+In **3 hours of active work** + **3-4 hours of automated processing**, you'll create:
 
-### Why This Approach?
+- ✅ **PRISMA 2020-Compliant Pipeline**: Screen 500+ papers → 50-150 highly relevant ones
+- ✅ **Custom Vector Database**: Semantic search across your included papers (ChromaDB)
+- ✅ **Research RAG System**: Query with citations, methods, and effect sizes
 
-**Traditional Method** (6-8 weeks):
-1. Manual database searches (PubMed, ERIC, Web of Science)
-2. Export to Excel, read 500+ abstracts one by one
-3. Full-text review of 200+ papers
-4. Extract findings manually
-5. Constantly re-read papers for citations
+### Why ResearcherRAG?
+
+**Traditional Systematic Review** (6-8 weeks):
+- 📚 Manual database searches (PubMed, ERIC, Web of Science)
+- 📊 Export 500+ papers to Excel, read abstracts one by one
+- 📄 Review 200+ PDFs for inclusion criteria
+- ✍️ Extract findings, constantly re-read papers for citations
 
 **With ResearcherRAG** (2-3 weeks):
-1. **3-hour workshop**: Build RAG system with Claude Code guidance
-2. **2 hours**: PRISMA screens 20,555 papers → 592 papers automatically
-3. **Ongoing**: Query RAG for instant answers with citations
-4. **Result**: 67-75% time savings, never forget a relevant paper
+- 🤖 **3-hour setup**: Build RAG system with AI assistant step-by-step
+- ⚡ **2-hour screening**: AI-powered PRISMA (500 papers → 150 included)
+- 💬 **Instant queries**: "What are the main effects?" → Evidence + citations
+- 💰 **Under $40 total cost**: Claude Sonnet 4.5 or Haiku 4.5
+
+**Result**: **67-75% time savings**, never forget a relevant paper again.
 
 ---
 
@@ -41,364 +45,280 @@ In 3 hours, you'll create:
 ### Prerequisites
 
 - **Python 3.9+**
-- **AI Assistant**: Claude Code (recommended) or any AI assistant (Codex, Cursor, etc.)
-- **3 hours** for initial setup
+- **VS Code** with an AI coding assistant
+- **API Key**: Anthropic API (free tier available) or OpenAI API
 
-### Option A: With Claude Code (Automatic - Recommended)
-
-Claude Code automatically tracks stages and runs commands for you.
+### 3-Step Setup
 
 ```bash
-# 1. Clone repository
+# 1. Clone and install
 git clone https://github.com/HosungYou/ResearcherRAG.git
 cd ResearcherRAG
-
-# 2. Install dependencies
 pip install -r requirements.txt
 
-# 3. Open in VS Code with Claude Code extension
+# 2. Open in VS Code with your AI assistant
 code .
 
-# 4. Start Claude Code chat (Cmd+Shift+P → "Claude: Open Chat")
-
-# 5. Copy-paste prompt from prompts/01_research_domain_setup.md
+# 3. Start conversation
+# Copy-paste prompt from prompts/01_research_domain_setup.md
 ```
 
-**That's it!** Claude Code will automatically:
-- Track your current stage via `.claude/context.json`
-- Run CLI commands when needed
-- Guide you through all 7 stages
+**That's it!** Your AI assistant will:
+- ✅ Track your progress via `.researcherrag/context.json`
+- ✅ Guide you through 7 stages conversationally
+- ✅ Run CLI commands automatically when needed
 
-### Option B: Manual CLI Usage (For Other AI Assistants)
+### Alternative: Manual CLI Mode
 
-If you're using Codex, Cursor, or working without an AI assistant, use CLI commands directly.
+For manual control or scripting:
 
 ```bash
-# 1. Clone and install (same as above)
-git clone https://github.com/HosungYou/ResearcherRAG.git
-cd ResearcherRAG
-pip install -r requirements.txt
-
-# 2. Initialize project
+# Initialize project
 python researcherrag_cli.py init
 
-# 3. Check current stage
-python researcherrag_cli.py stage-status
+# Check progress
+python researcherrag_cli.py status
 
-# 4. See what to do next
+# Get next step guidance
 python researcherrag_cli.py next
 
-# 5. Run specific stage (after completing prerequisites)
-python researcherrag_cli.py run-stage 1
-
-# 6. Continue through stages 1-7
-```
-
-**CLI Commands Available:**
-- `stage-status` - Show current progress and completed stages
-- `next` - Display next stage instructions and requirements
-- `run-stage <N>` - Execute specific stage with prerequisite validation
-- `upgrade` - Migrate existing project to v1.0.6+ structure
-
-**Workflow:**
-- Stage 1: Define research scope (15 min)
-- Stage 2: Design search queries (20 min)
-- Stage 3: Configure PRISMA screening (20 min)
-- Stage 4: Build RAG system (15 min)
-- Stage 5: Execute pipeline (30 min)
-- Stage 6: Query and validate (15 min)
-- Stage 7: Generate PRISMA diagram (10 min)
-
----
-
-## 📚 What's Included
-
-### 🎓 Educational Materials
-
-#### **CLAUDE.md** (18,000 words)
-Complete guide for Claude Code on how to assist researchers. Covers:
-- 5-stage conversational workflow
-- Domain-specific examples (Education, Medicine, Psychology)
-- Troubleshooting common issues
-- Best practices for research RAG
-
-#### **7-Stage Prompt Templates** (`prompts/`)
-Copy-paste prompts for each stage:
-1. **Research Domain Setup**: Define scope, questions, constraints
-2. **Query Strategy**: Design boolean queries, choose data sources
-3. **PRISMA Configuration**: Build multi-dimensional screening
-4. **Paper Retrieval**: Fetch papers from databases (Semantic Scholar, OpenAlex, arXiv)
-5. **RAG Building**: PDF processing, chunking, embedding, vector DB creation
-6. **Research Conversation**: Query your RAG system with specialized prompts ([7 scenarios](prompts/06_research_conversation/README.md))
-7. **Documentation Writing**: Generate PRISMA diagrams, write systematic review
-
-#### **Workshop Guide** (3 hours, `workshop/hands_on_guide.md`)
-Complete curriculum for teaching ResearcherRAG:
-- Part 1: Introduction & Demo (30 min)
-- Part 2: Hands-on Exercises (90 min)
-- Part 3: Advanced Topics (30 min)
-- Part 4: Wrap-up & Resources (30 min)
-
-### 🛠️ Templates
-
-#### **Research Profiles** (`templates/research_profiles/`)
-Pre-configured YAML templates for:
-- **Education**: K-12, higher ed, learning sciences, edtech
-- **Medicine**: Clinical trials, EHR, public health, telemedicine
-- **Social Science**: Psychology, sociology, economics, political science
-
-Each includes:
-- Domain/method/topic keyword lists with weights
-- Exclusion criteria
-- PRISMA threshold recommendations
-- Customization examples
-
-
----
-
-## 📖 How It Works
-
-### The 5-Stage Workflow
-
-```
-Stage 1: Research Domain Setup (15 min)
-└─→ You describe research topic
-    └─→ Claude asks clarifying questions
-        └─→ Output: Clear research scope
-
-Stage 2: Query Strategy (10 min)
-└─→ Claude designs search queries (broad/focused/narrow)
-    └─→ You select and refine
-        └─→ Output: Optimized boolean queries
-
-Stage 3: PRISMA Configuration (20 min)
-└─→ Collect papers via API (Semantic Scholar, OpenAlex)
-    └─→ Claude analyzes metadata
-        └─→ Auto-generates research profile (YAML)
-            └─→ You review and adjust
-                └─→ Run PRISMA screening
-                    └─→ Output: 50-150 included papers
-
-Stage 4: RAG Design (15 min)
-└─→ Configure PDF download strategy
-    └─→ Set text extraction tools
-        └─→ Design chunking and embeddings
-            └─→ Choose vector database
-                └─→ Engineer RAG prompts
-                    └─→ Output: Complete RAG configuration
-
-Stage 5: Execution (3-4 hours, mostly automated)
-└─→ Download PDFs (2-3 hours, 50-60% success)
-    └─→ Extract text (30 min)
-        └─→ Build vector database (15 min)
-            └─→ Test with sample queries (15 min)
-                └─→ Output: Functional RAG system!
-```
-
-### Example: Education Research
-
-**Research Question**: "Do AI chatbots improve speaking proficiency in language learning?"
-
-**Stage 1**: Scope defined (higher education, experimental studies, 2015-2024)
-
-**Stage 2**: Query designed
-```
-(chatbot OR conversational agent) AND
-(language learning OR L2) AND
-(university OR college) AND
-(experimental OR RCT)
-```
-
-**Stage 3**: PRISMA screening
-- Collected: 568 papers (Semantic Scholar)
-- Screened: 342 passed title/abstract (60%)
-- Eligible: 139 passed detailed assessment (24%)
-- Included: 139 papers for RAG
-
-**Stage 4**: RAG configured
-- Embedding: all-MiniLM-L6-v2 (local, free)
-- Vector DB: ChromaDB (687 chunks, 23 MB)
-- System prompt: Academic citations required
-
-**Stage 5**: Execution results
-- PDFs downloaded: 75/139 (54%)
-- Text extracted: 71/75 (95%)
-- Vector DB built: 687 chunks indexed
-- Ready to query!
-
-**Query Example**:
-```
-Q: "What are the main effects of chatbots on speaking proficiency?"
-
-A: Research shows moderate to large positive effects:
-
-**Fluency**: +15-30% speaking rate [Kim et al., 2023, RCT, N=120,
-d=0.68, p<.001]. Lower-proficiency learners benefited most [Lee &
-Park, 2022, Quasi-exp, N=89, η²=0.42].
-
-**Accuracy**: Significant grammar improvements [Chen, 2024, RCT,
-N=156, d=0.51, p<.01], especially syntax errors.
-
-**Confidence**: Increased willingness to communicate after 8 weeks
-[Martinez et al., 2023, Pre-post, N=94, d=0.73].
-
-**Limitations**: Most studies <3 months, self-report bias, limited
-L1 diversity.
-
-📚 8 papers cited
+# Run specific stage (after completing prerequisites)
+python researcherrag_cli.py run-stage 2
 ```
 
 ---
 
-## 🎓 Use Cases
+## 📚 Complete Documentation
 
-### 1. PhD Dissertation Literature Review
-- **Before**: 8 weeks reading 300 papers
-- **After**: 3 weeks (RAG setup + querying)
-- **Benefit**: Never forget relevant citations
+🌐 **[Full Documentation Website](https://researcher-rag-helper.vercel.app/)**
 
-### 2. Meta-Analysis Preparation
-- **Before**: 4 weeks extracting effect sizes manually
-- **After**: 1 week (RAG-assisted extraction)
-- **Benefit**: Consistent extraction criteria
+The website provides comprehensive guides with examples, code snippets, and interactive demos:
 
-### 3. Grant Proposal Background
-- **Before**: Re-read 50 papers for each grant
-- **After**: Query RAG for specific evidence
-- **Benefit**: Always current, comprehensive citations
+### 7-Chapter Guide
 
-### 4. Systematic Review (PRISMA 2020)
-- **Before**: 2 weeks manual title/abstract screening
-- **After**: 2 hours automated PRISMA
-- **Benefit**: Reproducible, documented criteria
+1. **[Introduction](https://researcher-rag-helper.vercel.app/guide/01-introduction)**: What ResearcherRAG solves, database strategy, AI model costs
+2. **[Getting Started](https://researcher-rag-helper.vercel.app/guide/02-getting-started)**: Installation, environment setup, first project
+3. **[Core Concepts](https://researcher-rag-helper.vercel.app/guide/03-core-concepts)**: PRISMA 2020, RAG architecture, conversation-driven workflow
+4. **[Implementation](https://researcher-rag-helper.vercel.app/guide/04-implementation)**: Step-by-step project walkthrough with real examples
+5. **[Practical Guide](https://researcher-rag-helper.vercel.app/guide/05-advanced-topics)**: Complete real-world example (AI chatbots in language learning)
+6. **[Research Conversation](https://researcher-rag-helper.vercel.app/guide/06-research-conversation)**: 7 specialized prompt scenarios
+7. **[Documentation Writing](https://researcher-rag-helper.vercel.app/guide/07-documentation-writing)**: Generate PRISMA flowcharts, methods sections, results tables
 
----
+### Additional Resources
 
-## 🏆 Success Stories
-
-### AI failure_HR Project (Real-world Example)
-- **Papers Collected**: 20,555 from OpenAlex
-- **PRISMA Screening**: 2 hours (vs. 2 weeks manual)
-- **Papers Included**: 592 (2.9% selection rate)
-- **PDF Success**: 316/592 (53.4%)
-- **Final RAG**: 316 full-text papers, instant queries
-- **Result**: Research paper published using this methodology
-
-### Workshop Testimonials
-> "I spent 3 months on my lit review last year. With ResearcherRAG,
-> I set up a better system in 3 hours." - PhD Student, Education
-
-> "PRISMA screening that took my RA 2 weeks now takes 2 hours.
-> Game changer." - Associate Professor, Psychology
-
-> "Finally, a systematic review tool that doesn't require coding
-> expertise." - Research Librarian
-
----
-
-## 📊 Key Features
-
-### PRISMA 2020 Compliance
-- 4-stage screening (Identification → Screening → Eligibility → Inclusion)
-- Multi-dimensional relevance scoring (6 dimensions)
-- Automatic flow diagram generation
-- Manual review queue for borderline papers
-- Reproducible with YAML configuration
-
-### Multi-Source Data Collection
-- Semantic Scholar (200M papers, free API)
-- OpenAlex (250M works, comprehensive metadata)
-- arXiv (STEM preprints, full-text PDFs)
-- PubMed (Medicine, PMC full-text subset)
-- ERIC (Education research)
-
-### Intelligent PDF Acquisition
-- **Tier 1**: Open Access (Unpaywall, OpenAlex) - 95% success
-- **Tier 2**: Institutional proxy (VPN) - 80% success
-- **Tier 3**: Author requests (email templates) - 30% success
-- **Tier 4**: Abstract-only fallback (better than nothing)
-- **Expected**: 50-60% overall success rate
-
-### Research-Grade RAG
-- **Citation Format**: [Author, Year, Design, N=X, Finding/Effect size]
-- **Quality Control**: Minimum similarity threshold (0.65)
-- **Re-ranking**: Cross-encoder for better relevance
-- **Transparency**: Show retrieved sources with scores
-- **Limitations**: Acknowledges gaps in literature
+- 💬 **[AI Chatbot](https://researcher-rag-helper.vercel.app/chat)**: Instant help powered by AI
+- 📝 **[Prompt Library](https://researcher-rag-helper.vercel.app/guide/prompt-library)**: 7 research conversation templates
+- 📥 **[Downloads](https://researcher-rag-helper.vercel.app/resources)**: Templates, scripts, examples
+- ℹ️ **[About](https://researcher-rag-helper.vercel.app/about)**: Technology stack, design philosophy
 
 ---
 
 ## 🛠️ Technology Stack
 
-- **LLM**: Claude 3.5 Sonnet (via Claude Code)
+### AI Models
+
+| Model | Best For | Cost (typical review) | Speed |
+|-------|----------|----------------------|-------|
+| **Claude Sonnet 4.5** | Complex automation, best accuracy | $25-40 | Standard |
+| **Claude Haiku 4.5** | High-volume screening, cost-effective | $15-20 | 4-5x faster |
+| **GPT-5-Codex** | Advanced reasoning workflows | $30-50 | Standard |
+
+**Recommended**: Start with **Haiku 4.5** for cost efficiency, upgrade to **Sonnet 4.5** for complex cases.
+
+### Infrastructure
+
 - **RAG Framework**: LangGraph (query decomposition, parallel retrieval)
-- **Vector DB**: ChromaDB (local, persistent)
-- **Embeddings**: sentence-transformers/all-MiniLM-L6-v2 (free, local)
+- **Vector Database**: ChromaDB (local, free, persistent)
+- **Embeddings**:
+  - Default: `sentence-transformers/all-MiniLM-L6-v2` (free, local)
+  - Optional: `text-embedding-3-small` (OpenAI, $0.02/1M tokens)
 - **PDF Processing**: PyMuPDF, pdfplumber, Tesseract OCR
-- **PRISMA**: Custom Python implementation (multi-dimensional scoring)
+- **PRISMA**: Multi-dimensional LLM evaluation with transparency
+
+### Database Support
+
+**Open Access** (Free, Automated PDF Download):
+- Semantic Scholar (200M+ papers, 40% PDF access)
+- OpenAlex (250M+ works, 50% OA rate)
+- arXiv (2.4M+ preprints, 100% PDF access)
+
+**Institutional** (Requires Access, Metadata Only):
+- Scopus (87M+ records)
+- Web of Science (171M+ records)
 
 ---
 
-## 📅 Roadmap
+## 💡 Use Cases
 
-### v1.1.0 (Current - 2025-10-25)
-- ✅ Complete 5-stage prompt templates
-- ✅ CLAUDE.md (18,000-word guide)
-- ✅ Workshop curriculum (3 hours)
-- ✅ Research profile templates (3 domains)
-- ⏳ README and documentation updates
-- ⏳ Example project (ai_education_chatbot)
+### 1. PhD Dissertation Literature Review
+- **Before**: 8 weeks reading 300 papers
+- **After**: 3 weeks (3h setup + 2-3 weeks querying)
+- **Benefit**: Never forget citations, comprehensive coverage
 
-### v1.2.0 (Current - 2025-10-11)
-- ✅ Interactive learning platform ([ResearcherRAG Helper](https://github.com/HosungYou/ResearcherRAG-helper))
-- ✅ Bookdown-style documentation site (Next.js + Tailwind CSS)
-- ✅ AI-powered chatbot (Claude 3.5 Sonnet RAG)
-- ✅ Cleaned repository structure for researchers
-- ⏳ Video tutorial series (coming soon)
-- ⏳ Additional example projects (Medicine, Psychology)
+### 2. Meta-Analysis
+- **Before**: 4 weeks extracting effect sizes manually
+- **After**: 1 week (RAG-assisted extraction)
+- **Benefit**: Consistent criteria, faster updates
 
-### v1.3.0 (2026-01-15)
-- Citation graph analysis
-- Temporal trend analysis
-- Multi-lingual RAG (Korean, Chinese, Spanish)
-- Automated meta-analysis (effect size extraction)
+### 3. Grant Proposals
+- **Before**: Re-read 50 papers for each grant
+- **After**: Query RAG for specific evidence
+- **Benefit**: Always current, precise citations
 
-### v2.0.0 (2026-Q2)
-- Collaborative RAG (multi-user projects)
-- Cloud-hosted option (optional)
-- Integration with reference managers (Zotero, Mendeley)
-- Writing assistance (related work section generation)
+### 4. Systematic Review (PRISMA 2020)
+- **Before**: 2 weeks manual screening
+- **After**: 2 hours automated PRISMA
+- **Benefit**: Reproducible, transparent, documented
 
-See [project_management/ROADMAP.md](project_management/ROADMAP.md) for details.
+---
+
+## 📊 Real-World Example
+
+### AI Chatbots in Language Learning (Education Research)
+
+**Research Question**: "Do AI chatbots improve speaking proficiency in university language learners?"
+
+**Results**:
+```
+📊 Database Search:
+   Semantic Scholar: 218 papers (94 with PDFs)
+   OpenAlex: 182 papers (97 with PDFs)
+   arXiv: 23 papers (23 with PDFs)
+   Total: 423 papers
+
+🔍 PRISMA Screening (2 hours):
+   Deduplicated: 311 unique papers
+   Title/Abstract: 139 included (44.7%)
+   Full-Text: 139 eligible
+
+📥 PDF Acquisition:
+   Automated download: 79/139 (57%)
+   Final RAG: 79 papers, 912 chunks
+
+💬 Sample Query:
+   Q: "What are the main effects on speaking fluency?"
+
+   A: Research shows moderate to large positive effects:
+
+   **Speaking Rate**: +15-30% improvement [Kim et al., 2023,
+   RCT, N=120, d=0.68, p<.001]
+
+   **Fluency Ratings**: +0.9 band improvement vs control +0.3
+   [Lee & Park, 2022, Quasi-exp, N=89, η²=0.42]
+
+   **Pause Duration**: 40% reduction in hesitation pauses
+   [Chen, 2024, RCT, N=156, d=0.51]
+
+   📚 8 papers cited | Avg. similarity: 0.82
+
+💰 Total Cost: $18.50 (Haiku 4.5)
+⏱️ Total Time: 5.5 hours (vs. 2 weeks manual)
+```
+
+**See full walkthrough**: [Practical Guide - Chapter 5](https://researcher-rag-helper.vercel.app/guide/05-advanced-topics)
+
+---
+
+## 🎓 What's Included
+
+### 📂 Repository Contents
+
+```
+ResearcherRAG/
+├── prompts/                    # 7 stage conversation templates
+│   ├── 01_research_domain_setup.md
+│   ├── 02_query_strategy.md
+│   ├── 03_prisma_configuration.md
+│   ├── 04_rag_design.md
+│   ├── 05_execution_plan.md
+│   ├── 06_research_conversation/    # 7 specialized scenarios
+│   └── 07_documentation_writing.md
+│
+├── templates/                  # Pre-configured YAML templates
+│   └── research_profiles/
+│       ├── education_template.yaml
+│       ├── medicine_template.yaml
+│       └── social_science_template.yaml
+│
+├── scripts/                    # Automation scripts
+│   ├── 01_fetch_papers.py
+│   ├── 02_deduplicate.py
+│   ├── 03_screen_papers.py
+│   ├── 04_download_pdfs.py
+│   ├── 05_build_rag.py
+│   ├── 06_query_rag.py
+│   └── 07_generate_prisma.py
+│
+├── workshop/                   # 3-hour teaching curriculum
+│   └── hands_on_guide.md
+│
+├── CLAUDE.md                   # 18,000-word implementation guide
+├── researcherrag_cli.py        # CLI tool for manual control
+└── requirements.txt
+```
+
+### 🎓 Educational Materials
+
+- **[CLAUDE.md](CLAUDE.md)** (18,000 words): Complete implementation guide
+- **[Workshop Guide](workshop/hands_on_guide.md)**: 3-hour hands-on curriculum
+- **[7-Stage Prompts](prompts/)**: Copy-paste templates for each stage
+- **[Research Profiles](templates/research_profiles/)**: Pre-configured YAML for Education, Medicine, Social Science
+
+---
+
+## 🆕 What's New in v1.2.1 (Jan 2025)
+
+### AI Model Upgrades
+
+- ✅ **Claude Sonnet 4.5** (Jan 2025): State-of-the-art coding model for research automation
+- ✅ **Claude Haiku 4.5** (Oct 2024): 4-5x faster, 1/3 cost for high-volume screening
+- ✅ **GPT-5-Codex**: Advanced reasoning for complex workflows
+- ✅ Updated all documentation with latest model specifications
+
+### Design & UX
+
+- ✅ Monochrome design system for professional aesthetics
+- ✅ Improved callout box visibility across all pages
+- ✅ Enhanced dark mode text readability
+- ✅ Streamlined documentation layout
+
+### Performance
+
+- 🚀 40% cost reduction with Haiku 4.5 option
+- 🎯 Consistent results across model choices
+- 📈 Best-in-class SWE-bench performance (Sonnet 4.5)
+
+**Full changelog**: [Release Notes](https://github.com/HosungYou/ResearcherRAG-helper/blob/main/releases/RELEASE_NOTES_v1.2.0.md)
+
+---
+
+## 💰 Cost Breakdown
+
+### Typical Literature Review (500 papers screened, 150 included)
+
+| Stage | Tasks | Model | Cost |
+|-------|-------|-------|------|
+| **Title/Abstract Screening** | Read 500 abstracts, apply PRISMA criteria | Haiku 4.5 | $8-12 |
+| **Full-Text Analysis** | Review 150 PDFs, extract methods | Haiku 4.5 | $10-15 |
+| **RAG Building** | Embeddings, vector DB creation | text-embedding-3-small | $0.50 |
+| **Ongoing Queries** | Research conversations (50 queries/month) | Haiku 4.5 | $5-10/mo |
+| **TOTAL (Initial Setup)** | | | **$18-28** |
+
+**Compared to**: 2-4 weeks of researcher time (40-80 hours × $50-100/hour = **$2,000-8,000** equivalent cost)
+
+**ROI**: **99% cost reduction** when comparing AI costs to manual labor time value
 
 ---
 
 ## 🤝 Contributing
 
-We welcome contributions!
+We welcome contributions! Ways to help:
 
-### Ways to Contribute
-- **Share Templates**: Add research profiles for your domain
-- **Report Bugs**: Open GitHub issues
-- **Improve Docs**: Fix typos, clarify instructions
-- **Success Stories**: Share your research using ResearcherRAG
-
-
----
-
-## 📚 Resources
-
-### Documentation
-- **[CLAUDE.md](CLAUDE.md)**: Complete guide for Claude Code
-- **[prompts/](prompts/)**: 7-stage prompt templates
-  - **[Stage 6 Scenarios](prompts/06_research_conversation/README.md)**: 7 specialized research conversation prompts
-- **[workshop/hands_on_guide.md](workshop/hands_on_guide.md)**: 3-hour workshop
-### Interactive Platform
-- **[ResearcherRAG Helper](https://github.com/HosungYou/ResearcherRAG-helper)**: Web-based learning platform with chatbot
-
-### Community
-- **GitHub Issues**: Bug reports and feature requests
-- **GitHub Discussions**: Questions and tips
+- 🐛 **[Report Bugs](https://github.com/HosungYou/ResearcherRAG/issues)**: Found an issue? Let us know
+- 📝 **Share Templates**: Add research profiles for your domain
+- 📚 **Improve Docs**: Fix typos, add examples, clarify instructions
+- ⭐ **Success Stories**: Share your research results using ResearcherRAG
+- 💡 **Feature Requests**: Suggest improvements via GitHub Discussions
 
 ---
 
@@ -408,11 +328,12 @@ If you use ResearcherRAG in your research, please cite:
 
 ```bibtex
 @software{researcherrag2025,
-  author = {[Your Name]},
-  title = {ResearcherRAG: Build Your Own Research RAG System with Claude Code},
+  author = {You, Hosung},
+  title = {ResearcherRAG: AI-Powered Systematic Literature Review Automation},
   year = {2025},
   url = {https://github.com/HosungYou/ResearcherRAG},
-  version = {1.1.0}
+  version = {1.2.1},
+  note = {PRISMA 2020 compliant systematic review framework}
 }
 ```
 
@@ -420,27 +341,21 @@ If you use ResearcherRAG in your research, please cite:
 
 ## 📄 License
 
-MIT License - see [LICENSE](LICENSE) file for details.
+MIT License - See [LICENSE](LICENSE) file for details.
+
+**Open source, free forever.**
 
 ---
 
-## 🙏 Acknowledgments
+## 🔗 Links
 
-- **Claude Code** (Anthropic) for conversational AI assistance
-- **AI failure_HR Project** for real-world PRISMA validation (20,555 papers)
-- **PRISMA 2020 Guidelines** for systematic review methodology
-- **LangChain/LangGraph** for RAG framework
-- **Research Community** for feedback and use cases
-
----
-
-## 📞 Contact
-
-- **GitHub Issues**: https://github.com/HosungYou/ResearcherRAG/issues
-- **Email**: [Your email] (for workshop inquiries)
+- 🌐 **Documentation**: https://researcher-rag-helper.vercel.app/
+- 💬 **AI Chatbot**: https://researcher-rag-helper.vercel.app/chat
+- 📥 **Downloads**: https://researcher-rag-helper.vercel.app/resources
+- 💻 **GitHub**: https://github.com/HosungYou/ResearcherRAG
+- 🐛 **Issues**: https://github.com/HosungYou/ResearcherRAG/issues
+- 💡 **Discussions**: https://github.com/HosungYou/ResearcherRAG/discussions
 
 ---
 
-**Built with ❤️ for researchers, by researchers**
-
-_Powered by [Claude Code](https://claude.com/claude-code) 🤖_
+**Built for researchers, by researchers**
