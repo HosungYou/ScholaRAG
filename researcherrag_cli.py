@@ -882,15 +882,15 @@ def next_stage():
             click.echo(f"   - {output}")
         click.echo()
 
-    # Stage 6 특화: 예시 프롬프트 추천
+    # Stage 6 specialized: Example prompt recommendations
     if current_stage == 6:
-        click.echo("🎯 Stage 6 특화 기능:")
-        click.echo("   ResearcherRAG v1.0.8에서 7가지 연구 시나리오를 제공합니다.")
+        click.echo("🎯 Stage 6 Specialized Features:")
+        click.echo("   ResearcherRAG v1.0.8 provides 7 research scenarios.")
         click.echo()
-        click.echo("   예시 프롬프트 보기:")
+        click.echo("   View example prompts:")
         click.echo("   $ researcherrag stage6-examples")
         click.echo()
-        click.echo("   특정 시나리오 프롬프트 복사:")
+        click.echo("   Copy specific scenario prompt:")
         click.echo("   $ researcherrag stage6-prompt hypothesis")
         click.echo("   $ researcherrag stage6-prompt statistics")
         click.echo()
@@ -954,15 +954,15 @@ def stage6_examples():
 
     for key, info in scenarios.items():
         click.echo(f"📌 {info['name']}")
-        click.echo(f"   설명: {info['description']}")
-        click.echo(f"   활용: {info['use_case']}")
-        click.echo(f"   프롬프트 복사: researcherrag stage6-prompt {key}")
+        click.echo(f"   Description: {info['description']}")
+        click.echo(f"   Use Case: {info['use_case']}")
+        click.echo(f"   Copy Prompt: researcherrag stage6-prompt {key}")
         click.echo()
 
-    click.echo("💡 팁:")
-    click.echo("   - 각 시나리오는 프롬프트 예시입니다 (자동 실행 아님)")
-    click.echo("   - 프롬프트를 복사해서 연구 상황에 맞게 수정하세요")
-    click.echo("   - 전체 가이드: prompts/06_research_conversation.md")
+    click.echo("💡 Tips:")
+    click.echo("   - Each scenario is a prompt template (not auto-executed)")
+    click.echo("   - Copy and modify the prompt to fit your research needs")
+    click.echo("   - Full guide: prompts/06_research_conversation.md")
     click.echo("\n" + "="*70 + "\n")
 
 
@@ -1033,7 +1033,7 @@ def stage6_prompt(scenario):
 
 Organize the response hierarchically with citations and page ranges for each category.""",
 
-        "hypothesis": """My hypothesis: "[여기에 가설을 입력하세요]"
+        "hypothesis": """My hypothesis: "[Enter your hypothesis here]"
 
 Please:
 1. List evidence SUPPORTING this hypothesis
@@ -1104,21 +1104,21 @@ Include:
     click.echo(f"📋 Stage 6 Prompt: {scenario_names[scenario]}")
     click.echo("="*70 + "\n")
 
-    click.echo("아래 프롬프트를 복사해서 RAG 인터페이스에 붙여넣으세요:")
-    click.echo("(필요시 대괄호 [] 부분을 수정하세요)\n")
+    click.echo("Copy the prompt below and paste it into your RAG interface:")
+    click.echo("(Modify text in brackets [] as needed)\n")
     click.echo("-" * 70)
     click.echo(prompt_text)
     click.echo("-" * 70)
     click.echo()
 
-    click.echo("💡 사용 방법:")
-    click.echo("   1. 위 프롬프트를 복사 (Ctrl+C / Cmd+C)")
-    click.echo("   2. RAG 인터페이스 시작: python scripts/06_query_rag.py")
-    click.echo("   3. 프롬프트 붙여넣기 (Ctrl+V / Cmd+V)")
-    click.echo("   4. 연구 상황에 맞게 수정 후 실행")
+    click.echo("💡 How to Use:")
+    click.echo("   1. Copy the prompt above (Ctrl+C / Cmd+C)")
+    click.echo("   2. Start RAG interface: python scripts/06_query_rag.py")
+    click.echo("   3. Paste the prompt (Ctrl+V / Cmd+V)")
+    click.echo("   4. Modify for your research context and execute")
     click.echo()
 
-    click.echo("📖 전체 예시 및 최적 응답 구조:")
+    click.echo("📖 Full Examples and Optimal Response Structures:")
     click.echo("   prompts/06_research_conversation/README.md")
     click.echo(f"   prompts/06_research_conversation/{scenario_files[scenario]}")
     click.echo("\n" + "="*70 + "\n")

@@ -487,6 +487,332 @@ Here's your Stage 2 prompt for query strategy design:
 
 ---
 
+## 🗂️ Project Creation and Switching Protocol
+
+### When to Create a New Project
+
+ResearcherRAG supports **multiple independent projects** (e.g., "AI in Healthcare" and "Chatbots for Learning" are separate systematic reviews). You must detect when the user wants to create a **new project** vs. continue an **existing project**.
+
+#### Triggers for Creating a New Project
+
+Create a **new project** when:
+
+1. **Explicit keyword trigger**:
+   - User says: "new project", "start a new systematic review", "create another project", "second project", "different research topic"
+
+2. **Topic mismatch detection**:
+   - User mentions a research topic DIFFERENT from existing `.researcherrag/context.json` metadata
+   - Example: Existing project = "AI Healthcare Adoption", User says = "I want to study chatbots for language learning"
+
+3. **No existing project detected**:
+   - Working directory = `ResearcherRAG/` (repository root)
+   - No `.researcherrag/context.json` file found
+   - This is the user's FIRST project
+
+4. **User confirmation required**:
+   - ALWAYS ask user before creating a new project:
+     ```
+     "This looks like a new research topic (different from your current project 'AI Healthcare').
+     Create a new project 'Chatbot-Learning'? [y/n]"
+     ```
+
+#### Decision Tree for Project Management
+
+```
+User message received
+    ↓
+Is working directory ResearcherRAG/ (root)?
+    ├─ Yes → Check for .researcherrag/context.json
+    │         ├─ Exists → ⚠️  ERROR: .researcherrag should NOT be in root
+    │         │           (Should be in projects/*/ subfolder)
+    │         │           Ask: "Move this to projects/ folder?"
+    │         │
+    │         └─ Not exists → This is FIRST project or need to create NEW project
+    │                         ├─ Check: Does projects/ folder exist?
+    │                         │   ├─ Yes → List existing projects
+    │                         │   │         Ask: "Continue existing or create new?"
+    │                         │   └─ No → First project ever
+    │                         │            Run: python researcherrag_cli.py init
+    │                         │            Creates: projects/2025-10-18_Project-Name/
+    │                         └─ Run: python researcherrag_cli.py init
+    │
+    └─ No → Check: Is working directory projects/*/ (project subfolder)?
+              ├─ Yes → Check for .researcherrag/context.json
+              │         ├─ Exists → Load context, check topic match
+              │         │             ├─ Topic MATCHES user message → Continue project
+              │         │             │   Load current_stage, show progress
+              │         │             │
+              │         │             └─ Topic MISMATCH → Ask user
+              │         │                 "Your current project is 'AI Healthcare'.
+              │         │                  You mentioned 'chatbots'. Create new project?"
+              │         │
+              │         └─ Not exists → ⚠️  WARNING: Project folder without metadata
+              │                         Ask: "Initialize this folder as ResearcherRAG project?"
+              │
+              └─ No → ❌ ERROR: Must work inside ResearcherRAG/ or projects/*/
+                      Show: "Please navigate to ResearcherRAG directory"
+```
+
+### Example Conversation Flows
+
+#### Scenario 1: First Project Ever
+
+```
+Working directory: /path/to/ResearcherRAG/
+User: "I want to build a RAG for AI adoption in healthcare"
+
+Claude Code:
+1. Check: .researcherrag/context.json exists? → No
+2. Check: projects/ folder exists? → No
+3. Conclusion: This is the FIRST project
+4. Action: "I'll create your first ResearcherRAG project.
+            Running: python researcherrag_cli.py init"
+5. Prompt user for project details:
+   - Project name: "AI-Healthcare-Adoption"
+   - Research question: "What factors influence AI adoption in hospitals?"
+   - Domain: "medicine"
+6. Execute: python researcherrag_cli.py init \
+              --name "AI-Healthcare-Adoption" \
+              --question "What factors influence AI adoption in hospitals?" \
+              --domain medicine
+7. Result: projects/2025-10-18_AI-Healthcare-Adoption/ created
+8. Navigate: cd projects/2025-10-18_AI-Healthcare-Adoption/
+9. Continue: Begin Stage 1 conversation
+```
+
+#### Scenario 2: Second Project (NEW Topic)
+
+```
+Working directory: /path/to/ResearcherRAG/projects/2025-10-18_AI-Healthcare/
+Current project context loaded:
+  - project_name: "AI Healthcare Adoption"
+  - research_question: "What factors influence AI adoption in hospitals?"
+  - current_stage: 3
+
+User: "NEW project: I want to study chatbots for language learning"
+
+Claude Code:
+1. Detect keyword: "NEW project"
+2. Check current .researcherrag/context.json:
+   - Topic: "AI Healthcare" ≠ "chatbots for language learning"
+3. Conclusion: User wants a DIFFERENT systematic review
+4. Ask confirmation:
+   ┌─────────────────────────────────────────────────────────┐
+   │ 🔍 New Project Detection                                │
+   ├─────────────────────────────────────────────────────────┤
+   │ Current project: "AI Healthcare Adoption" (Stage 3/7)   │
+   │ Your message mentions: "chatbots for language learning" │
+   │                                                          │
+   │ This looks like a DIFFERENT research topic.             │
+   │                                                          │
+   │ Options:                                                │
+   │ 1️⃣  Create NEW project "Chatbot-Learning"              │
+   │    → New folder: projects/2025-10-18_Chatbot-Learning/ │
+   │    → Separate database, separate RAG system            │
+   │                                                          │
+   │ 2️⃣  Continue current project "AI Healthcare"           │
+   │    → Stay in current folder, resume Stage 3            │
+   │                                                          │
+   │ Which option? [1/2]                                     │
+   └─────────────────────────────────────────────────────────┘
+
+User: "1"
+
+Claude Code:
+5. Navigate to root: cd ../../
+6. Execute: python researcherrag_cli.py init \
+              --name "Chatbot-Learning" \
+              --question "How do chatbots improve language learning outcomes?" \
+              --domain education
+7. Result: projects/2025-10-18_Chatbot-Learning/ created
+8. Navigate: cd projects/2025-10-18_Chatbot-Learning/
+9. Continue: Begin Stage 1 for NEW project
+10. Note: Original project remains intact at:
+    projects/2025-10-18_AI-Healthcare/ (can resume later)
+```
+
+#### Scenario 3: Switch Between Existing Projects
+
+```
+Working directory: /path/to/ResearcherRAG/projects/2025-10-18_Chatbot-Learning/
+User: "Switch to my AI Healthcare project"
+
+Claude Code:
+1. Detect keyword: "Switch to"
+2. Run: python researcherrag_cli.py list
+   Output:
+   ✅ 2025-10-18_AI-Healthcare-Adoption
+      📊 Stage 3/6 • Domain: medicine
+
+   🆕 2025-10-18_Chatbot-Learning
+      📊 Stage 1/6 • Domain: education
+3. Find match: "AI Healthcare" → "2025-10-18_AI-Healthcare-Adoption"
+4. Navigate: cd ../2025-10-18_AI-Healthcare-Adoption/
+5. Load context: .researcherrag/context.json
+   {
+     "current_stage": 3,
+     "project_name": "AI Healthcare Adoption",
+     "research_question": "What factors influence AI adoption?"
+   }
+6. Inform user:
+   "✅ Switched to project: AI Healthcare Adoption
+    📍 Currently on Stage 3/7: PRISMA Configuration
+    📅 Last updated: 2025-10-15
+
+    Ready to continue where you left off!"
+7. Show Stage 3 prompt or ask: "Continue with Stage 3 or jump to different stage?"
+```
+
+#### Scenario 4: User Confused About Multiple Projects
+
+```
+Working directory: /path/to/ResearcherRAG/
+User: "I want to continue my chatbot project"
+
+Claude Code:
+1. Check: .researcherrag/context.json in current directory? → No
+2. Check: projects/ folder exists? → Yes
+3. Run: python researcherrag_cli.py list
+4. Show user:
+   ┌─────────────────────────────────────────────────────────┐
+   │ 📚 Your ResearcherRAG Projects                          │
+   ├─────────────────────────────────────────────────────────┤
+   │ 1. AI-Healthcare-Adoption (Stage 3/7)                   │
+   │    Research: "What factors influence AI adoption?"      │
+   │    Last active: 2025-10-15                              │
+   │                                                          │
+   │ 2. Chatbot-Learning (Stage 1/7)                         │
+   │    Research: "How do chatbots improve learning?"        │
+   │    Last active: 2025-10-18                              │
+   │                                                          │
+   │ Which project? [1/2]                                    │
+   └─────────────────────────────────────────────────────────┘
+
+User: "2"
+
+Claude Code:
+5. Navigate: cd projects/2025-10-18_Chatbot-Learning/
+6. Load context and continue
+```
+
+### Topic Mismatch Detection Algorithm
+
+Use this logic to detect when user wants a NEW project vs. continue existing:
+
+```python
+import json
+import os
+
+def should_create_new_project(user_message: str, context_file: str = '.researcherrag/context.json') -> bool:
+    """
+    Determine if user wants a new project or continue existing.
+
+    Returns:
+        True: Create new project
+        False: Continue existing project
+    """
+    # Check for explicit keywords
+    new_project_keywords = [
+        "new project", "start a new", "create another",
+        "second project", "different topic", "different research"
+    ]
+
+    if any(keyword in user_message.lower() for keyword in new_project_keywords):
+        return True
+
+    # Check if context file exists
+    if not os.path.exists(context_file):
+        # No existing project
+        return True
+
+    # Load existing project context
+    with open(context_file, 'r') as f:
+        context = json.load(f)
+
+    existing_topic = context.get('project_name', '').lower()
+    existing_question = context.get('research_question', '').lower()
+
+    # Extract key terms from user message (simple approach)
+    user_message_lower = user_message.lower()
+
+    # Check if user message contains terms from existing project
+    topic_overlap = (
+        existing_topic in user_message_lower or
+        any(word in user_message_lower for word in existing_question.split() if len(word) > 4)
+    )
+
+    # If NO overlap and user is describing a research topic → likely NEW project
+    research_indicators = ["study", "research", "review", "investigate", "analyze"]
+    mentions_research = any(indicator in user_message_lower for indicator in research_indicators)
+
+    if mentions_research and not topic_overlap:
+        # User is describing research, but doesn't match existing project
+        return True  # Probably wants new project (but ASK for confirmation)
+
+    return False  # Continue existing project
+```
+
+### Critical Rules for Project Management
+
+**DO:**
+- ✅ Always check working directory before creating projects
+- ✅ Detect topic mismatch and ASK user for confirmation
+- ✅ Use `python researcherrag_cli.py list` to show existing projects
+- ✅ Navigate to correct project folder before starting work
+- ✅ Keep projects isolated (separate folders, separate databases)
+
+**DON'T:**
+- ❌ Create new project without asking when existing project detected
+- ❌ Overwrite existing .researcherrag/context.json
+- ❌ Mix data from different projects in same folder
+- ❌ Assume user wants to continue if topic looks different
+
+### Project Folder Structure (Multiple Projects)
+
+```
+ResearcherRAG/                                  # Framework repository (root)
+├── researcherrag_cli.py                        # Project manager CLI
+├── scripts/                                    # Shared scripts (all projects use these)
+│   ├── 01_fetch_papers.py
+│   ├── 02_deduplicate.py
+│   └── ...
+├── prompts/                                    # Shared prompts
+│   ├── 01_research_domain_setup.md
+│   └── ...
+└── projects/                                   # All user projects (gitignored)
+    ├── 2025-10-18_AI-Healthcare-Adoption/      # Project 1
+    │   ├── .researcherrag/
+    │   │   └── context.json                    # Project 1 state
+    │   ├── config.yaml                         # Project 1 config
+    │   ├── data/
+    │   │   ├── 01_identification/
+    │   │   │   └── semantic_scholar.csv        # Project 1 papers
+    │   │   └── pdfs/                           # Project 1 PDFs
+    │   └── rag/
+    │       └── chroma_db/                      # Project 1 vector DB
+    │
+    └── 2025-10-18_Chatbot-Learning/            # Project 2
+        ├── .researcherrag/
+        │   └── context.json                    # Project 2 state (independent)
+        ├── config.yaml                         # Project 2 config (different)
+        ├── data/
+        │   ├── 01_identification/
+        │   │   └── semantic_scholar.csv        # Project 2 papers (separate)
+        │   └── pdfs/                           # Project 2 PDFs (separate)
+        └── rag/
+            └── chroma_db/                      # Project 2 vector DB (separate)
+```
+
+**Key principle**: Each project is COMPLETELY ISOLATED:
+- Different research questions
+- Different papers fetched
+- Different PDFs downloaded
+- Different vector databases
+- Different RAG systems
+- Independent conversation contexts
+
+---
+
 ## 🚨 Critical Rules
 
 ### DO:

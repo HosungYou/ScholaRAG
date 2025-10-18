@@ -85,3 +85,7 @@ secrets.yaml
 
 # ResearcherRAG v1.0.6+ context (runtime state, not version-controlled)
 .claude/context.json
+
+# ResearcherRAG user projects (local, not version-controlled)
+# Each user has their own systematic review projects
+projects/
