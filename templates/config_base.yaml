@@ -1,0 +1,159 @@
+# ResearcherRAG Configuration v1.0
+# Template for systematic literature review projects
+
+# ============================================================
+# PROJECT IDENTITY
+# ============================================================
+project_name: "Your Research Project Name"
+created_date: "2025-10-16"
+author: "Your Name"
+
+research_question: |
+  Your research question here.
+
+# ============================================================
+# RETRIEVAL SETTINGS (Complete Collection - New in v1.0)
+# ============================================================
+retrieval_settings:
+  strategy: "complete"  # Fetch ALL results
+  order: "newest_first"
+  user_confirmation_threshold: 15000  # Prompt if results exceed this
+  year_range:
+    start: 2015
+    end: 2024
+
+# ============================================================
+# DATABASES
+# ============================================================
+databases:
+  open_access:
+    openalex:
+      enabled: true
+    semantic_scholar:
+      enabled: true
+    arxiv:
+      enabled: true
+
+  institutional:  # Requires API keys - see docs/INSTITUTIONAL_APIS.md
+    scopus:
+      enabled: false  # Set true after setup
+    web_of_science:
+      enabled: false
+
+# ============================================================
+# SEARCH QUERY
+# ============================================================
+search_query:
+  simple: "your search keywords"
+  scopus: "TITLE-ABS-KEY(your AND query)"  # If institutional enabled
+  web_of_science: "TS=(your query)"
+
+# ============================================================
+# SCREENING CRITERIA
+# ============================================================
+inclusion_criteria:
+  - "Criterion 1"
+  - "Criterion 2"
+
+exclusion_criteria:
+  - "Criterion 1"
+  - "Criterion 2"
+
+# ============================================================
+# AI-PRISMA RUBRIC (New in v1.0)
+# ============================================================
+ai_prisma_rubric:
+  enabled: true
+  llm: "claude-3-5-sonnet-20241022"
+  temperature: 0.1
+
+  decision_confidence:
+    auto_include: 90
+    auto_exclude: 10
+
+  sub_criteria:
+    population:
+      description: "Target population or domain"
+      scoring_rubric: |
+        100: Directly relevant
+        75:  Major component
+        50:  Mentions but not primary
+        0:   Not related
+
+    intervention:
+      description: "Technology or intervention"
+      scoring_rubric: |
+        100: Primary focus
+        75:  Major component
+        50:  Mentioned
+        0:   Not present
+
+    outcomes:
+      description: "Outcomes measured"
+      scoring_rubric: |
+        100: Primary outcome
+        75:  Major outcome
+        50:  Secondary
+        0:   Not measured
+
+  human_validation:
+    prompt_user: true  # Interactive prompt after AI evaluation
+    sample_size: 100
+    required: false
+    estimated_time_hours: 2.5
+
+# ============================================================
+# PRISMA KEYWORDS (Fallback if AI-PRISMA disabled)
+# ============================================================
+prisma_keywords:
+  domain_keywords:
+    "keyword1": 10
+    "keyword2": 9
+
+  topic_keywords:
+    "topic1": 5
+    "topic2": 5
+
+  exclusion_keywords:
+    "exclude1": -10
+
+# ============================================================
+# RAG SETTINGS
+# ============================================================
+rag_settings:
+  vector_db: "chromadb"
+  collection_name: "research-papers"
+  embedding_model: "text-embedding-3-large"
+  chunk_size: 1000
+  chunk_overlap: 200
+  retrieval_k: 10
+  llm: "claude-3-5-sonnet-20241022"
+  llm_temperature: 0.0
+  llm_max_tokens: 4096
+
+# ============================================================
+# OUTPUT SETTINGS
+# ============================================================
+output_settings:
+  base_dir: "data"
+  folders:
+    open_access: "data/open_access"
+    institutional: "data/institutional"
+    combined: "data/combined"
+    pdfs: "data/pdfs"
+    prisma: "data/prisma"
+  paper_metadata: "csv"
+  prisma_format: "png"
+
+# ============================================================
+# NOTES
+# ============================================================
+notes: |
+  Workflow:
+  1. Paper retrieval (01_fetch_papers.py)
+  2. Deduplication (02_deduplicate.py)
+  3. Screening (03_screen_papers.py) - Uses AI-PRISMA rubric
+  4. PDF download (04_download_pdfs.py)
+  5. RAG building (05_build_rag.py)
+  6. Query & analysis (06_query_rag.py)
+  7. PRISMA diagram (07_generate_prisma.py)

@@ -1,0 +1,5 @@
+# .mailmap - Map email addresses to canonical names
+# This file hides certain contributors from GitHub insights
+
+# Hide AI assistant from contributors list
+Claude <noreply@anthropic.com> <>

@@ -1,14 +1,21 @@
-# ResearcherRAG - Codex Agent Instructions
+# ResearcherRAG - AI Coding Assistant Guide
 
-Framework: PRISMA 2020 + RAG-powered systematic literature review automation
-Target users: Academic researchers conducting rigorous literature reviews with AI-enhanced analysis
-Architecture: 7-stage pipeline (PRISMA selection → RAG analysis → Documentation)
+**For: GPT-5-Codex, Cursor, GitHub Copilot, and other AI coding assistants**
+
+## Overview
+
+ResearcherRAG is an **AI-powered systematic literature review automation framework** that helps researchers build custom RAG systems through conversational guidance.
+
+**Framework**: PRISMA 2020 + RAG-powered literature review automation
+**Target Users**: Academic researchers conducting rigorous systematic reviews
+**Architecture**: 7-stage conversational pipeline (Research Setup → RAG Building → Documentation)
 
 **Key Technologies**:
-- **PRISMA 2020**: Paper identification, screening, eligibility assessment (Stages 1-4)
-- **RAG (Retrieval-Augmented Generation)**: Data extraction, synthesis from PDFs (Stages 5-6)
-- **ChromaDB**: Vector database for semantic search across paper collections
-- **LLM Integration**: Claude/GPT for intelligent screening and data extraction
+- **AI Models**: Claude Sonnet 4.5, Haiku 4.5, GPT-5-Codex (you!)
+- **PRISMA 2020**: Paper identification, screening, eligibility assessment
+- **RAG**: Retrieval-Augmented Generation for evidence-based research queries
+- **Vector Database**: ChromaDB for semantic search across papers
+- **Cost**: Under $40 per typical literature review (500 papers → 150 included)
 
 ---
 
@@ -278,6 +285,12 @@ When referencing files or terminal outputs:
 
 ---
 
-**Last updated**: October 14, 2025
-**Maintained by**: ResearcherRAG team
-**GitHub**: https://github.com/HosungYou/ResearcherRAG
+---
+
+## Documentation Resources
+
+- **Full Documentation**: https://researcher-rag-helper.vercel.app/
+- **GitHub**: https://github.com/HosungYou/ResearcherRAG
+- **AI Chatbot Help**: https://researcher-rag-helper.vercel.app/chat
+
+**Last updated**: January 22, 2025 (v1.2.1)

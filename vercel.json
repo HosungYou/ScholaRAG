@@ -1,7 +1,0 @@
-{
-  "buildCommand": "jekyll build --source docs --destination docs/_site",
-  "outputDirectory": "docs/_site",
-  "installCommand": "gem install jekyll bundler && bundle install --gemfile=docs/Gemfile",
-  "framework": null,
-  "public": false
-}
