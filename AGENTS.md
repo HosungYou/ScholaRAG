@@ -15,7 +15,7 @@ ResearcherRAG is an **AI-powered systematic literature review automation framewo
 - **PRISMA 2020**: Paper identification, screening, eligibility assessment
 - **RAG**: Retrieval-Augmented Generation for evidence-based research queries
 - **Vector Database**: ChromaDB for semantic search across papers
-- **Cost**: Under $40 per typical literature review (500 papers → 150 included)
+- **Cost**: $20/month Claude Pro subscription (unlimited usage, 20,000+ papers)
 
 ---
 

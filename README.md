@@ -18,7 +18,7 @@ ResearcherRAG is an **open-source framework** that helps researchers build custo
 
 In **3 hours of active work** + **3-4 hours of automated processing**, you'll create:
 
-- ✅ **PRISMA 2020-Compliant Pipeline**: Screen 500+ papers → 50-150 highly relevant ones
+- ✅ **PRISMA 2020-Compliant Pipeline**: Screen 20,000+ papers → PRISMA-filtered relevant set
 - ✅ **Custom Vector Database**: Semantic search across your included papers (ChromaDB)
 - ✅ **Research RAG System**: Query with citations, methods, and effect sizes
 
@@ -26,15 +26,15 @@ In **3 hours of active work** + **3-4 hours of automated processing**, you'll cr
 
 **Traditional Systematic Review** (6-8 weeks):
 - 📚 Manual database searches (PubMed, ERIC, Web of Science)
-- 📊 Export 500+ papers to Excel, read abstracts one by one
-- 📄 Review 200+ PDFs for inclusion criteria
+- 📊 Export 20,000+ papers to Excel, read abstracts one by one
+- 📄 Review hundreds of PDFs for inclusion criteria
 - ✍️ Extract findings, constantly re-read papers for citations
 
 **With ResearcherRAG** (2-3 weeks):
 - 🤖 **3-hour setup**: Build RAG system with AI assistant step-by-step
-- ⚡ **2-hour screening**: AI-powered PRISMA (500 papers → 150 included)
+- ⚡ **2-hour screening**: AI-powered PRISMA (20,000 papers → PRISMA-filtered relevant set)
 - 💬 **Instant queries**: "What are the main effects?" → Evidence + citations
-- 💰 **Under $40 total cost**: Claude Sonnet 4.5 or Haiku 4.5
+- 💰 **Fixed $20/month**: Claude Pro subscription (unlimited usage)
 
 **Result**: **67-75% time savings**, never forget a relevant paper again.
 
@@ -117,13 +117,13 @@ The website provides comprehensive guides with examples, code snippets, and inte
 
 ### AI Models
 
-| Model | Best For | Cost (typical review) | Speed |
-|-------|----------|----------------------|-------|
-| **Claude Sonnet 4.5** | Complex automation, best accuracy | $25-40 | Standard |
-| **Claude Haiku 4.5** | High-volume screening, cost-effective | $15-20 | 4-5x faster |
-| **GPT-5-Codex** | Advanced reasoning workflows | $30-50 | Standard |
+| Model | Best For | Cost | Speed |
+|-------|----------|------|-------|
+| **Claude Sonnet 4.5** | Complex automation, best accuracy | $20/month (unlimited) | Standard |
+| **Claude Haiku 4.5** | High-volume screening, cost-effective | Included in Pro | 4-5x faster |
+| **GPT-5-Codex** | Advanced reasoning workflows | Via API subscription | Standard |
 
-**Recommended**: Start with **Haiku 4.5** for cost efficiency, upgrade to **Sonnet 4.5** for complex cases.
+**Recommended**: Use **Claude Pro subscription ($20/month)** for unlimited access to both Sonnet 4.5 and Haiku 4.5. No per-token charges.
 
 ### Infrastructure
 
@@ -181,19 +181,20 @@ The website provides comprehensive guides with examples, code snippets, and inte
 **Results**:
 ```
 📊 Database Search:
-   Semantic Scholar: 218 papers (94 with PDFs)
-   OpenAlex: 182 papers (97 with PDFs)
-   arXiv: 23 papers (23 with PDFs)
-   Total: 423 papers
+   Semantic Scholar: 12,847 papers (5,139 with PDFs)
+   OpenAlex: 8,231 papers (4,116 with PDFs)
+   arXiv: 156 papers (156 with PDFs)
+   Total: 21,234 papers
 
-🔍 PRISMA Screening (2 hours):
-   Deduplicated: 311 unique papers
-   Title/Abstract: 139 included (44.7%)
-   Full-Text: 139 eligible
+🔍 PRISMA Screening (2 hours, AI-assisted):
+   Deduplicated: 15,892 unique papers
+   Title/Abstract: 1,847 passed initial screening
+   Full-Text Assessment: 342 met PRISMA criteria
+   Note: ~2.1% inclusion rate (PRISMA-based filtering, not fixed target)
 
-📥 PDF Acquisition:
-   Automated download: 79/139 (57%)
-   Final RAG: 79 papers, 912 chunks
+📥 PDF Acquisition (via open access + institutional access):
+   Automated download: 287/342 (84%)
+   Final RAG: 287 papers, 3,421 chunks
 
 💬 Sample Query:
    Q: "What are the main effects on speaking fluency?"
@@ -209,9 +210,9 @@ The website provides comprehensive guides with examples, code snippets, and inte
    **Pause Duration**: 40% reduction in hesitation pauses
    [Chen, 2024, RCT, N=156, d=0.51]
 
-   📚 8 papers cited | Avg. similarity: 0.82
+   📚 23 papers cited | Avg. similarity: 0.85
 
-💰 Total Cost: $18.50 (Haiku 4.5)
+💰 Total Cost: $20/month (Claude Pro unlimited)
 ⏱️ Total Time: 5.5 hours (vs. 2 weeks manual)
 ```
 
@@ -294,19 +295,21 @@ ResearcherRAG/
 
 ## 💰 Cost Breakdown
 
-### Typical Literature Review (500 papers screened, 150 included)
+### Typical Literature Review (20,000 papers screened, PRISMA-filtered to relevant set)
 
 | Stage | Tasks | Model | Cost |
 |-------|-------|-------|------|
-| **Title/Abstract Screening** | Read 500 abstracts, apply PRISMA criteria | Haiku 4.5 | $8-12 |
-| **Full-Text Analysis** | Review 150 PDFs, extract methods | Haiku 4.5 | $10-15 |
-| **RAG Building** | Embeddings, vector DB creation | text-embedding-3-small | $0.50 |
-| **Ongoing Queries** | Research conversations (50 queries/month) | Haiku 4.5 | $5-10/mo |
-| **TOTAL (Initial Setup)** | | | **$18-28** |
+| **Title/Abstract Screening** | AI-powered PRISMA screening of 20,000 abstracts | Claude Pro | $20/month (unlimited) |
+| **Full-Text Analysis** | Review hundreds of PDFs, extract methods/data | Claude Pro | Included |
+| **RAG Building** | Embeddings, vector DB creation | Free local model | $0 |
+| **Ongoing Queries** | Unlimited research conversations | Claude Pro | Included |
+| **TOTAL (Monthly Subscription)** | | | **$20/month (unlimited usage)** |
 
-**Compared to**: 2-4 weeks of researcher time (40-80 hours × $50-100/hour = **$2,000-8,000** equivalent cost)
+**Compared to**: 6-8 weeks of researcher time (240-320 hours × $50-100/hour = **$12,000-32,000** equivalent cost)
 
-**ROI**: **99% cost reduction** when comparing AI costs to manual labor time value
+**ROI**: **99.9% cost reduction** when comparing subscription cost to manual labor time value
+
+**Note**: No per-token charges. Fixed monthly subscription covers unlimited systematic reviews.
 
 ---
 
