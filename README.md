@@ -44,36 +44,72 @@ In **3 hours of active work** + **3-4 hours of automated processing**, you'll cr
 
 ### Prerequisites
 
-- **Python 3.9+**
-- **VS Code** with an AI coding assistant
-- **API Key**: Anthropic API (free tier available) or OpenAI API
+- **VS Code** with **Claude Code** or **GitHub Copilot** extension
+- **Claude Pro** ($20/month) or **OpenAI API** account
+- **Python 3.9+** (your AI assistant will handle installation)
 
-### 3-Step Setup
+### Conversation-First Setup (Recommended)
 
-```bash
-# 1. Clone and install
-git clone https://github.com/HosungYou/ResearcherRAG.git
-cd ResearcherRAG
-pip install -r requirements.txt
+**You don't need to run commands yourself.** Simply talk to your AI assistant in VS Code:
 
-# 2. Open in VS Code with your AI assistant
-code .
+#### Step 1: Open AI Assistant in VS Code
 
-# 3. Start conversation
-# Copy-paste prompt from prompts/01_research_domain_setup.md
+Press Cmd+Shift+P (Mac) or Ctrl+Shift+P (Windows/Linux), then:
+- For Claude Code: Type "Claude: Open Chat"
+- For Copilot: Type "GitHub Copilot: Open Chat"
+
+#### Step 2: Copy-Paste This Prompt
+
+```
+Please set up ResearcherRAG for me:
+
+1. Clone https://github.com/HosungYou/ResearcherRAG.git
+2. Navigate into ResearcherRAG directory
+3. Create Python virtual environment (venv)
+4. Activate the virtual environment
+5. Install CLI dependencies: pip install click pyyaml
+6. Initialize my first project: python researcherrag_cli.py init
+7. Guide me through Stage 1 of the systematic review workflow
+
+My research topic: [Describe your research question here]
 ```
 
-**That's it!** Your AI assistant will:
-- ✅ Track your progress via `.researcherrag/context.json`
-- ✅ Guide you through 7 stages conversationally
-- ✅ Run CLI commands automatically when needed
+#### Step 3: Follow the Conversation
+
+Your AI assistant will:
+- Execute all setup commands automatically
+- Create your project folder structure
+- Guide you through 7 stages conversationally
+- Track progress via .researcherrag/context.json
+- Run scripts when needed (you never touch terminal)
+
+**That's it!** Just keep chatting to complete your systematic review.
+
+---
 
 ### Alternative: Manual CLI Mode
 
-For manual control or scripting:
+For users who prefer direct command-line control:
 
 ```bash
-# Initialize project
+# Clone the repository
+git clone https://github.com/HosungYou/ResearcherRAG.git
+cd ResearcherRAG
+
+# Create virtual environment
+python3 -m venv venv
+
+# Activate virtual environment
+# On macOS/Linux:
+source venv/bin/activate
+# On Windows:
+venv\Scripts\activate
+
+# Install CLI dependencies
+pip install --upgrade pip
+pip install click pyyaml
+
+# Initialize your first project
 python researcherrag_cli.py init
 
 # Check progress
@@ -81,10 +117,9 @@ python researcherrag_cli.py status
 
 # Get next step guidance
 python researcherrag_cli.py next
-
-# Run specific stage (after completing prerequisites)
-python researcherrag_cli.py run-stage 2
 ```
+
+**Note**: Manual mode requires you to run Stage scripts yourself. Conversation mode is recommended for seamless automation.
 
 ---
 
