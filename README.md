@@ -34,7 +34,7 @@ In **3 hours of active work** + **3-4 hours of automated processing**, you'll cr
 - 🤖 **3-hour setup**: Build RAG system with AI assistant step-by-step
 - ⚡ **2-hour screening**: AI-powered PRISMA (20,000 papers → PRISMA-filtered relevant set)
 - 💬 **Instant queries**: "What are the main effects?" → Evidence + citations
-- 💰 **Fixed $20/month**: Claude Pro subscription (unlimited usage)
+- 💰 **Fixed $20/month**: Claude Pro subscription (Haiku 4.5 sufficient for individual researchers)
 
 **Result**: **67-75% time savings**, never forget a relevant paper again.
 
@@ -119,11 +119,11 @@ The website provides comprehensive guides with examples, code snippets, and inte
 
 | Model | Best For | Cost | Speed |
 |-------|----------|------|-------|
-| **Claude Sonnet 4.5** | Complex automation, best accuracy | $20/month (unlimited) | Standard |
+| **Claude Sonnet 4.5** | Complex automation, best accuracy | $20/month Pro plan | Standard |
 | **Claude Haiku 4.5** | High-volume screening, cost-effective | Included in Pro | 4-5x faster |
 | **GPT-5-Codex** | Advanced reasoning workflows | Via API subscription | Standard |
 
-**Recommended**: Use **Claude Pro subscription ($20/month)** for unlimited access to both Sonnet 4.5 and Haiku 4.5. No per-token charges.
+**Recommended**: Use **Claude Pro subscription ($20/month)** with Haiku 4.5 model. Sufficient for individual researchers on typical systematic reviews.
 
 ### Infrastructure
 
@@ -212,7 +212,7 @@ The website provides comprehensive guides with examples, code snippets, and inte
 
    📚 23 papers cited | Avg. similarity: 0.85
 
-💰 Total Cost: $20/month (Claude Pro unlimited)
+💰 Total Cost: $20/month (Claude Pro with Haiku 4.5)
 ⏱️ Total Time: 5.5 hours (vs. 2 weeks manual)
 ```
 
@@ -299,17 +299,17 @@ ResearcherRAG/
 
 | Stage | Tasks | Model | Cost |
 |-------|-------|-------|------|
-| **Title/Abstract Screening** | AI-powered PRISMA screening of 20,000 abstracts | Claude Pro | $20/month (unlimited) |
-| **Full-Text Analysis** | Review hundreds of PDFs, extract methods/data | Claude Pro | Included |
+| **Title/Abstract Screening** | AI-powered PRISMA screening of 20,000 abstracts | Claude Pro (Haiku 4.5) | $20/month |
+| **Full-Text Analysis** | Review hundreds of PDFs, extract methods/data | Claude Pro (Haiku 4.5) | Included |
 | **RAG Building** | Embeddings, vector DB creation | Free local model | $0 |
-| **Ongoing Queries** | Unlimited research conversations | Claude Pro | Included |
-| **TOTAL (Monthly Subscription)** | | | **$20/month (unlimited usage)** |
+| **Ongoing Queries** | Research conversations | Claude Pro (Haiku 4.5) | Included |
+| **TOTAL (Monthly Subscription)** | | | **$20/month** |
 
 **Compared to**: 6-8 weeks of researcher time (240-320 hours × $50-100/hour = **$12,000-32,000** equivalent cost)
 
 **ROI**: **99.9% cost reduction** when comparing subscription cost to manual labor time value
 
-**Note**: No per-token charges. Fixed monthly subscription covers unlimited systematic reviews.
+**Note**: Claude Pro $20/month with Haiku 4.5 is sufficient for individual researchers on typical systematic reviews. Usage limits apply but are adequate for most research workflows.
 
 ---
 
