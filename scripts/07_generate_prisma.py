@@ -162,13 +162,21 @@ class PRISMAGenerator:
         # Box style
         box_style = "round,pad=0.1"
 
-        # Title
-        ax.text(5, 13.5, 'PRISMA 2020 Flow Diagram',
+        # Title (different for knowledge repository vs systematic review)
+        project_type = self.config.get('project_type', 'systematic_review')
+        if project_type == 'knowledge_repository':
+            title = 'Paper Processing Pipeline'
+            subtitle = 'Comprehensive Knowledge Repository'
+        else:
+            title = 'PRISMA 2020 Flow Diagram'
+            subtitle = 'Systematic Literature Review'
+
+        ax.text(5, 13.5, title,
                 ha='center', va='center', fontsize=16, fontweight='bold')
 
-        # Project name
+        # Project name with subtitle
         project_name = self.config.get('project_name', self.project_path.name)
-        ax.text(5, 13, project_name,
+        ax.text(5, 13, f'{project_name}\n({subtitle})',
                 ha='center', va='center', fontsize=12, style='italic')
 
         # ============================================================

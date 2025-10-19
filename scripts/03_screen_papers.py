@@ -23,6 +23,7 @@ from typing import Dict, List
 import anthropic
 import time
 from dotenv import load_dotenv
+import yaml
 
 
 class PaperScreener:
@@ -35,6 +36,9 @@ class PaperScreener:
         self.output_dir = self.project_path / "data" / "02_screening"
         self.output_dir.mkdir(parents=True, exist_ok=True)
 
+        # Load project config
+        self.load_config()
+
         # Load API key
         load_dotenv()
         api_key = os.getenv('ANTHROPIC_API_KEY')
@@ -44,6 +48,35 @@ class PaperScreener:
             sys.exit(1)
 
         self.client = anthropic.Anthropic(api_key=api_key)
+
+    def load_config(self):
+        """Load project configuration and set screening parameters based on project_type"""
+        config_file = self.project_path / "config.yaml"
+        if config_file.exists():
+            with open(config_file, 'r') as f:
+                self.config = yaml.safe_load(f)
+        else:
+            self.config = {}
+
+        # Set screening thresholds based on project_type
+        project_type = self.config.get('project_type', 'systematic_review')
+
+        if project_type == 'knowledge_repository':
+            # Lenient thresholds for comprehensive coverage
+            self.screening_threshold = self.config.get('ai_prisma_rubric', {}).get('decision_confidence', {}).get('auto_include', 50)
+            self.exclude_threshold = self.config.get('ai_prisma_rubric', {}).get('decision_confidence', {}).get('auto_exclude', 20)
+            self.require_human_review = False
+            print(f"   📊 Project type: Knowledge Repository (lenient filtering)")
+        else:
+            # Strict thresholds for systematic review
+            self.screening_threshold = self.config.get('ai_prisma_rubric', {}).get('decision_confidence', {}).get('auto_include', 90)
+            self.exclude_threshold = self.config.get('ai_prisma_rubric', {}).get('decision_confidence', {}).get('auto_exclude', 10)
+            self.require_human_review = self.config.get('ai_prisma_rubric', {}).get('human_validation', {}).get('required', False)
+            print(f"   📊 Project type: Systematic Review (strict filtering)")
+
+        print(f"   ✓ Include threshold: {self.screening_threshold}%")
+        print(f"   ✓ Exclude threshold: {self.exclude_threshold}%")
+        print(f"   ✓ Human review: {'Required' if self.require_human_review else 'Not required'}")
 
     def load_papers(self) -> pd.DataFrame:
         """
