@@ -93,20 +93,41 @@ After completing Stages 1-2, copy this prompt to Claude Code:
 
 Now that we have our search queries, I need help configuring PRISMA (Preferred Reporting Items for Systematic Reviews and Meta-Analyses) screening criteria.
 
+**My Project Type** (from Stage 1):
+[knowledge_repository OR systematic_review]
+
 **Research Focus**: [Brief summary from Stage 1]
 
 **Search Query**: [Your selected query from Stage 2]
 
 **Expected Paper Count**: [Estimated from Stage 2]
 
-Please help me design:
-1. **Inclusion criteria** (domain, method, topic, context keywords with weights)
-2. **Exclusion criteria** (keywords to filter out irrelevant papers)
-3. **Screening thresholds** (cutoffs for each PRISMA stage)
-4. **Research profile** (YAML configuration for automated screening)
+---
+
+## 📊 PRISMA Configuration by Project Type
+
+### If Knowledge Repository 🗂️
+
+Please help me design **minimal filtering criteria**:
+1. **Technical criteria only**: Language, publication format, duplicates
+2. **Spam/noise detection**: Remove clearly irrelevant papers (not domain-related)
+3. **Lenient thresholds**: 80-90% retention rate (AI screening only, no human review)
 
 **My Preferences**:
-- Preferred study designs: [e.g., experimental only, any quantitative, include qualitative]
+- Languages: [e.g., English only, or multilingual]
+- Exclude formats: [e.g., patents, posters, editorials]
+- Domain boundaries: [e.g., exclude papers completely unrelated to X field]
+
+### If Systematic Review 📄
+
+Please help me design **strict PRISMA criteria**:
+1. **Inclusion criteria**: Domain, method, population, intervention, outcomes (with keyword weights)
+2. **Exclusion criteria**: Specific exclusions (animal studies, age groups, study designs)
+3. **Strict thresholds**: 2-10% final retention rate (human review required)
+4. **Research profile**: Detailed YAML configuration for multi-stage screening
+
+**My Preferences**:
+- Preferred study designs: [e.g., RCT only, experimental + quasi-experimental, include qualitative]
 - Must include: [e.g., specific outcomes, populations, interventions]
 - Must exclude: [e.g., animal studies, K-12 if focusing on higher ed, specific contexts]
 
@@ -114,32 +135,67 @@ Please help me design:
 
 ## 📋 What Happens in This Stage
 
-### Claude Code Will:
+### For Knowledge Repository 🗂️
+
+**Claude Code Will**:
+
+1. **Explain Minimal Filtering Approach** (Turn 1)
+   - Goal: Maximize coverage, minimize false negatives
+   - AI screening only (no human review required)
+   - Technical filters: Language, format, duplicates
+
+2. **Design Simple Criteria** (Turn 2-3)
+   - **Language filter**: English only or multilingual
+   - **Format exclusions**: Patents, posters, editorials (if desired)
+   - **Domain relevance**: Broad keywords to catch spam/noise only
+   - **No strict thresholds**: Accept 80-90% of papers
+
+3. **Configure AI Screening** (Turn 4)
+   - Lenient confidence thresholds (auto_include: 50, auto_exclude: 20)
+   - No human validation required
+   - Focus: Remove spam, duplicates, clearly irrelevant papers
+
+4. **Save Minimal Profile** (automatic)
+   - Update `config.yaml` with lenient settings
+   - Expected retention: 80-90% of initial papers
+   - Ready for Stage 5 execution
+
+---
+
+### For Systematic Review 📄
+
+**Claude Code Will**:
 
 1. **Explain PRISMA 2020 Workflow** (Turn 1)
    - 4 stages: Identification → Screening → Eligibility → Inclusion
    - Multi-dimensional scoring system (6 dimensions)
-   - Threshold-based filtering
+   - Threshold-based filtering with human review
 
-2. **Design Keyword Lists** (Turn 2-4)
+2. **Design Detailed Keyword Lists** (Turn 2-5)
    - **Domain keywords** (0-10 points): Core research area
-   - **Method keywords** (0-5 points): Study designs
-   - **Topic keywords** (0-5 points): Specific focus areas
-   - **Context keywords** (0-10 points): Outcomes, settings
-   - **Exclusion keywords** (-20 to 0 points): Papers to filter out
-   - **Title bonus** (0 or 10 points): Keywords in title
+   - **Method keywords** (0-5 points): Study designs (RCT, experimental, etc.)
+   - **Population keywords** (0-5 points): Target groups (age, setting, etc.)
+   - **Intervention keywords** (0-10 points): Specific interventions tested
+   - **Outcome keywords** (0-10 points): Measured outcomes
+   - **Exclusion keywords** (-20 to 0 points): Hard exclusions
 
-3. **Set Thresholds** (Turn 5-7)
+3. **Set Strict Thresholds** (Turn 6-8)
    - Screening threshold (recommended: 25 points, expect 50-70% pass)
    - Eligibility threshold (recommended: 45 points, expect 20-40% final)
    - Review queue range (35-44 points, manual review needed)
+   - Final retention: 2-10% of initial papers
 
-4. **Preview Results** (if requested)
+4. **Configure Human Review** (Turn 9)
+   - Require human validation (review sample papers)
+   - Set confidence thresholds (auto_include: 90, auto_exclude: 10)
+   - Flag borderline cases for manual decision
+
+5. **Preview and Test** (if requested)
    - Estimate pass rates based on keyword analysis
    - Show sample papers from each score range
    - Adjust thresholds if needed
 
-5. **Save Research Profile** (automatic)
+6. **Save Detailed Profile** (automatic)
    - Create `config/research_profile.yaml`
    - Include all keyword lists and thresholds
    - Ready for Stage 5 execution

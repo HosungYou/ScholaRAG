@@ -95,12 +95,21 @@ Now that we've defined my research scope, please help me design effective search
 **Confirmed Research Focus**:
 [Summarize what you agreed on with Claude in Stage 1]
 
+**My Project Type** (from Stage 1):
+[knowledge_repository OR systematic_review]
+
 **My Preferences**:
 
-1. **Query Breadth**:
-   - [ ] Broad (high recall, more screening work) - I want comprehensive coverage
-   - [ ] Balanced (recommended) - I want quality papers without too much noise
-   - [ ] Narrow (high precision) - I want only the most relevant papers
+1. **Query Breadth** (depends on your project type):
+
+   **If Knowledge Repository**:
+   - [ ] Comprehensive (recommended for knowledge repository) - Maximize domain coverage (20,000+ papers)
+   - [ ] Moderate - Balance coverage and relevance (5,000-10,000 papers)
+
+   **If Systematic Review**:
+   - [ ] Broad (high recall) - Comprehensive coverage for publication (1,000-5,000 papers)
+   - [ ] Balanced (recommended for SLR) - Quality papers without too much noise (500-800 papers)
+   - [ ] Narrow (high precision) - Only the most relevant papers (100-300 papers)
 
 2. **Data Sources**:
    - [ ] Semantic Scholar (CS, Engineering, Sciences - 40% open access PDFs)
@@ -131,10 +140,16 @@ Please design 2-3 query options (broad/focused/narrow) and estimate the expected
    - Understand field-specific terminology
    - Map research questions to searchable terms
 
-2. **Design 2-3 Query Strategies** (Turn 3-4)
-   - **Broad**: High recall, comprehensive coverage (1500+ papers)
-   - **Focused**: Balanced precision/recall (500-800 papers) ⭐ **RECOMMENDED**
-   - **Narrow**: High precision, minimal noise (100-200 papers)
+2. **Design Query Strategies Based on Project Type** (Turn 3-4)
+
+   **For Knowledge Repository**:
+   - **Comprehensive**: Maximum domain coverage (20,000-30,000 papers) ⭐ **RECOMMENDED**
+   - **Moderate**: Balanced scope (5,000-10,000 papers)
+
+   **For Systematic Review**:
+   - **Broad**: High recall, comprehensive coverage (1,500-5,000 papers)
+   - **Balanced**: Balanced precision/recall (500-800 papers) ⭐ **RECOMMENDED**
+   - **Narrow**: High precision, minimal noise (100-300 papers)
 
 3. **Explain Boolean Operators** (if requested)
    - How AND, OR, NOT work
@@ -166,27 +181,66 @@ Before moving to Stage 3, ensure:
 
 ## 📊 Understanding Query Trade-offs
 
-| Query Type | Papers Found | Relevance Rate | Screening Time | Risk |
-|------------|--------------|----------------|----------------|------|
-| **Broad** | 1500-3000 | 20-30% relevant | High (3-5 days) | Miss nothing |
-| **Focused** ⭐ | 500-800 | 50-70% relevant | Medium (1 day) | Balanced |
-| **Narrow** | 100-200 | 80-90% relevant | Low (2-3 hours) | May miss papers |
+### For Knowledge Repository Projects 🗂️
 
-**💡 Recommendation**: Start with **Focused**, then broaden if you're missing important papers after screening.
+**Goal**: Maximize domain coverage for comprehensive knowledge base
+
+| Query Type | Papers Found | Retention After Filtering | Screening Approach | Philosophy |
+|------------|--------------|---------------------------|--------------------|--------------|
+| **Comprehensive** ⭐ | 20,000-30,000 | 15,000-20,000 (80-90%) | AI-only, minimal filtering | Maximize coverage |
+| **Moderate** | 5,000-10,000 | 4,000-8,000 (80-90%) | AI-only, minimal filtering | Balanced scope |
+
+**💡 Recommendation**: Use **Comprehensive** for knowledge repositories - you want maximum coverage with minimal filtering.
+
+**Trade-off Philosophy**:
+- No human review required
+- AI removes only spam/duplicates/clearly irrelevant
+- Accept 10-20% noise for complete domain coverage
+- Large dataset enables better semantic search
+
+---
+
+### For Systematic Review Projects 📄
+
+**Goal**: Publication-quality PRISMA review with strict criteria
+
+| Query Type | Papers Found | After PRISMA Filtering | Screening Time | Risk |
+|------------|--------------|------------------------|----------------|------|
+| **Broad** | 1,500-5,000 | 50-300 (2-10%) | High (3-5 days) | Miss nothing |
+| **Balanced** ⭐ | 500-800 | 50-150 (5-20%) | Medium (1 day) | Good coverage |
+| **Narrow** | 100-300 | 30-100 (20-40%) | Low (2-3 hours) | May miss papers |
+
+**💡 Recommendation**: Use **Balanced**, then broaden if missing important papers after screening.
+
+**Trade-off Philosophy**:
+- Human review required for final decisions
+- Strict inclusion/exclusion criteria (study design, population, intervention)
+- High rejection rate (80-98%) is normal for systematic reviews
+- Small final dataset for deep analysis
+
+---
 
 ### When to Choose Each Strategy
 
 ```
-Do you want comprehensive literature coverage (e.g., systematic review for publication)?
-├─ YES → Use Broad query
-│   └─ Trade-off: 3-5 days of screening, but won't miss important papers
+What is your project type?
 │
-└─ NO → Do you know your exact research question with specific methods?
-    ├─ YES → Use Narrow query
-    │   └─ Trade-off: Fast screening (2-3 hours), but might miss relevant papers
+├─ Knowledge Repository 🗂️
+│   └─ Use Comprehensive query (20,000+ papers)
+│       └─ Trade-off: Large dataset, minimal filtering, no human review needed
+│
+└─ Systematic Review 📄
     │
-    └─ NO → Use Focused query ⭐ RECOMMENDED
-        └─ Trade-off: Balanced screening time (1 day) with good coverage
+    ├─ Do you want comprehensive coverage for publication?
+    │   └─ YES → Use Broad query
+    │       └─ Trade-off: 3-5 days screening, strict PRISMA filtering, 50-300 final papers
+    │
+    └─ Do you know exact research question with specific methods?
+        ├─ YES → Use Narrow query
+        │   └─ Trade-off: Fast screening (2-3 hours), may miss relevant papers, 30-100 final
+        │
+        └─ NO → Use Balanced query ⭐ RECOMMENDED
+            └─ Trade-off: 1 day screening, good coverage, 50-150 final papers
 ```
 
 ---

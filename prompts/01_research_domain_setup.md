@@ -5,10 +5,15 @@ stage_goal: "Define research scope and validate feasibility"
 expected_duration: "15-20 minutes"
 conversation_mode: "interactive"
 outputs:
+  - project_type: "knowledge_repository or systematic_review"
   - research_question: "Clear, answerable research question"
   - research_scope: "Year range, publication types, languages, study designs"
   - feasibility_assessment: "Estimated paper count and data source recommendations"
 validation_rules:
+  project_type:
+    required: true
+    allowed_values: ["knowledge_repository", "systematic_review"]
+    validation: "Must choose between comprehensive knowledge base or focused systematic review"
   research_question:
     required: true
     min_length: 20
@@ -23,8 +28,8 @@ validation_rules:
     validation: "Must be realistic (e.g., 2010-2024, not 1800-2024 for AI research)"
   target_paper_count:
     required: false
-    default: "50-100"
-    validation: "Realistic range between 20-500 papers"
+    default: "Depends on project_type"
+    validation: "Knowledge repository: 10,000-20,000 final papers | Systematic review: 50-300 final papers"
 cli_commands:
   - command: "researcherrag init"
     when: "After conversation completes and user approves scope"
@@ -61,9 +66,10 @@ conversation_flow:
       user_action: "Ready to proceed"
       claude_action: "Summarize decisions, initialize project structure, show Stage 2 prompt"
 validation_checklist:
+  - "Project type is clearly chosen (knowledge repository vs systematic review)"
   - "Research question is specific and answerable"
   - "Scope constraints are realistic and clearly defined"
-  - "Expected paper count is reasonable (20-500 papers)"
+  - "Expected paper count aligns with project type (10K-20K for repository, 50-300 for SLR)"
   - "User understands systematic review process and time commitment"
   - "Data sources have been recommended based on field"
 -->
@@ -88,6 +94,30 @@ I want to conduct a PRISMA 2020 systematic literature review enhanced with RAG a
 - **PRISMA 2020**: Systematic method to identify, screen, and select relevant papers (ensures rigor and transparency)
 - **RAG (Retrieval-Augmented Generation)**: AI-powered system to query and extract insights from selected papers (enables depth)
 - **Together**: Rigorous paper selection + intelligent analysis = Comprehensive literature review in days, not months
+
+---
+
+## 📊 Step 0: Choose Your Project Type
+
+**Before we begin, clarify your project goal:**
+
+### Option A: Knowledge Repository 🗂️
+**Goal**: Build a comprehensive knowledge base for interactive exploration
+- **Query strategy**: Broad queries to maximize domain coverage
+- **Expected papers**: 20,000+ initial → 10,000-20,000 final (after minimal filtering)
+- **PRISMA filtering**: Minimal - technical criteria only (language, duplicates, spam)
+- **Human review**: Not required - AI screening is sufficient
+- **Use cases**: Interactive Q&A, domain mapping, teaching materials, exploratory research
+
+### Option B: Scientific Systematic Literature Review 📄
+**Goal**: Produce publication-quality systematic review following PRISMA 2020
+- **Query strategy**: Narrow and specific to manageable size
+- **Expected papers**: 1,000-5,000 initial → 50-300 final (after strict filtering)
+- **PRISMA filtering**: Strict - detailed inclusion/exclusion criteria (study design, population, intervention, outcomes)
+- **Human review**: Required - AI assists but researcher makes final decisions
+- **Use cases**: Meta-analysis, systematic review publication, clinical guidelines, dissertation
+
+**Which option describes your project?** [Choose A or B]
 
 ---
 
@@ -157,8 +187,11 @@ Please help me design an effective PRISMA 2020 systematic review pipeline enhanc
 
 Before moving to Stage 2, ensure:
 
+- [ ] **Project type** is clearly chosen (Knowledge Repository or Systematic Review)
 - [ ] Research question is **specific and answerable** (not too broad like "AI in education")
-- [ ] Scope constraints are **realistic** (year range makes sense, paper count is 20-500)
+- [ ] Scope constraints are **realistic** and **aligned with project type**:
+  - Knowledge Repository: Expect 20,000+ initial → 10,000-20,000 final
+  - Systematic Review: Expect 1,000-5,000 initial → 50-300 final
 - [ ] You understand the **7-stage process** and time commitment (~4-8 hours total)
 - [ ] Data sources have been **recommended and approved**
 - [ ] Project structure has been **initialized** (you'll see confirmation message)
@@ -323,12 +356,15 @@ Yes! You can restart Stage 1 anytime with `researcherrag reset stage1`. However,
 
 You're ready to move to Stage 2 when:
 
+✅ **Project type** is clearly chosen (Knowledge Repository or Systematic Review)
 ✅ Research question is **clear and answerable**
-✅ Scope is **realistic** (not too broad, not too narrow)
-✅ Expected paper count is **20-500 papers**
+✅ Scope is **realistic** and **aligned with project type**
+✅ Expected paper count is **appropriate**:
+   - Knowledge Repository: 10,000-20,000 final papers
+   - Systematic Review: 50-300 final papers
 ✅ You understand the **time commitment** (~4-8 hours for all 7 stages)
 ✅ Data sources are **selected and approved**
-✅ Project has been **initialized** with `config.yaml`
+✅ Project has been **initialized** with `config.yaml` (including `project_type` field)
 
 ---
 
