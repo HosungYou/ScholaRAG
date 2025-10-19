@@ -47,59 +47,47 @@ In **3 hours of active work** + **3-4 hours of automated processing**, you'll cr
 - **VS Code** installed
 - **AI Coding Assistant**: Choose one:
   - **Claude Code** (recommended) - $20/month Claude Pro
-  - **Cursor** with GPT-5-Codex
+  - **GPT-5-Codex** - OpenAI subscription
 - **Python 3.9+** (your AI assistant will handle installation)
 
 ### Conversation-First Setup (Recommended)
 
 **You don't need to run commands yourself.** Simply talk to your AI assistant in VS Code:
 
-#### Step 1: Install AI Assistant Extension
+#### Step 1: Install AI Assistant Extension in VS Code
 
 **Option A: Claude Code (Recommended)**
 
-**Method 1: VS Code Extension Marketplace**
 1. Open VS Code
 2. Press Cmd+Shift+X (Mac) or Ctrl+Shift+X (Windows/Linux) to open Extensions
 3. Search for "Claude Code"
 4. Click "Install"
 5. Sign in with your Anthropic account (Claude Pro required)
 
-**Method 2: Terminal Installation**
+Alternative: Install via Terminal
 ```bash
-# Install Claude Code CLI
 npm install -g @anthropic/claude-code
-
-# Launch Claude Code in VS Code
 claude-code
 ```
-
 See: https://www.claude.com/product/claude-code
 
-**Option B: Cursor with GPT-5-Codex**
+**Option B: GPT-5-Codex**
 
-**Method 1: VS Code Extension Marketplace**
 1. Open VS Code
 2. Press Cmd+Shift+X (Mac) or Ctrl+Shift+X (Windows/Linux) to open Extensions
-3. Search for "Cursor"
+3. Search for "GitHub Copilot" (provides Codex access)
 4. Click "Install"
-5. Configure GPT-5-Codex in Settings (API key required)
-
-**Method 2: Download Standalone App**
-1. Download Cursor from https://cursor.sh
-2. Install and open Cursor (VS Code fork)
-3. Go to Settings > Models
-4. Enable GPT-5-Codex (API key required)
+5. Sign in with OpenAI account (subscription required)
 
 #### Step 2: Open AI Chat
 
 Once extension is installed, click the AI assistant icon in VS Code sidebar:
 - **Claude Code**: Click the Claude icon in the Activity Bar (left sidebar)
-- **Cursor**: Click the Cursor icon in the Activity Bar (left sidebar)
+- **GPT-5-Codex**: Click the Copilot Chat icon in the Activity Bar (left sidebar)
 
 Or use keyboard shortcuts:
 - **Claude Code**: Press Cmd+Shift+P (Mac) or Ctrl+Shift+P (Windows/Linux), then type "Claude: Open Chat"
-- **Cursor**: Press Cmd+L (Mac) or Ctrl+L (Windows/Linux) to open chat
+- **GPT-5-Codex**: Press Cmd+Shift+P (Mac) or Ctrl+Shift+P (Windows/Linux), then type "GitHub Copilot: Open Chat"
 
 #### Step 3: Copy-Paste This Prompt
 
@@ -328,18 +316,20 @@ ResearcherRAG/
 │   ├── 06_query_rag.py
 │   └── 07_generate_prisma.py
 │
-├── workshop/                   # 3-hour teaching curriculum
-│   └── hands_on_guide.md
+├── interfaces/                 # Optional UI interfaces
+│   ├── streamlit_app.py        # Streamlit web interface
+│   └── cli_interactive.py      # Interactive CLI
 │
-├── CLAUDE.md                   # 18,000-word implementation guide
-├── researcherrag_cli.py        # CLI tool for manual control
-└── requirements.txt
+├── CLAUDE.md                   # AI assistant implementation guide
+├── AGENTS.md                   # GPT-5-Codex implementation guide
+├── researcherrag_cli.py        # CLI tool for project management
+└── requirements.txt            # Python dependencies
 ```
 
 ### 🎓 Educational Materials
 
-- **[CLAUDE.md](CLAUDE.md)** (18,000 words): Complete implementation guide
-- **[Workshop Guide](workshop/hands_on_guide.md)**: 3-hour hands-on curriculum
+- **[CLAUDE.md](CLAUDE.md)**: Complete implementation guide for Claude Code
+- **[AGENTS.md](AGENTS.md)**: Implementation guide for GPT-5-Codex and other AI assistants
 - **[7-Stage Prompts](prompts/)**: Copy-paste templates for each stage
 - **[Research Profiles](templates/research_profiles/)**: Pre-configured YAML for Education, Medicine, Social Science
 
