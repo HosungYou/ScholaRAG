@@ -1,4 +1,4 @@
-# ResearcherRAG Dependencies
+# ScholarRAG Dependencies
 # Python 3.9+ required
 
 # Core AI/ML Libraries

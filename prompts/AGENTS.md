@@ -1,7 +1,7 @@
 # Prompts Folder - Codex Agent Instructions
 
 **Framework**: PRISMA 2020 + RAG systematic literature review prompts
-**Target**: OpenAI Codex agents executing ResearcherRAG pipeline
+**Target**: OpenAI Codex agents executing ScholarRAG pipeline
 **Context**: 7-stage conversational workflow for academic research automation
 
 ---
@@ -36,7 +36,7 @@
 - ✅ Read HTML metadata block at top of each file
 - ✅ Execute scripts specified in `cli_commands` section
 - ✅ Validate outputs against expected ranges
-- ✅ Update `.researcherrag/context.json` after stage completion
+- ✅ Update `.scholarag/context.json` after stage completion
 - ✅ Run ALL programmatic validation checks before proceeding
 
 **DON'T**:
@@ -57,7 +57,7 @@
 ```yaml
 stage: 1
 cli_commands:
-  - command: "researcherrag init"
+  - command: "scholarag init"
     auto_execute: true
 scripts_triggered:
   - none (initialization only)
@@ -70,7 +70,7 @@ mkdir -p data/01_identification
 mkdir -p data/02_screening
 mkdir -p data/03_pdfs
 mkdir -p data/04_rag
-mkdir -p .researcherrag
+mkdir -p .scholarag
 
 # Create config.yaml
 cat > config.yaml <<EOF
@@ -81,7 +81,7 @@ year_range: [2015, 2024]
 EOF
 
 # Create context.json
-cat > .researcherrag/context.json <<EOF
+cat > .scholarag/context.json <<EOF
 {
   "current_stage": 1,
   "completed_stages": [],
@@ -95,7 +95,7 @@ EOF
 ```bash
 # Check files created
 test -f config.yaml || echo "ERROR: config.yaml missing"
-test -f .researcherrag/context.json || echo "ERROR: context.json missing"
+test -f .scholarag/context.json || echo "ERROR: context.json missing"
 test -d data/01_identification || echo "ERROR: data directory missing"
 ```
 
@@ -281,7 +281,7 @@ cli_commands:
 
 #### Script 1: Fetch Papers
 ```bash
-cd /path/to/ResearcherRAG
+cd /path/to/ScholarRAG
 python scripts/01_fetch_papers.py --project <project_path>
 ```
 
@@ -669,5 +669,5 @@ prompts/
 ---
 
 **Last Updated**: 2025-10-14
-**Maintained by**: ResearcherRAG Team
-**GitHub**: https://github.com/HosungYou/ResearcherRAG
+**Maintained by**: ScholarRAG Team
+**GitHub**: https://github.com/HosungYou/ScholarRAG

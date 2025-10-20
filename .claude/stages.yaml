@@ -1,8 +1,8 @@
-# ResearcherRAG Stage Configuration
+# ScholarRAG Stage Configuration
 # This file defines the 7-stage workflow for Claude Code automation
 
 version: "1.0"
-project_type: "researcherrag"
+project_type: "scholarag"
 
 # Stage definitions
 stages:
@@ -10,7 +10,7 @@ stages:
     name: "Research Domain Setup"
     prompt_file: "prompts/01_research_domain_setup.md"
     duration: "15-20 min"
-    cli_command: "researcherrag init"
+    cli_command: "scholarag init"
     auto_execute: true
     outputs:
       - "config.yaml"
@@ -93,7 +93,7 @@ stages:
     name: "Documentation & Reporting"
     prompt_file: "prompts/07_documentation_writing.md"
     duration: "1-2 hours"
-    cli_command: "researcherrag export --format markdown"
+    cli_command: "scholarag export --format markdown"
     auto_execute: false
     outputs:
       - "reports/systematic_review.md"

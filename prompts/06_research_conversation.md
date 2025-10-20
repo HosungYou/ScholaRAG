@@ -87,7 +87,7 @@ This ensures high-quality, relevant answers backed by rigorous paper selection.
 python scripts/06_query_rag.py --project /path/to/project
 
 ╔═══════════════════════════════════════════════════════════╗
-║           ResearcherRAG - Research Conversation            ║
+║           ScholarRAG - Research Conversation            ║
 ║                                                           ║
 ║  📚 Database: 45 PRISMA-selected papers                   ║
 ║  🔢 Chunks: 2,250 semantic units                          ║
@@ -1092,7 +1092,7 @@ Include:
 📋 POLICY MEMO: AI Chatbots for Language Education
 
 **TO**: Education Department Leadership, K-12 & Higher Education Administrators
-**FROM**: ResearcherRAG Systematic Literature Review
+**FROM**: ScholarRAG Systematic Literature Review
 **DATE**: October 15, 2025
 **RE**: Evidence-Based Recommendations for AI Chatbot Implementation in Language Learning
 **EVIDENCE BASE**: 45 PRISMA-selected peer-reviewed studies (2018-2024)
@@ -1959,7 +1959,7 @@ Speaking Proficiency ~ Duration × Frequency × Proficiency Level × Time + (1|P
 
 ---
 
-**Proposal Prepared By**: ResearcherRAG System
+**Proposal Prepared By**: ScholarRAG System
 **Evidence Base**: 45 PRISMA-selected papers, systematic gap analysis
 **Confidence Level**: HIGH (gaps clearly identified, design addresses gaps directly)
 

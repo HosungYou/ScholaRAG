@@ -22,10 +22,10 @@ cli_commands:
   - command: "python scripts/06_query_rag.py --query 'your research question'"
     when: "User wants to query RAG system"
     auto_execute: false
-  - command: "researcherrag stage6-examples"
+  - command: "scholarag stage6-examples"
     when: "User wants to see available prompt scenarios"
     auto_execute: false
-  - command: "researcherrag stage6-prompt <scenario>"
+  - command: "scholarag stage6-prompt <scenario>"
     when: "User wants to copy a specific scenario prompt"
     auto_execute: false
 scripts_triggered:
@@ -93,7 +93,7 @@ This ensures high-quality, relevant answers backed by rigorous paper selection.
 python scripts/06_query_rag.py --project /path/to/project
 
 ╔═══════════════════════════════════════════════════════════╗
-║           ResearcherRAG - Research Conversation            ║
+║           ScholarRAG - Research Conversation            ║
 ║                                                           ║
 ║  📚 Database: 45 PRISMA-selected papers                   ║
 ║  🔢 Chunks: 2,250 semantic units                          ║
@@ -117,12 +117,12 @@ This directory contains **specialized prompt templates** for different research 
 
 ```bash
 # List all available scenarios
-researcherrag stage6-examples
+scholarag stage6-examples
 
 # Copy a specific scenario prompt
-researcherrag stage6-prompt overview
-researcherrag stage6-prompt hypothesis
-researcherrag stage6-prompt statistics
+scholarag stage6-prompt overview
+scholarag stage6-prompt hypothesis
+scholarag stage6-prompt statistics
 ```
 
 ### Scenario Files
@@ -154,7 +154,7 @@ Start with **Context Scanning** (Scenario 1) to understand your corpus, then mov
 
 **Option A: Via CLI**
 ```bash
-researcherrag stage6-prompt overview
+scholarag stage6-prompt overview
 # Copies prompt to terminal, you paste into RAG interface
 ```
 
@@ -288,6 +288,6 @@ If you don't see these indicators, you're NOT using RAG.
 
 ## 📚 Additional Resources
 
-- [ResearcherRAG Documentation](https://researcher-rag-helper.vercel.app)
+- [ScholarRAG Documentation](https://researcher-rag-helper.vercel.app)
 - [Prompt Library (Web)](https://researcher-rag-helper.vercel.app/guide/prompt-library)
 - [GitHub Issues](https://github.com/HosungYou/researcherRAG/issues)

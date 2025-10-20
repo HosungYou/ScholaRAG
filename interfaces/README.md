@@ -1,4 +1,4 @@
-# ResearcherRAG Chat Interfaces
+# ScholarRAG Chat Interfaces
 
 After building your knowledge base using Stages 1-5, you need a way to interact with your papers. This directory provides **three interface options** to chat with your RAG system.
 
@@ -22,7 +22,7 @@ A Python script you run directly in Claude Code to query your Vector DB conversa
 ### Setup
 ```bash
 # No installation needed! Just download the script
-cd your-researcherrag-project/
+cd your-scholarag-project/
 # File: claude_code_interface.py already in your project
 ```
 
@@ -39,7 +39,7 @@ python interfaces/claude_code_interface.py
 ✅ Connected to Claude API
 
 ============================================================
-  ResearcherRAG Interactive Chat
+  ScholarRAG Interactive Chat
 ============================================================
 
 Type your questions (or 'exit' to quit)

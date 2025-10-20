@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 """
-ResearcherRAG CLI - Project Management Tool
+ScholarRAG CLI - Project Management Tool
 
-This CLI tool creates and manages standardized ResearcherRAG projects,
+This CLI tool creates and manages standardized ScholarRAG projects,
 ensuring consistent folder structures that work with Claude Code and the web dashboard.
 
 Usage:
-    python researcherrag_cli.py init       # Create new project
-    python researcherrag_cli.py status     # Check project status
-    python researcherrag_cli.py list       # List all projects
+    python scholarag_cli.py init       # Create new project
+    python scholarag_cli.py status     # Check project status
+    python scholarag_cli.py list       # List all projects
 """
 
 import click
@@ -24,7 +24,7 @@ from pathlib import Path
 
 @click.group()
 def cli():
-    """ResearcherRAG CLI - Project Management Tool"""
+    """ScholarRAG CLI - Project Management Tool"""
     pass
 
 
@@ -40,20 +40,20 @@ def cli():
               help='Research domain (loads template)')
 def init(name, question, domain):
     """
-    Initialize a new ResearcherRAG project with standardized folder structure.
+    Initialize a new ScholarRAG project with standardized folder structure.
 
     This command creates:
     - Standardized folder structure (PRISMA 2020 compliant)
     - config.yaml with project settings
     - README.md with project documentation
-    - .researcherrag metadata file for dashboard tracking
+    - .scholarag metadata file for dashboard tracking
 
     Example:
-        python researcherrag_cli.py init
+        python scholarag_cli.py init
         # Follow prompts interactively
 
         # Or provide all arguments:
-        python researcherrag_cli.py init \\
+        python scholarag_cli.py init \\
             --name "AI-Healthcare-Adoption" \\
             --question "What factors influence AI adoption in hospitals?" \\
             --domain medicine
@@ -113,7 +113,7 @@ def init(name, question, domain):
     _create_project_readme(project_folder, name, question, today, sanitized_name)
     click.echo(f"   ✓ README.md")
 
-    # 6. Create .researcherrag metadata (for dashboard tracking)
+    # 6. Create .scholarag metadata (for dashboard tracking)
     metadata = {
         'version': '1.2.0',
         'created': today,
@@ -125,9 +125,9 @@ def init(name, question, domain):
         'last_updated': today
     }
 
-    with open(f"{project_folder}/.researcherrag", 'w') as f:
+    with open(f"{project_folder}/.scholarag", 'w') as f:
         yaml.dump(metadata, f, default_flow_style=False)
-    click.echo(f"   ✓ .researcherrag (metadata)")
+    click.echo(f"   ✓ .scholarag (metadata)")
 
     # 7. Create .gitkeep files for empty directories
     for folder in folders:
@@ -153,7 +153,7 @@ def init(name, question, domain):
 
     click.echo("3️⃣  Copy-paste this prompt to Claude Code:")
     click.echo("   " + "-" * 66)
-    click.echo(f"   I'm starting a new ResearcherRAG project: {name}")
+    click.echo(f"   I'm starting a new ScholarRAG project: {name}")
     click.echo(f"   Research question: {question}")
     click.echo(f"   Domain: {domain}")
     click.echo(f"   ")
@@ -173,7 +173,7 @@ def init(name, question, domain):
     click.echo(f"   https://researcher-rag-helper.vercel.app/dashboard?project={today}_{sanitized_name}\n")
 
     click.echo("💡 Check project status anytime:")
-    click.echo(f"   python researcherrag_cli.py status {project_folder}\n")
+    click.echo(f"   python scholarag_cli.py status {project_folder}\n")
 
 
 @cli.command()
@@ -189,14 +189,14 @@ def status(project_path):
     - Reports file statistics
 
     Example:
-        python researcherrag_cli.py status projects/2025-01-12_AI-Healthcare
+        python scholarag_cli.py status projects/2025-01-12_AI-Healthcare
     """
     # 1. Load and validate metadata
-    metadata_path = os.path.join(project_path, '.researcherrag')
+    metadata_path = os.path.join(project_path, '.scholarag')
     if not os.path.exists(metadata_path):
-        click.echo(f"\n❌ Error: Not a valid ResearcherRAG project")
-        click.echo(f"   Missing .researcherrag metadata file in: {project_path}")
-        click.echo(f"\n   Did you create this project with 'researcherrag_cli.py init'?\n")
+        click.echo(f"\n❌ Error: Not a valid ScholarRAG project")
+        click.echo(f"   Missing .scholarag metadata file in: {project_path}")
+        click.echo(f"\n   Did you create this project with 'scholarag_cli.py init'?\n")
         sys.exit(1)
 
     with open(metadata_path, 'r') as f:
@@ -333,7 +333,7 @@ def status(project_path):
 @cli.command()
 def list():
     """
-    List all ResearcherRAG projects in the projects/ directory.
+    List all ScholarRAG projects in the projects/ directory.
 
     Shows:
     - Project name and creation date
@@ -342,13 +342,13 @@ def list():
     - Domain
 
     Example:
-        python researcherrag_cli.py list
+        python scholarag_cli.py list
     """
     projects_dir = 'projects'
 
     if not os.path.exists(projects_dir):
         click.echo(f"\n❌ No projects directory found.")
-        click.echo(f"   Create your first project with: python researcherrag_cli.py init\n")
+        click.echo(f"   Create your first project with: python scholarag_cli.py init\n")
         return
 
     projects = [d for d in os.listdir(projects_dir)
@@ -356,18 +356,18 @@ def list():
 
     if not projects:
         click.echo(f"\n📂 Projects directory is empty.")
-        click.echo(f"   Create your first project with: python researcherrag_cli.py init\n")
+        click.echo(f"   Create your first project with: python scholarag_cli.py init\n")
         return
 
     click.echo(f"\n{'='*70}")
-    click.echo(f"📚 ResearcherRAG Projects ({len(projects)} total)")
+    click.echo(f"📚 ScholarRAG Projects ({len(projects)} total)")
     click.echo(f"{'='*70}\n")
 
     # Sort by date (newest first)
     projects_sorted = sorted(projects, reverse=True)
 
     for project in projects_sorted:
-        metadata_path = os.path.join(projects_dir, project, '.researcherrag')
+        metadata_path = os.path.join(projects_dir, project, '.scholarag')
 
         if os.path.exists(metadata_path):
             with open(metadata_path, 'r') as f:
@@ -399,10 +399,10 @@ def list():
         else:
             # Project without metadata
             click.echo(f"⚠️  {project}")
-            click.echo(f"   Missing .researcherrag metadata (not created with CLI)")
+            click.echo(f"   Missing .scholarag metadata (not created with CLI)")
             click.echo()
 
-    click.echo("💡 Check project status: python researcherrag_cli.py status projects/PROJECT_NAME\n")
+    click.echo("💡 Check project status: python scholarag_cli.py status projects/PROJECT_NAME\n")
 
 
 # ============================================================================
@@ -452,7 +452,7 @@ def _create_project_readme(project_folder, name, question, today, sanitized_name
 
 ## Project Overview
 
-This project uses ResearcherRAG to conduct a systematic literature review following PRISMA 2020 guidelines.
+This project uses ScholarRAG to conduct a systematic literature review following PRISMA 2020 guidelines.
 
 ### Current Status
 
@@ -475,7 +475,7 @@ This project uses ResearcherRAG to conduct a systematic literature review follow
 
 ```
 {os.path.basename(project_folder)}/
-├── .researcherrag          # Metadata for dashboard tracking
+├── .scholarag          # Metadata for dashboard tracking
 ├── config.yaml             # Project configuration
 ├── README.md               # This file
 ├── data/
@@ -517,7 +517,7 @@ This project uses ResearcherRAG to conduct a systematic literature review follow
 
 - **Documentation**: https://researcher-rag-helper.vercel.app/guide
 - **Dashboard**: https://researcher-rag-helper.vercel.app/dashboard?project={sanitized_name}
-- **Check Status**: `python ../../researcherrag_cli.py status .`
+- **Check Status**: `python ../../scholarag_cli.py status .`
 
 ## Notes
 
@@ -596,7 +596,7 @@ def stage_status():
     the researcher is currently in and displays completion status.
 
     Example:
-        researcherrag stage-status
+        scholarag stage-status
     """
     context_file = '.claude/context.json'
     stages_file = '.claude/stages.yaml'
@@ -604,14 +604,14 @@ def stage_status():
     # Check if .claude/ exists
     if not os.path.exists('.claude'):
         click.echo("\n❌ No .claude/ folder found.")
-        click.echo("   This command requires ResearcherRAG v1.0.6+")
-        click.echo("   Run: researcherrag upgrade\n")
+        click.echo("   This command requires ScholarRAG v1.0.6+")
+        click.echo("   Run: scholarag upgrade\n")
         sys.exit(1)
 
     # Load context
     if not os.path.exists(context_file):
         click.echo("\n📍 No active project detected.")
-        click.echo("   Start a new project with: researcherrag init\n")
+        click.echo("   Start a new project with: scholarag init\n")
         sys.exit(0)
 
     with open(context_file, 'r') as f:
@@ -620,7 +620,7 @@ def stage_status():
     # Load stages config
     if not os.path.exists(stages_file):
         click.echo("\n❌ Missing .claude/stages.yaml")
-        click.echo("   Run: researcherrag upgrade\n")
+        click.echo("   Run: scholarag upgrade\n")
         sys.exit(1)
 
     with open(stages_file, 'r') as f:
@@ -628,7 +628,7 @@ def stage_status():
 
     # Display current status
     click.echo("\n" + "="*60)
-    click.echo("📍 RESEARCHERRAG STAGE STATUS")
+    click.echo("📍 SCHOLARAG STAGE STATUS")
     click.echo("="*60 + "\n")
 
     project = context.get('project', {})
@@ -687,8 +687,8 @@ def run_stage(stage, force):
         --force: Skip prerequisite checks (use with caution)
 
     Example:
-        researcherrag run-stage 2
-        researcherrag run-stage 3 --force
+        scholarag run-stage 2
+        scholarag run-stage 3 --force
     """
     stages_file = '.claude/stages.yaml'
     context_file = '.claude/context.json'
@@ -702,7 +702,7 @@ def run_stage(stage, force):
     # Load stages config
     if not os.path.exists(stages_file):
         click.echo("\n❌ Missing .claude/stages.yaml")
-        click.echo("   Run: researcherrag upgrade\n")
+        click.echo("   Run: scholarag upgrade\n")
         sys.exit(1)
 
     with open(stages_file, 'r') as f:
@@ -835,14 +835,14 @@ def next_stage():
     Displays the next prompt file and expected actions.
 
     Example:
-        researcherrag next
+        scholarag next
     """
     context_file = '.claude/context.json'
     stages_file = '.claude/stages.yaml'
 
     if not os.path.exists(context_file):
         click.echo("\n📍 No active project. Next step: Initialize project")
-        click.echo("   Run: researcherrag init\n")
+        click.echo("   Run: scholarag init\n")
         sys.exit(0)
 
     with open(context_file, 'r') as f:
@@ -885,14 +885,14 @@ def next_stage():
     # Stage 6 specialized: Example prompt recommendations
     if current_stage == 6:
         click.echo("🎯 Stage 6 Specialized Features:")
-        click.echo("   ResearcherRAG v1.0.8 provides 7 research scenarios.")
+        click.echo("   ScholarRAG v1.0.8 provides 7 research scenarios.")
         click.echo()
         click.echo("   View example prompts:")
-        click.echo("   $ researcherrag stage6-examples")
+        click.echo("   $ scholarag stage6-examples")
         click.echo()
         click.echo("   Copy specific scenario prompt:")
-        click.echo("   $ researcherrag stage6-prompt hypothesis")
-        click.echo("   $ researcherrag stage6-prompt statistics")
+        click.echo("   $ scholarag stage6-prompt hypothesis")
+        click.echo("   $ scholarag stage6-prompt statistics")
         click.echo()
 
     click.echo("💡 Tip: Open prompt file with:")
@@ -908,7 +908,7 @@ def stage6_examples():
     Lists all 7 research conversation scenarios with descriptions.
 
     Example:
-        researcherrag stage6-examples
+        scholarag stage6-examples
     """
     click.echo("\n" + "="*70)
     click.echo("🎯 Stage 6: Research Conversation Scenarios (v1.0.8)")
@@ -956,7 +956,7 @@ def stage6_examples():
         click.echo(f"📌 {info['name']}")
         click.echo(f"   Description: {info['description']}")
         click.echo(f"   Use Case: {info['use_case']}")
-        click.echo(f"   Copy Prompt: researcherrag stage6-prompt {key}")
+        click.echo(f"   Copy Prompt: scholarag stage6-prompt {key}")
         click.echo()
 
     click.echo("💡 Tips:")
@@ -985,7 +985,7 @@ def stage6_prompt(scenario):
         grant           Future Research Design (grant proposal)
 
     Example:
-        researcherrag stage6-prompt hypothesis
+        scholarag stage6-prompt hypothesis
     """
     import os
 
@@ -1135,9 +1135,9 @@ def upgrade():
     - .gitignore entry for context.json
 
     Example:
-        researcherrag upgrade
+        scholarag upgrade
     """
-    click.echo("\n🔧 Upgrading to ResearcherRAG v1.0.6+\n")
+    click.echo("\n🔧 Upgrading to ScholarRAG v1.0.6+\n")
 
     # Check if already upgraded
     if os.path.exists('.claude/stages.yaml'):
@@ -1152,8 +1152,8 @@ def upgrade():
     # Copy stages.yaml if exists in repo root
     if os.path.exists('.claude/stages.yaml') is False:
         click.echo("❌ Missing .claude/stages.yaml template in repository")
-        click.echo("   This should be included in ResearcherRAG v1.0.6+")
-        click.echo("   Please update your ResearcherRAG installation\n")
+        click.echo("   This should be included in ScholarRAG v1.0.6+")
+        click.echo("   Please update your ScholarRAG installation\n")
         sys.exit(1)
 
     click.echo("✓ stages.yaml configuration ready")
@@ -1182,7 +1182,7 @@ def upgrade():
     click.echo("✓ Created context.json")
 
     # Update .gitignore
-    gitignore_entry = "\n# ResearcherRAG v1.0.6+ context\n.claude/context.json\n"
+    gitignore_entry = "\n# ScholarRAG v1.0.6+ context\n.claude/context.json\n"
 
     if os.path.exists('.gitignore'):
         with open('.gitignore', 'r') as f:
@@ -1201,9 +1201,9 @@ def upgrade():
 
     click.echo("\n✅ Upgrade complete!")
     click.echo("\n💡 Try these new commands:")
-    click.echo("   researcherrag stage-status  # Show current progress")
-    click.echo("   researcherrag next          # Show next stage")
-    click.echo("   researcherrag run-stage 1   # Execute specific stage\n")
+    click.echo("   scholarag stage-status  # Show current progress")
+    click.echo("   scholarag next          # Show next stage")
+    click.echo("   scholarag run-stage 1   # Execute specific stage\n")
 
 
 if __name__ == '__main__':

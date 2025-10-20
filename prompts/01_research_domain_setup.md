@@ -31,7 +31,7 @@ validation_rules:
     default: "Depends on project_type"
     validation: "Knowledge repository: 10,000-20,000 final papers | Systematic review: 50-300 final papers"
 cli_commands:
-  - command: "researcherrag init"
+  - command: "scholarag init"
     when: "After conversation completes and user approves scope"
     auto_execute: true
 scripts_triggered:
@@ -326,9 +326,9 @@ systematic review pipeline for this research project.
    - Expected time: 20-30 minutes
 
 3. **Progress Tracking**
-   - Your conversation context is saved in `.researcherrag/context.json`
+   - Your conversation context is saved in `.scholarag/context.json`
    - Claude Code knows which stage you're in
-   - Can always check progress with `researcherrag status`
+   - Can always check progress with `scholarag status`
 
 ---
 
@@ -348,7 +348,7 @@ This system follows PRISMA 2020 guidelines for systematic reviews. All 7 stages 
 
 ### "Can I change my scope later?"
 
-Yes! You can restart Stage 1 anytime with `researcherrag reset stage1`. However, you'll need to re-run subsequent stages if you significantly change your research question.
+Yes! You can restart Stage 1 anytime with `scholarag reset stage1`. However, you'll need to re-run subsequent stages if you significantly change your research question.
 
 ---
 

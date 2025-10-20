@@ -18,7 +18,7 @@ Include:
 📋 POLICY MEMO: AI Chatbots for Language Education
 
 **TO**: Education Department Leadership, K-12 & Higher Education Administrators
-**FROM**: ResearcherRAG Systematic Literature Review
+**FROM**: ScholarRAG Systematic Literature Review
 **DATE**: October 15, 2025
 **RE**: Evidence-Based Recommendations for AI Chatbot Implementation in Language Learning
 **EVIDENCE BASE**: 45 PRISMA-selected peer-reviewed studies (2018-2024)

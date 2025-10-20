@@ -1,5 +1,5 @@
 """
-ResearcherRAG Streamlit Interface
+ScholarRAG Streamlit Interface
 
 A visual web interface for chatting with your research papers.
 
@@ -12,7 +12,7 @@ Features:
 - Citation tracking
 - Paper statistics
 
-Author: ResearcherRAG Team
+Author: ScholarRAG Team
 License: MIT
 """
 
@@ -26,7 +26,7 @@ import json
 
 # Page config
 st.set_page_config(
-    page_title="ResearcherRAG Chat",
+    page_title="ScholarRAG Chat",
     page_icon="🔍",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -128,7 +128,7 @@ def main():
     """Main app"""
 
     # Header
-    st.title("🔍 ResearcherRAG Chat Interface")
+    st.title("🔍 ScholarRAG Chat Interface")
     st.markdown("Ask questions about your research papers")
 
     # Initialize

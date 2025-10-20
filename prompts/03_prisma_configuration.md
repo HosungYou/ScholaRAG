@@ -30,7 +30,7 @@ validation_rules:
     default: 45
     validation: "Should result in 20-40% final inclusion rate"
 cli_commands:
-  - command: "researcherrag test-prisma --profile config/research_profile.yaml"
+  - command: "scholarag test-prisma --profile config/research_profile.yaml"
     when: "User wants to preview PRISMA results before committing"
     auto_execute: false
 scripts_triggered:
@@ -48,7 +48,7 @@ divergence_handling:
     - pattern: "User confused about scoring system"
       response: "The scoring system is multi-dimensional (domain, method, topic, context, exclusion, title). Each dimension contributes points, total range -20 to 50. Papers scoring ≥screening threshold pass to next stage."
     - pattern: "User wants to skip PRISMA and manually select papers"
-      response: "Manual selection is fine for exploratory research, but ResearcherRAG is designed for PRISMA 2020 systematic reviews. If you prefer manual selection, this might not be the right tool."
+      response: "Manual selection is fine for exploratory research, but ScholarRAG is designed for PRISMA 2020 systematic reviews. If you prefer manual selection, this might not be the right tool."
 conversation_flow:
   expected_turns: 6-12
   typical_pattern:
@@ -536,7 +536,7 @@ This allows strong qualitative studies to pass if they score well in other dimen
    - Expected time: 20-30 minutes
 
 3. **Progress Tracking**
-   - Conversation context updated in `.researcherrag/context.json`
+   - Conversation context updated in `.scholarag/context.json`
    - PRISMA configuration saved for execution in Stage 5
 
 ---

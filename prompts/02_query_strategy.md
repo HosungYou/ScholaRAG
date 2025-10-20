@@ -27,7 +27,7 @@ validation_rules:
     required: true
     validation: "Proper use of AND, OR, NOT, parentheses"
 cli_commands:
-  - command: "researcherrag test-query --query '[QUERY]' --database semantic_scholar"
+  - command: "scholarag test-query --query '[QUERY]' --database semantic_scholar"
     when: "User wants to preview results before committing"
     auto_execute: false
 scripts_triggered:
@@ -425,9 +425,9 @@ These look highly relevant! About 70% directly address your research question. S
    - Expected time: 10-15 minutes
 
 3. **Progress Tracking**
-   - Conversation context updated in `.researcherrag/context.json`
+   - Conversation context updated in `.scholarag/context.json`
    - Query preview results saved for reference
-   - Can test query anytime with `researcherrag test-query`
+   - Can test query anytime with `scholarag test-query`
 
 ---
 

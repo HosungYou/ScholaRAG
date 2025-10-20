@@ -1,10 +1,10 @@
-# ResearcherRAG v1.0.12 Release Notes
+# ScholarRAG v1.0.12 Release Notes
 
 **Release Date**: 2025-10-19
 
 ## 🎯 Major Feature: Dual-Mode Support
 
-ResearcherRAG now supports **two distinct project types** to serve different research needs:
+ScholarRAG now supports **two distinct project types** to serve different research needs:
 
 ### 📊 Two Project Modes
 
@@ -148,8 +148,8 @@ None in this release.
 
 ## 📚 Related Updates
 
-- **ResearcherRAG-helper v1.1.1**: Updated paper count expectations (100-1,000+)
-- **ResearcherRAG-helper v1.1.1**: Added Semantic Scholar API key requirement
+- **ScholarRAG-helper v1.1.1**: Updated paper count expectations (100-1,000+)
+- **ScholarRAG-helper v1.1.1**: Added Semantic Scholar API key requirement
 
 ---
 
@@ -179,7 +179,7 @@ cp .env.example .env
 ## 🔗 Links
 
 - **GitHub Repository**: https://github.com/HosungYou/researcherRAG
-- **Documentation**: https://github.com/HosungYou/ResearcherRAG-helper
+- **Documentation**: https://github.com/HosungYou/ScholarRAG-helper
 - **Previous Release**: v1.0.11
 
 ---

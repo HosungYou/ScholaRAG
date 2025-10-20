@@ -1,9 +1,9 @@
-# ResearcherRAG Architecture
+# ScholarRAG Architecture
 
 **Version**: 1.0.12
 **Last Updated**: 2025-10-19
 
-This document explains how all files in ResearcherRAG connect and communicate with each other.
+This document explains how all files in ScholarRAG connect and communicate with each other.
 
 ---
 
@@ -14,7 +14,7 @@ User (via Claude Code)
     ↓
 prompts/*.md (Stage 1-7 conversation flows)
     ↓
-researcherrag_cli.py (Orchestration & initialization)
+scholarag_cli.py (Orchestration & initialization)
     ↓
 config.yaml (Project configuration)
     ↓
@@ -35,7 +35,7 @@ outputs/ (Final RAG system + PRISMA diagram)
 
 | File | Stage | Reads From | Writes To | Key Decisions |
 |------|-------|------------|-----------|---------------|
-| `prompts/01_research_domain_setup.md` | 1 | User input | `.researcherrag/context.json` | **project_type**, research_question, scope |
+| `prompts/01_research_domain_setup.md` | 1 | User input | `.scholarag/context.json` | **project_type**, research_question, scope |
 | `prompts/02_query_strategy.md` | 2 | Stage 1 context | `config.yaml` (query) | Query breadth (based on project_type) |
 | `prompts/03_prisma_configuration.md` | 3 | Stage 1-2 context | `config.yaml` (PRISMA criteria) | Screening thresholds (based on project_type) |
 | `prompts/04_rag_design.md` | 4 | Stage 1-3 context | `config.yaml` (RAG settings) | Embedding model, chunk size, LLM |
@@ -55,7 +55,7 @@ outputs/ (Final RAG system + PRISMA diagram)
 **Purpose**: Store project configuration and conversation state
 
 #### `config.yaml` (Project Configuration)
-**Created by**: `researcherrag_cli.py init` (Stage 1)
+**Created by**: `scholarag_cli.py init` (Stage 1)
 **Updated by**: Claude Code during Stages 2-4
 **Read by**: All scripts (`01_fetch_papers.py` → `07_generate_prisma.py`)
 
@@ -85,10 +85,10 @@ rag_settings:
 
 **Dependencies**:
 - `templates/config_base.yaml`: Template with inline documentation
-- `.researcherrag/context.json`: Conversation state (current stage, completed stages)
+- `.scholarag/context.json`: Conversation state (current stage, completed stages)
 
-#### `.researcherrag/context.json` (Conversation State)
-**Created by**: `researcherrag_cli.py init`
+#### `.scholarag/context.json` (Conversation State)
+**Created by**: `scholarag_cli.py init`
 **Updated by**: Claude Code after each stage
 **Read by**: Claude Code to resume conversations
 
@@ -125,9 +125,9 @@ SEMANTIC_SCHOLAR_API_KEY=xxxxx  # Optional but recommended
 
 **Purpose**: Initialize projects and run pipeline stages
 
-#### `researcherrag_cli.py`
+#### `scholarag_cli.py`
 **Called by**: Claude Code or user directly
-**Reads**: `config.yaml`, `.researcherrag/context.json`
+**Reads**: `config.yaml`, `.scholarag/context.json`
 **Writes**: Project structure, log files
 **Executes**: `scripts/*.py` in sequence
 
@@ -135,14 +135,14 @@ SEMANTIC_SCHOLAR_API_KEY=xxxxx  # Optional but recommended
 
 ```bash
 # Initialize new project (Stage 1)
-python researcherrag_cli.py init
+python scholarag_cli.py init
 
 # Run specific stage (Stage 5+)
-python researcherrag_cli.py run-stage 5  # Fetch papers
-python researcherrag_cli.py run-stage 6  # Research Q&A
+python scholarag_cli.py run-stage 5  # Fetch papers
+python scholarag_cli.py run-stage 6  # Research Q&A
 
 # Check status
-python researcherrag_cli.py status
+python scholarag_cli.py status
 ```
 
 **What it does**:
@@ -152,7 +152,7 @@ python researcherrag_cli.py status
 
 **File Dependencies**:
 - Reads: `templates/config_base.yaml`
-- Creates: `config.yaml`, `.researcherrag/context.json`, `data/`, `outputs/`, `logs/`
+- Creates: `config.yaml`, `.scholarag/context.json`, `data/`, `outputs/`, `logs/`
 
 ---
 
@@ -229,7 +229,7 @@ else:
 ```
 projects/<project_name>/
 ├── config.yaml                          # ⬅️ Configuration hub
-├── .researcherrag/
+├── .scholarag/
 │   └── context.json                     # ⬅️ Conversation state
 ├── data/
 │   ├── 01_identification/               # Stage 1: Fetch
@@ -269,11 +269,11 @@ User → prompts/01_research_domain_setup.md
   ↓ (Claude Code reads metadata)
   ↓ Conversation: Choose project_type, define research question
   ↓
-researcherrag_cli.py init
+scholarag_cli.py init
   ↓ Creates config.yaml from templates/config_base.yaml
   ↓ Sets project_type: "knowledge_repository" or "systematic_review"
   ↓
-.researcherrag/context.json created
+.scholarag/context.json created
   ↓ Records: current_stage=1, project_type, research_question
 ```
 
@@ -289,7 +289,7 @@ User → prompts/02_query_strategy.md
 Claude Code updates config.yaml
   ↓ search_query.simple: "(chatbot OR agent) AND learning"
   ↓
-.researcherrag/context.json updated
+.scholarag/context.json updated
   ↓ current_stage=2, query saved
 ```
 
@@ -310,7 +310,7 @@ Claude Code updates config.yaml
 ### Stage 5: Automated Execution
 
 ```
-researcherrag_cli.py run-stage 5
+scholarag_cli.py run-stage 5
   ↓
 01_fetch_papers.py
   ↓ Reads: config.yaml (search_query, databases)
@@ -364,13 +364,13 @@ graph TB
 
     subgraph "Configuration Layer"
         CONF[config.yaml]
-        CTX[.researcherrag/context.json]
+        CTX[.scholarag/context.json]
         ENV[.env]
         TMPL[templates/config_base.yaml]
     end
 
     subgraph "Orchestration Layer"
-        CLI[researcherrag_cli.py]
+        CLI[scholarag_cli.py]
     end
 
     subgraph "Execution Layer"
@@ -464,7 +464,7 @@ graph TB
 | `templates/config_base.yaml` | Default `project_type` value + comments | Template |
 | `scripts/03_screen_papers.py` | `load_config()` threshold logic | Automation |
 | `scripts/07_generate_prisma.py` | `create_prisma_diagram()` title logic | Visualization |
-| `researcherrag_cli.py` | Validation logic (if added) | CLI |
+| `scholarag_cli.py` | Validation logic (if added) | CLI |
 
 ### 2. Configuration Schema
 
@@ -559,7 +559,7 @@ rag_settings:
   llm: str
 ```
 
-### JSON Schema: .researcherrag/context.json
+### JSON Schema: .scholarag/context.json
 
 ```json
 {
@@ -578,7 +578,7 @@ rag_settings:
 
 When something doesn't work, check these files in order:
 
-1. **`.researcherrag/context.json`** - Is current_stage correct?
+1. **`.scholarag/context.json`** - Is current_stage correct?
 2. **`config.yaml`** - Does it have all required fields? Is `project_type` set?
 3. **`.env`** - Are API keys present?
 4. **`data/` folders** - Do previous stages' outputs exist?
@@ -596,7 +596,7 @@ When something doesn't work, check these files in order:
 | **PRISMA thresholds** | `config.yaml` (Stage 3) | `03_screen_papers.py` |
 | **RAG settings** | `config.yaml` (Stage 4) | `05_build_rag.py`, `06_query_rag.py` |
 | **API keys** | `.env` (Stage 5) | `03_screen_papers.py`, `05_build_rag.py`, `06_query_rag.py` |
-| **Conversation state** | `.researcherrag/context.json` | Claude Code (to resume conversations) |
+| **Conversation state** | `.scholarag/context.json` | Claude Code (to resume conversations) |
 
 ---
 

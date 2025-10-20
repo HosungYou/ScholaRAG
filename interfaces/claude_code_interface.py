@@ -1,5 +1,5 @@
 """
-ResearcherRAG Chat Interface
+ScholarRAG Chat Interface
 
 This script lets you query your Vector Database through conversational AI.
 
@@ -29,7 +29,7 @@ WHY USE THIS?
   Without this script, Claude uses GENERAL KNOWLEDGE.
   With this script, Claude searches YOUR PAPERS and cites them!
 
-Author: ResearcherRAG Team
+Author: ScholarRAG Team
 License: MIT
 """
 
@@ -48,7 +48,7 @@ except ImportError:
     sys.exit(1)
 
 
-class ResearcherRAGChat:
+class ScholarRAGChat:
     """Simple chat interface for querying your Vector DB"""
 
     def __init__(self, db_path: str = "./chroma_db", collection_name: str = "papers"):
@@ -158,7 +158,7 @@ Answer:"""
     def interactive_mode(self):
         """Interactive chat mode"""
         print("=" * 60)
-        print("  ResearcherRAG Interactive Chat")
+        print("  ScholarRAG Interactive Chat")
         print("=" * 60)
         print("\nType your questions (or 'exit' to quit)\n")
 
@@ -199,7 +199,7 @@ def main():
         question = " ".join(sys.argv[1:])
 
         # Single query mode
-        chat = ResearcherRAGChat()
+        chat = ScholarRAGChat()
         result = chat.query(question)
 
         print("\n" + "=" * 60)
@@ -212,7 +212,7 @@ def main():
         print("=" * 60)
     else:
         # Interactive mode
-        chat = ResearcherRAGChat()
+        chat = ScholarRAGChat()
         chat.interactive_mode()
 
 

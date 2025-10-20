@@ -1,6 +1,6 @@
 # Prompts Folder - Claude Code Instructions
 
-**Context**: You are in the prompts folder of ResearcherRAG, which contains 7 stage-specific conversation prompts for guiding researchers through PRISMA 2020 + RAG systematic literature reviews.
+**Context**: You are in the prompts folder of ScholarRAG, which contains 7 stage-specific conversation prompts for guiding researchers through PRISMA 2020 + RAG systematic literature reviews.
 
 ---
 
@@ -8,7 +8,7 @@
 
 ### 7-Stage Prompt System
 
-Each `.md` file represents one conversational stage in the ResearcherRAG workflow:
+Each `.md` file represents one conversational stage in the ScholarRAG workflow:
 
 1. **01_research_domain_setup.md** - Define research question and scope (15-20 min)
 2. **02_query_strategy.md** - Design database search queries (20-30 min)
@@ -73,7 +73,7 @@ validation_checklist:
 3. ✅ **Detect divergence** - Redirect if user asks about future stages
 4. ✅ **Validate completion** - Check ALL items in validation_checklist
 5. ✅ **Auto-execute scripts** - Run appropriate scripts when stage completes
-6. ✅ **Update context** - Save progress to `.researcherrag/context.json`
+6. ✅ **Update context** - Save progress to `.scholarag/context.json`
 7. ✅ **Show next prompt** - Display next stage's prompt template
 
 ---
@@ -93,7 +93,7 @@ validation_checklist:
 ```python
 # Create project folders
 os.makedirs('data/01_identification', exist_ok=True)
-os.makedirs('.researcherrag', exist_ok=True)
+os.makedirs('.scholarag', exist_ok=True)
 
 # Create config.yaml with research question, databases, year range
 # Create context.json with current_stage: 1, completed_stages: []
@@ -371,7 +371,7 @@ context = {
     'last_updated': datetime.now().isoformat()
 }
 
-with open('.researcherrag/context.json', 'w') as f:
+with open('.scholarag/context.json', 'w') as f:
     json.dump(context, f, indent=2)
 ```
 
@@ -380,7 +380,7 @@ with open('.researcherrag/context.json', 'w') as f:
 ```python
 import json
 
-with open('.researcherrag/context.json', 'r') as f:
+with open('.scholarag/context.json', 'r') as f:
     context = json.load(f)
 
 current_stage = context['current_stage']
@@ -486,5 +486,5 @@ prompts/
 ---
 
 **Last Updated**: 2025-10-14
-**Maintained by**: ResearcherRAG Team
-**GitHub**: https://github.com/HosungYou/ResearcherRAG
+**Maintained by**: ScholarRAG Team
+**GitHub**: https://github.com/HosungYou/ScholarRAG

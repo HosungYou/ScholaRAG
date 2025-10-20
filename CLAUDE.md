@@ -1,10 +1,10 @@
-# ResearcherRAG: Prompt-Driven Systematic Review Assistant
+# ScholarRAG: Prompt-Driven Systematic Review Assistant
 
-**You are helping a researcher conduct a PRISMA 2020 systematic literature review enhanced with RAG-powered analysis using ResearcherRAG's conversation-first automation approach.**
+**You are helping a researcher conduct a PRISMA 2020 systematic literature review enhanced with RAG-powered analysis using ScholarRAG's conversation-first automation approach.**
 
-## 🧠 What is ResearcherRAG?
+## 🧠 What is ScholarRAG?
 
-ResearcherRAG combines two powerful methodologies:
+ScholarRAG combines two powerful methodologies:
 
 1. **PRISMA 2020 Protocol** (Stages 1-4): Systematic paper identification, screening, and selection
 2. **RAG (Retrieval-Augmented Generation)** (Stages 5-6): AI-powered data extraction and synthesis from selected papers
@@ -18,16 +18,16 @@ ResearcherRAG combines two powerful methodologies:
 
 ## 📁 Hierarchical Context System
 
-ResearcherRAG uses **multi-level CLAUDE.md files** for optimal context:
+ScholarRAG uses **multi-level CLAUDE.md files** for optimal context:
 
 ```
-ResearcherRAG/
+ScholarRAG/
 ├── CLAUDE.md (THIS FILE - system-level behavior)
 ├── AGENTS.md (for OpenAI Codex compatibility)
 └── examples/ai-chatbots-language-learning/
     ├── CLAUDE.md (project-specific context)
     ├── AGENTS.md (project-specific Codex instructions)
-    └── .researcherrag/context.json (runtime state)
+    └── .scholarag/context.json (runtime state)
 ```
 
 **Precedence**: Project-specific > System-level > Default behavior
@@ -35,13 +35,13 @@ ResearcherRAG/
 **IMPORTANT**: When working in a project folder (`examples/*/`):
 1. **ALWAYS check for project-specific CLAUDE.md FIRST**
 2. Use project CLAUDE.md for expected results, domain terminology
-3. Use THIS file for general ResearcherRAG workflow behavior
+3. Use THIS file for general ScholarRAG workflow behavior
 
 ---
 
 ## 🎯 Core Philosophy
 
-**IMPORTANT**: ResearcherRAG is designed for **conversation-first research automation**.
+**IMPORTANT**: ScholarRAG is designed for **conversation-first research automation**.
 
 1. **Prompts are the primary interface** - Researchers interact ONLY through prompts
 2. **You (Claude Code) execute scripts automatically** - Based on conversation completion
@@ -56,7 +56,7 @@ ResearcherRAG/
 
 ### When Researcher Provides a Stage Prompt
 
-The researcher will copy/paste prompts from the ResearcherRAG website. Each prompt has:
+The researcher will copy/paste prompts from the ScholarRAG website. Each prompt has:
 
 1. **Visible content** - What the researcher sees and fills out
 2. **Hidden metadata** - HTML comment block at the top that YOU read
@@ -92,7 +92,7 @@ validation_rules:
     min_length: 20
     validation: "Must be specific and answerable"
 cli_commands:
-  - command: "researcherrag init"
+  - command: "scholarag init"
     auto_execute: true
 scripts_triggered:
   - none (initialization only)
@@ -124,14 +124,14 @@ validation_checklist:
 
 ### 2. Check Conversation Context
 
-Check if `.researcherrag/context.json` exists:
+Check if `.scholarag/context.json` exists:
 
 ```python
 import os
 import json
 
-if os.path.exists('.researcherrag/context.json'):
-    with open('.researcherrag/context.json', 'r') as f:
+if os.path.exists('.scholarag/context.json'):
+    with open('.scholarag/context.json', 'r') as f:
         context = json.load(f)
 
     current_stage = context.get('current_stage', 1)
@@ -236,7 +236,7 @@ os.makedirs('data/pdfs', exist_ok=True)
 os.makedirs('rag', exist_ok=True)
 os.makedirs('conversations', exist_ok=True)
 os.makedirs('outputs', exist_ok=True)
-os.makedirs('.researcherrag', exist_ok=True)
+os.makedirs('.scholarag', exist_ok=True)
 
 # Create config.yaml
 config = {
@@ -337,8 +337,8 @@ context = {
     'last_updated': datetime.now().isoformat()
 }
 
-os.makedirs('.researcherrag', exist_ok=True)
-with open('.researcherrag/context.json', 'w') as f:
+os.makedirs('.scholarag', exist_ok=True)
+with open('.scholarag/context.json', 'w') as f:
     json.dump(context, f, indent=2)
 
 print("✅ Conversation context updated")
@@ -392,7 +392,7 @@ Here's your Stage 2 prompt for query strategy design:
 5. Recommend databases (Semantic Scholar, OpenAlex, arXiv, CORE)
 6. Validate against checklist
 7. Create `config.yaml` and project structure
-8. Update `.researcherrag/context.json`
+8. Update `.scholarag/context.json`
 9. Show Stage 2 prompt
 
 **Divergence to watch:**
@@ -491,7 +491,7 @@ Here's your Stage 2 prompt for query strategy design:
 
 ### When to Create a New Project
 
-ResearcherRAG supports **multiple independent projects** (e.g., "AI in Healthcare" and "Chatbots for Learning" are separate systematic reviews). You must detect when the user wants to create a **new project** vs. continue an **existing project**.
+ScholarRAG supports **multiple independent projects** (e.g., "AI in Healthcare" and "Chatbots for Learning" are separate systematic reviews). You must detect when the user wants to create a **new project** vs. continue an **existing project**.
 
 #### Triggers for Creating a New Project
 
@@ -501,12 +501,12 @@ Create a **new project** when:
    - User says: "new project", "start a new systematic review", "create another project", "second project", "different research topic"
 
 2. **Topic mismatch detection**:
-   - User mentions a research topic DIFFERENT from existing `.researcherrag/context.json` metadata
+   - User mentions a research topic DIFFERENT from existing `.scholarag/context.json` metadata
    - Example: Existing project = "AI Healthcare Adoption", User says = "I want to study chatbots for language learning"
 
 3. **No existing project detected**:
-   - Working directory = `ResearcherRAG/` (repository root)
-   - No `.researcherrag/context.json` file found
+   - Working directory = `ScholarRAG/` (repository root)
+   - No `.scholarag/context.json` file found
    - This is the user's FIRST project
 
 4. **User confirmation required**:
@@ -521,9 +521,9 @@ Create a **new project** when:
 ```
 User message received
     ↓
-Is working directory ResearcherRAG/ (root)?
-    ├─ Yes → Check for .researcherrag/context.json
-    │         ├─ Exists → ⚠️  ERROR: .researcherrag should NOT be in root
+Is working directory ScholarRAG/ (root)?
+    ├─ Yes → Check for .scholarag/context.json
+    │         ├─ Exists → ⚠️  ERROR: .scholarag should NOT be in root
     │         │           (Should be in projects/*/ subfolder)
     │         │           Ask: "Move this to projects/ folder?"
     │         │
@@ -532,12 +532,12 @@ Is working directory ResearcherRAG/ (root)?
     │                         │   ├─ Yes → List existing projects
     │                         │   │         Ask: "Continue existing or create new?"
     │                         │   └─ No → First project ever
-    │                         │            Run: python researcherrag_cli.py init
+    │                         │            Run: python scholarag_cli.py init
     │                         │            Creates: projects/2025-10-18_Project-Name/
-    │                         └─ Run: python researcherrag_cli.py init
+    │                         └─ Run: python scholarag_cli.py init
     │
     └─ No → Check: Is working directory projects/*/ (project subfolder)?
-              ├─ Yes → Check for .researcherrag/context.json
+              ├─ Yes → Check for .scholarag/context.json
               │         ├─ Exists → Load context, check topic match
               │         │             ├─ Topic MATCHES user message → Continue project
               │         │             │   Load current_stage, show progress
@@ -547,10 +547,10 @@ Is working directory ResearcherRAG/ (root)?
               │         │                  You mentioned 'chatbots'. Create new project?"
               │         │
               │         └─ Not exists → ⚠️  WARNING: Project folder without metadata
-              │                         Ask: "Initialize this folder as ResearcherRAG project?"
+              │                         Ask: "Initialize this folder as ScholarRAG project?"
               │
-              └─ No → ❌ ERROR: Must work inside ResearcherRAG/ or projects/*/
-                      Show: "Please navigate to ResearcherRAG directory"
+              └─ No → ❌ ERROR: Must work inside ScholarRAG/ or projects/*/
+                      Show: "Please navigate to ScholarRAG directory"
 ```
 
 ### Example Conversation Flows
@@ -558,20 +558,20 @@ Is working directory ResearcherRAG/ (root)?
 #### Scenario 1: First Project Ever
 
 ```
-Working directory: /path/to/ResearcherRAG/
+Working directory: /path/to/ScholarRAG/
 User: "I want to build a RAG for AI adoption in healthcare"
 
 Claude Code:
-1. Check: .researcherrag/context.json exists? → No
+1. Check: .scholarag/context.json exists? → No
 2. Check: projects/ folder exists? → No
 3. Conclusion: This is the FIRST project
-4. Action: "I'll create your first ResearcherRAG project.
-            Running: python researcherrag_cli.py init"
+4. Action: "I'll create your first ScholarRAG project.
+            Running: python scholarag_cli.py init"
 5. Prompt user for project details:
    - Project name: "AI-Healthcare-Adoption"
    - Research question: "What factors influence AI adoption in hospitals?"
    - Domain: "medicine"
-6. Execute: python researcherrag_cli.py init \
+6. Execute: python scholarag_cli.py init \
               --name "AI-Healthcare-Adoption" \
               --question "What factors influence AI adoption in hospitals?" \
               --domain medicine
@@ -583,7 +583,7 @@ Claude Code:
 #### Scenario 2: Second Project (NEW Topic)
 
 ```
-Working directory: /path/to/ResearcherRAG/projects/2025-10-18_AI-Healthcare/
+Working directory: /path/to/ScholarRAG/projects/2025-10-18_AI-Healthcare/
 Current project context loaded:
   - project_name: "AI Healthcare Adoption"
   - research_question: "What factors influence AI adoption in hospitals?"
@@ -593,7 +593,7 @@ User: "NEW project: I want to study chatbots for language learning"
 
 Claude Code:
 1. Detect keyword: "NEW project"
-2. Check current .researcherrag/context.json:
+2. Check current .scholarag/context.json:
    - Topic: "AI Healthcare" ≠ "chatbots for language learning"
 3. Conclusion: User wants a DIFFERENT systematic review
 4. Ask confirmation:
@@ -620,7 +620,7 @@ User: "1"
 
 Claude Code:
 5. Navigate to root: cd ../../
-6. Execute: python researcherrag_cli.py init \
+6. Execute: python scholarag_cli.py init \
               --name "Chatbot-Learning" \
               --question "How do chatbots improve language learning outcomes?" \
               --domain education
@@ -634,12 +634,12 @@ Claude Code:
 #### Scenario 3: Switch Between Existing Projects
 
 ```
-Working directory: /path/to/ResearcherRAG/projects/2025-10-18_Chatbot-Learning/
+Working directory: /path/to/ScholarRAG/projects/2025-10-18_Chatbot-Learning/
 User: "Switch to my AI Healthcare project"
 
 Claude Code:
 1. Detect keyword: "Switch to"
-2. Run: python researcherrag_cli.py list
+2. Run: python scholarag_cli.py list
    Output:
    ✅ 2025-10-18_AI-Healthcare-Adoption
       📊 Stage 3/6 • Domain: medicine
@@ -648,7 +648,7 @@ Claude Code:
       📊 Stage 1/6 • Domain: education
 3. Find match: "AI Healthcare" → "2025-10-18_AI-Healthcare-Adoption"
 4. Navigate: cd ../2025-10-18_AI-Healthcare-Adoption/
-5. Load context: .researcherrag/context.json
+5. Load context: .scholarag/context.json
    {
      "current_stage": 3,
      "project_name": "AI Healthcare Adoption",
@@ -666,16 +666,16 @@ Claude Code:
 #### Scenario 4: User Confused About Multiple Projects
 
 ```
-Working directory: /path/to/ResearcherRAG/
+Working directory: /path/to/ScholarRAG/
 User: "I want to continue my chatbot project"
 
 Claude Code:
-1. Check: .researcherrag/context.json in current directory? → No
+1. Check: .scholarag/context.json in current directory? → No
 2. Check: projects/ folder exists? → Yes
-3. Run: python researcherrag_cli.py list
+3. Run: python scholarag_cli.py list
 4. Show user:
    ┌─────────────────────────────────────────────────────────┐
-   │ 📚 Your ResearcherRAG Projects                          │
+   │ 📚 Your ScholarRAG Projects                          │
    ├─────────────────────────────────────────────────────────┤
    │ 1. AI-Healthcare-Adoption (Stage 3/7)                   │
    │    Research: "What factors influence AI adoption?"      │
@@ -703,7 +703,7 @@ Use this logic to detect when user wants a NEW project vs. continue existing:
 import json
 import os
 
-def should_create_new_project(user_message: str, context_file: str = '.researcherrag/context.json') -> bool:
+def should_create_new_project(user_message: str, context_file: str = '.scholarag/context.json') -> bool:
     """
     Determine if user wants a new project or continue existing.
 
@@ -757,21 +757,21 @@ def should_create_new_project(user_message: str, context_file: str = '.researche
 **DO:**
 - ✅ Always check working directory before creating projects
 - ✅ Detect topic mismatch and ASK user for confirmation
-- ✅ Use `python researcherrag_cli.py list` to show existing projects
+- ✅ Use `python scholarag_cli.py list` to show existing projects
 - ✅ Navigate to correct project folder before starting work
 - ✅ Keep projects isolated (separate folders, separate databases)
 
 **DON'T:**
 - ❌ Create new project without asking when existing project detected
-- ❌ Overwrite existing .researcherrag/context.json
+- ❌ Overwrite existing .scholarag/context.json
 - ❌ Mix data from different projects in same folder
 - ❌ Assume user wants to continue if topic looks different
 
 ### Project Folder Structure (Multiple Projects)
 
 ```
-ResearcherRAG/                                  # Framework repository (root)
-├── researcherrag_cli.py                        # Project manager CLI
+ScholarRAG/                                  # Framework repository (root)
+├── scholarag_cli.py                        # Project manager CLI
 ├── scripts/                                    # Shared scripts (all projects use these)
 │   ├── 01_fetch_papers.py
 │   ├── 02_deduplicate.py
@@ -781,7 +781,7 @@ ResearcherRAG/                                  # Framework repository (root)
 │   └── ...
 └── projects/                                   # All user projects (gitignored)
     ├── 2025-10-18_AI-Healthcare-Adoption/      # Project 1
-    │   ├── .researcherrag/
+    │   ├── .scholarag/
     │   │   └── context.json                    # Project 1 state
     │   ├── config.yaml                         # Project 1 config
     │   ├── data/
@@ -792,7 +792,7 @@ ResearcherRAG/                                  # Framework repository (root)
     │       └── chroma_db/                      # Project 1 vector DB
     │
     └── 2025-10-18_Chatbot-Learning/            # Project 2
-        ├── .researcherrag/
+        ├── .scholarag/
         │   └── context.json                    # Project 2 state (independent)
         ├── config.yaml                         # Project 2 config (different)
         ├── data/
@@ -865,7 +865,7 @@ Progress: ~1 hour spent, ~3-6 hours remaining
 
 ## 🔍 Troubleshooting
 
-### "I don't see .researcherrag/context.json"
+### "I don't see .scholarag/context.json"
 
 This is NORMAL if it's a brand new project. You'll create it in Stage 1.
 
@@ -903,7 +903,7 @@ Show user the error and ask if they have API keys set up.
 
 **After Stage 1:**
 - `config.yaml` - All configuration
-- `.researcherrag/context.json` - Conversation state
+- `.scholarag/context.json` - Conversation state
 
 **After Stage 5 (Execution):**
 - `data/01_identification/semantic_scholar.csv` - Papers from Semantic Scholar

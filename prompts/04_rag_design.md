@@ -31,7 +31,7 @@ validation_rules:
     default: 5
     validation: "Number of chunks to retrieve per query"
 cli_commands:
-  - command: "researcherrag test-rag --query 'sample question'"
+  - command: "scholarag test-rag --query 'sample question'"
     when: "User wants to preview RAG retrieval before full execution"
     auto_execute: false
 scripts_triggered:

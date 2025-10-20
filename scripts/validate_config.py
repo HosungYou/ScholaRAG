@@ -56,7 +56,7 @@ def validate_config(config_path):
                     "ℹ️  Scopus ENABLED\n"
                     "   → Ensure SCOPUS_API_KEY and SCOPUS_INST_TOKEN in .env\n"
                     "   → Note: Metadata only (NO PDFs)\n"
-                    "   → Guide: https://researcherrag.io/docs/institutional-apis/scopus"
+                    "   → Guide: https://scholarag.io/docs/institutional-apis/scopus"
                 )
 
             if inst.get("web_of_science", {}).get("enabled", False):
@@ -64,7 +64,7 @@ def validate_config(config_path):
                     "ℹ️  Web of Science ENABLED\n"
                     "   → Ensure WOS_API_KEY in .env\n"
                     "   → Note: Metadata only (NO PDFs)\n"
-                    "   → Guide: https://researcherrag.io/docs/institutional-apis/wos"
+                    "   → Guide: https://scholarag.io/docs/institutional-apis/wos"
                 )
 
     # Check 3: AI-PRISMA Rubric (if enabled)

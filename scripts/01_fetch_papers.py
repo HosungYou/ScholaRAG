@@ -457,7 +457,7 @@ def main():
     project_path = Path(args.project)
     if not project_path.exists():
         print(f"❌ Error: Project path does not exist: {project_path}")
-        print(f"   Please run: python researcherrag_cli.py init")
+        print(f"   Please run: python scholarag_cli.py init")
         sys.exit(1)
 
     # Initialize fetcher
