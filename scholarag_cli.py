@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-ScholarRAG CLI - Project Management Tool
+ScholaRAG CLI - Project Management Tool
 
-This CLI tool creates and manages standardized ScholarRAG projects,
+This CLI tool creates and manages standardized ScholaRAG projects,
 ensuring consistent folder structures that work with Claude Code and the web dashboard.
 
 Usage:
@@ -24,7 +24,7 @@ from pathlib import Path
 
 @click.group()
 def cli():
-    """ScholarRAG CLI - Project Management Tool"""
+    """ScholaRAG CLI - Project Management Tool"""
     pass
 
 
@@ -40,7 +40,7 @@ def cli():
               help='Research domain (loads template)')
 def init(name, question, domain):
     """
-    Initialize a new ScholarRAG project with standardized folder structure.
+    Initialize a new ScholaRAG project with standardized folder structure.
 
     This command creates:
     - Standardized folder structure (PRISMA 2020 compliant)
@@ -153,7 +153,7 @@ def init(name, question, domain):
 
     click.echo("3️⃣  Copy-paste this prompt to Claude Code:")
     click.echo("   " + "-" * 66)
-    click.echo(f"   I'm starting a new ScholarRAG project: {name}")
+    click.echo(f"   I'm starting a new ScholaRAG project: {name}")
     click.echo(f"   Research question: {question}")
     click.echo(f"   Domain: {domain}")
     click.echo(f"   ")
@@ -194,7 +194,7 @@ def status(project_path):
     # 1. Load and validate metadata
     metadata_path = os.path.join(project_path, '.scholarag')
     if not os.path.exists(metadata_path):
-        click.echo(f"\n❌ Error: Not a valid ScholarRAG project")
+        click.echo(f"\n❌ Error: Not a valid ScholaRAG project")
         click.echo(f"   Missing .scholarag metadata file in: {project_path}")
         click.echo(f"\n   Did you create this project with 'scholarag_cli.py init'?\n")
         sys.exit(1)
@@ -333,7 +333,7 @@ def status(project_path):
 @cli.command()
 def list():
     """
-    List all ScholarRAG projects in the projects/ directory.
+    List all ScholaRAG projects in the projects/ directory.
 
     Shows:
     - Project name and creation date
@@ -360,7 +360,7 @@ def list():
         return
 
     click.echo(f"\n{'='*70}")
-    click.echo(f"📚 ScholarRAG Projects ({len(projects)} total)")
+    click.echo(f"📚 ScholaRAG Projects ({len(projects)} total)")
     click.echo(f"{'='*70}\n")
 
     # Sort by date (newest first)
@@ -452,7 +452,7 @@ def _create_project_readme(project_folder, name, question, today, sanitized_name
 
 ## Project Overview
 
-This project uses ScholarRAG to conduct a systematic literature review following PRISMA 2020 guidelines.
+This project uses ScholaRAG to conduct a systematic literature review following PRISMA 2020 guidelines.
 
 ### Current Status
 
@@ -604,7 +604,7 @@ def stage_status():
     # Check if .claude/ exists
     if not os.path.exists('.claude'):
         click.echo("\n❌ No .claude/ folder found.")
-        click.echo("   This command requires ScholarRAG v1.0.6+")
+        click.echo("   This command requires ScholaRAG v1.0.6+")
         click.echo("   Run: scholarag upgrade\n")
         sys.exit(1)
 
@@ -885,7 +885,7 @@ def next_stage():
     # Stage 6 specialized: Example prompt recommendations
     if current_stage == 6:
         click.echo("🎯 Stage 6 Specialized Features:")
-        click.echo("   ScholarRAG v1.0.8 provides 7 research scenarios.")
+        click.echo("   ScholaRAG v1.0.8 provides 7 research scenarios.")
         click.echo()
         click.echo("   View example prompts:")
         click.echo("   $ scholarag stage6-examples")
@@ -1137,7 +1137,7 @@ def upgrade():
     Example:
         scholarag upgrade
     """
-    click.echo("\n🔧 Upgrading to ScholarRAG v1.0.6+\n")
+    click.echo("\n🔧 Upgrading to ScholaRAG v1.0.6+\n")
 
     # Check if already upgraded
     if os.path.exists('.claude/stages.yaml'):
@@ -1152,8 +1152,8 @@ def upgrade():
     # Copy stages.yaml if exists in repo root
     if os.path.exists('.claude/stages.yaml') is False:
         click.echo("❌ Missing .claude/stages.yaml template in repository")
-        click.echo("   This should be included in ScholarRAG v1.0.6+")
-        click.echo("   Please update your ScholarRAG installation\n")
+        click.echo("   This should be included in ScholaRAG v1.0.6+")
+        click.echo("   Please update your ScholaRAG installation\n")
         sys.exit(1)
 
     click.echo("✓ stages.yaml configuration ready")
@@ -1182,7 +1182,7 @@ def upgrade():
     click.echo("✓ Created context.json")
 
     # Update .gitignore
-    gitignore_entry = "\n# ScholarRAG v1.0.6+ context\n.claude/context.json\n"
+    gitignore_entry = "\n# ScholaRAG v1.0.6+ context\n.claude/context.json\n"
 
     if os.path.exists('.gitignore'):
         with open('.gitignore', 'r') as f:

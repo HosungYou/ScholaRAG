@@ -1,4 +1,4 @@
-# ScholarRAG Chat Interfaces
+# ScholaRAG Chat Interfaces
 
 After building your knowledge base using Stages 1-5, you need a way to interact with your papers. This directory provides **three interface options** to chat with your RAG system.
 
@@ -39,7 +39,7 @@ python interfaces/claude_code_interface.py
 ✅ Connected to Claude API
 
 ============================================================
-  ScholarRAG Interactive Chat
+  ScholaRAG Interactive Chat
 ============================================================
 
 Type your questions (or 'exit' to quit)

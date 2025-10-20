@@ -1,5 +1,5 @@
 """
-ScholarRAG FastAPI Server
+ScholaRAG FastAPI Server
 
 A REST API for querying your Vector DB. Build your own frontend!
 
@@ -12,7 +12,7 @@ Endpoints:
     GET /stats       - Get statistics
     GET /health      - Health check
 
-Author: ScholarRAG Team
+Author: ScholaRAG Team
 License: MIT
 """
 
@@ -49,7 +49,7 @@ class StatsResponse(BaseModel):
 
 # Initialize FastAPI
 app = FastAPI(
-    title="ScholarRAG API",
+    title="ScholaRAG API",
     description="REST API for querying your research papers",
     version="1.0.0"
 )
@@ -99,7 +99,7 @@ async def startup_event():
 async def root():
     """Root endpoint"""
     return {
-        "message": "ScholarRAG API",
+        "message": "ScholaRAG API",
         "version": "1.0.0",
         "endpoints": {
             "POST /query": "Query papers",

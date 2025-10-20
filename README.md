@@ -1,4 +1,4 @@
-# ScholarRAG
+# ScholaRAG
 
 **AI-Powered Systematic Literature Review Automation**
 
@@ -10,13 +10,13 @@ Transform weeks of manual literature review into hours of automated, reproducibl
 
 ---
 
-## 🎯 What is ScholarRAG?
+## 🎯 What is ScholaRAG?
 
-ScholarRAG is an **open-source framework** that helps researchers build custom RAG (Retrieval-Augmented Generation) systems for literature review and research through **conversational AI guidance** in VS Code.
+ScholaRAG is an **open-source framework** that helps researchers build custom RAG (Retrieval-Augmented Generation) systems for literature review and research through **conversational AI guidance** in VS Code.
 
 ### Two Modes for Different Research Needs
 
-ScholarRAG supports **two project types** to serve different research goals:
+ScholaRAG supports **two project types** to serve different research goals:
 
 #### 📊 Knowledge Repository Mode 🗂️
 **For comprehensive domain coverage**
@@ -42,7 +42,7 @@ In **3 hours of active work** + **3-5 hours of automated processing**, you'll cr
 
 **Use for**: Meta-analysis, systematic review publications, clinical guidelines, dissertations
 
-### Why ScholarRAG?
+### Why ScholaRAG?
 
 **Traditional Systematic Review** (6-8 weeks):
 - 📚 Manual database searches (PubMed, ERIC, Web of Science)
@@ -50,7 +50,7 @@ In **3 hours of active work** + **3-5 hours of automated processing**, you'll cr
 - 📄 Review hundreds of PDFs for inclusion criteria
 - ✍️ Extract findings, constantly re-read papers for citations
 
-**With ScholarRAG** (2-3 weeks):
+**With ScholaRAG** (2-3 weeks):
 - 🤖 **3-hour setup**: Build RAG system with AI assistant step-by-step
 - ⚡ **2-hour screening**: AI-powered PRISMA (20,000 papers → PRISMA-filtered relevant set)
 - 💬 **Instant queries**: "What are the main effects?" → Evidence + citations
@@ -112,10 +112,10 @@ Or use keyboard shortcuts:
 #### Step 3: Copy-Paste This Prompt
 
 ```
-Please set up ScholarRAG for me:
+Please set up ScholaRAG for me:
 
-1. Clone https://github.com/HosungYou/ScholarRAG.git
-2. Navigate into ScholarRAG directory
+1. Clone https://github.com/HosungYou/ScholaRAG.git
+2. Navigate into ScholaRAG directory
 3. Create Python virtual environment (venv)
 4. Activate the virtual environment
 5. Install CLI dependencies: pip install click pyyaml
@@ -144,8 +144,8 @@ For users who prefer direct command-line control:
 
 ```bash
 # Clone the repository
-git clone https://github.com/HosungYou/ScholarRAG.git
-cd ScholarRAG
+git clone https://github.com/HosungYou/ScholaRAG.git
+cd ScholaRAG
 
 # Create virtual environment
 python3 -m venv venv
@@ -182,7 +182,7 @@ The website provides comprehensive guides with examples, code snippets, and inte
 
 ### 7-Chapter Guide
 
-1. **[Introduction](https://researcher-rag-helper.vercel.app/guide/01-introduction)**: What ScholarRAG solves, database strategy, AI model costs
+1. **[Introduction](https://researcher-rag-helper.vercel.app/guide/01-introduction)**: What ScholaRAG solves, database strategy, AI model costs
 2. **[Getting Started](https://researcher-rag-helper.vercel.app/guide/02-getting-started)**: Installation, environment setup, first project
 3. **[Core Concepts](https://researcher-rag-helper.vercel.app/guide/03-core-concepts)**: PRISMA 2020, RAG architecture, conversation-driven workflow
 4. **[Implementation](https://researcher-rag-helper.vercel.app/guide/04-implementation)**: Step-by-step project walkthrough with real examples
@@ -311,7 +311,7 @@ The website provides comprehensive guides with examples, code snippets, and inte
 ### 📂 Repository Contents
 
 ```
-ScholarRAG/
+ScholaRAG/
 ├── prompts/                    # 7 stage conversation templates
 │   ├── 01_research_domain_setup.md
 │   ├── 02_query_strategy.md
@@ -377,7 +377,7 @@ ScholarRAG/
 - 🎯 Consistent results across model choices
 - 📈 Best-in-class SWE-bench performance (Sonnet 4.5)
 
-**Full changelog**: [Release Notes](https://github.com/HosungYou/ScholarRAG-helper/blob/main/releases/RELEASE_NOTES_v1.2.0.md)
+**Full changelog**: [Release Notes](https://github.com/HosungYou/ScholaRAG-helper/blob/main/releases/RELEASE_NOTES_v1.2.0.md)
 
 ---
 
@@ -405,24 +405,24 @@ ScholarRAG/
 
 We welcome contributions! Ways to help:
 
-- 🐛 **[Report Bugs](https://github.com/HosungYou/ScholarRAG/issues)**: Found an issue? Let us know
+- 🐛 **[Report Bugs](https://github.com/HosungYou/ScholaRAG/issues)**: Found an issue? Let us know
 - 📝 **Share Templates**: Add research profiles for your domain
 - 📚 **Improve Docs**: Fix typos, add examples, clarify instructions
-- ⭐ **Success Stories**: Share your research results using ScholarRAG
+- ⭐ **Success Stories**: Share your research results using ScholaRAG
 - 💡 **Feature Requests**: Suggest improvements via GitHub Discussions
 
 ---
 
 ## 📖 Citation
 
-If you use ScholarRAG in your research, please cite:
+If you use ScholaRAG in your research, please cite:
 
 ```bibtex
 @software{scholarag2025,
   author = {You, Hosung},
-  title = {ScholarRAG: AI-Powered Systematic Literature Review Automation},
+  title = {ScholaRAG: AI-Powered Systematic Literature Review Automation},
   year = {2025},
-  url = {https://github.com/HosungYou/ScholarRAG},
+  url = {https://github.com/HosungYou/ScholaRAG},
   version = {1.2.1},
   note = {PRISMA 2020 compliant systematic review framework}
 }
@@ -443,9 +443,9 @@ MIT License - See [LICENSE](LICENSE) file for details.
 - 🌐 **Documentation**: https://researcher-rag-helper.vercel.app/
 - 💬 **AI Chatbot**: https://researcher-rag-helper.vercel.app/chat
 - 📥 **Downloads**: https://researcher-rag-helper.vercel.app/resources
-- 💻 **GitHub**: https://github.com/HosungYou/ScholarRAG
-- 🐛 **Issues**: https://github.com/HosungYou/ScholarRAG/issues
-- 💡 **Discussions**: https://github.com/HosungYou/ScholarRAG/discussions
+- 💻 **GitHub**: https://github.com/HosungYou/ScholaRAG
+- 🐛 **Issues**: https://github.com/HosungYou/ScholaRAG/issues
+- 💡 **Discussions**: https://github.com/HosungYou/ScholaRAG/discussions
 
 ---
 

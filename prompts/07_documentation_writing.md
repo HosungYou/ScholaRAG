@@ -84,7 +84,7 @@ You've completed your research! Now let's create publication-ready documentation
 python scripts/07_generate_prisma.py --project /path/to/project
 
 ╔═══════════════════════════════════════════════════════════╗
-║          ScholarRAG - Documentation Generator           ║
+║          ScholaRAG - Documentation Generator           ║
 ╚═══════════════════════════════════════════════════════════╝
 
 [Step 1/5] Loading pipeline statistics...
@@ -473,7 +473,7 @@ Use `prisma_flowchart.png` in conference presentations to show rigor.
 
 ## 🎉 Congratulations!
 
-You've completed all 7 stages of ScholarRAG:
+You've completed all 7 stages of ScholaRAG:
 
 ```
 [●●●●●●●] Stage 7/7: Documentation & Writing - COMPLETE!

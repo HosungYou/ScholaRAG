@@ -1,6 +1,6 @@
 # Scripts Folder - Claude Code Instructions
 
-**Context**: You are in the scripts folder of ScholarRAG, which contains 7 Python scripts for executing the PRISMA 2020 + RAG pipeline.
+**Context**: You are in the scripts folder of ScholaRAG, which contains 7 Python scripts for executing the PRISMA 2020 + RAG pipeline.
 
 ---
 
@@ -616,5 +616,5 @@ scripts/
 ---
 
 **Last Updated**: 2025-10-14
-**Maintained by**: ScholarRAG Team
-**GitHub**: https://github.com/HosungYou/ScholarRAG
+**Maintained by**: ScholaRAG Team
+**GitHub**: https://github.com/HosungYou/ScholaRAG

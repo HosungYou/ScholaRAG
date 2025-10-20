@@ -1,6 +1,6 @@
 # Prompts Folder - Claude Code Instructions
 
-**Context**: You are in the prompts folder of ScholarRAG, which contains 7 stage-specific conversation prompts for guiding researchers through PRISMA 2020 + RAG systematic literature reviews.
+**Context**: You are in the prompts folder of ScholaRAG, which contains 7 stage-specific conversation prompts for guiding researchers through PRISMA 2020 + RAG systematic literature reviews.
 
 ---
 
@@ -8,7 +8,7 @@
 
 ### 7-Stage Prompt System
 
-Each `.md` file represents one conversational stage in the ScholarRAG workflow:
+Each `.md` file represents one conversational stage in the ScholaRAG workflow:
 
 1. **01_research_domain_setup.md** - Define research question and scope (15-20 min)
 2. **02_query_strategy.md** - Design database search queries (20-30 min)
@@ -486,5 +486,5 @@ prompts/
 ---
 
 **Last Updated**: 2025-10-14
-**Maintained by**: ScholarRAG Team
-**GitHub**: https://github.com/HosungYou/ScholarRAG
+**Maintained by**: ScholaRAG Team
+**GitHub**: https://github.com/HosungYou/ScholaRAG

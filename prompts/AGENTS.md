@@ -1,7 +1,7 @@
 # Prompts Folder - Codex Agent Instructions
 
 **Framework**: PRISMA 2020 + RAG systematic literature review prompts
-**Target**: OpenAI Codex agents executing ScholarRAG pipeline
+**Target**: OpenAI Codex agents executing ScholaRAG pipeline
 **Context**: 7-stage conversational workflow for academic research automation
 
 ---
@@ -281,7 +281,7 @@ cli_commands:
 
 #### Script 1: Fetch Papers
 ```bash
-cd /path/to/ScholarRAG
+cd /path/to/ScholaRAG
 python scripts/01_fetch_papers.py --project <project_path>
 ```
 
@@ -669,5 +669,5 @@ prompts/
 ---
 
 **Last Updated**: 2025-10-14
-**Maintained by**: ScholarRAG Team
-**GitHub**: https://github.com/HosungYou/ScholarRAG
+**Maintained by**: ScholaRAG Team
+**GitHub**: https://github.com/HosungYou/ScholaRAG

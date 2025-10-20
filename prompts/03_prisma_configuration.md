@@ -48,7 +48,7 @@ divergence_handling:
     - pattern: "User confused about scoring system"
       response: "The scoring system is multi-dimensional (domain, method, topic, context, exclusion, title). Each dimension contributes points, total range -20 to 50. Papers scoring ≥screening threshold pass to next stage."
     - pattern: "User wants to skip PRISMA and manually select papers"
-      response: "Manual selection is fine for exploratory research, but ScholarRAG is designed for PRISMA 2020 systematic reviews. If you prefer manual selection, this might not be the right tool."
+      response: "Manual selection is fine for exploratory research, but ScholaRAG is designed for PRISMA 2020 systematic reviews. If you prefer manual selection, this might not be the right tool."
 conversation_flow:
   expected_turns: 6-12
   typical_pattern:

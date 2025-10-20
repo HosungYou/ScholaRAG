@@ -1,10 +1,10 @@
-# ScholarRAG - AI Coding Assistant Guide
+# ScholaRAG - AI Coding Assistant Guide
 
 **For: GPT-5-Codex, Cursor, GitHub Copilot, and other AI coding assistants**
 
 ## Overview
 
-ScholarRAG is an **AI-powered systematic literature review automation framework** that helps researchers build custom RAG systems through conversational guidance.
+ScholaRAG is an **AI-powered systematic literature review automation framework** that helps researchers build custom RAG systems through conversational guidance.
 
 **Framework**: PRISMA 2020 + RAG-powered literature review automation
 **Target Users**: Academic researchers conducting rigorous systematic reviews
@@ -23,7 +23,7 @@ ScholarRAG is an **AI-powered systematic literature review automation framework*
 
 This is an **academic research automation framework**, NOT traditional software development.
 
-**What ScholarRAG Does**:
+**What ScholaRAG Does**:
 1. **PRISMA Protocol** (Stages 1-4): Systematically identify, screen, and select relevant papers
 2. **RAG Analysis** (Stages 5-6): Build semantic search index → Extract data from selected papers
 3. **Documentation** (Stage 7): Generate PRISMA flowchart and synthesis report
@@ -40,7 +40,7 @@ This is an **academic research automation framework**, NOT traditional software 
 ## Repository Structure
 
 ```
-ScholarRAG/
+ScholaRAG/
 ├── AGENTS.md (this file - Codex system-level instructions)
 ├── CLAUDE.md (Claude Code system-level instructions)
 ├── scripts/
@@ -119,7 +119,7 @@ cat config.yaml  # Research question, databases, criteria
 
 3. **Execute appropriate script**:
 ```bash
-cd ../../  # Navigate to ScholarRAG root
+cd ../../  # Navigate to ScholaRAG root
 python scripts/0X_script.py --project examples/ai-chatbots-language-learning
 ```
 
@@ -264,9 +264,9 @@ For project-specific validation tests, see project AGENTS.md.
 
 ## Hierarchical Instructions
 
-ScholarRAG uses hierarchical AGENTS.md files:
+ScholaRAG uses hierarchical AGENTS.md files:
 
-1. **This file** (`ScholarRAG/AGENTS.md`): System-level behavior
+1. **This file** (`ScholaRAG/AGENTS.md`): System-level behavior
 2. **Project files** (`examples/*/AGENTS.md`): Project-specific context
 
 **Precedence**: Project-specific > System-level > General instructions
@@ -290,7 +290,7 @@ When referencing files or terminal outputs:
 ## Documentation Resources
 
 - **Full Documentation**: https://researcher-rag-helper.vercel.app/
-- **GitHub**: https://github.com/HosungYou/ScholarRAG
+- **GitHub**: https://github.com/HosungYou/ScholaRAG
 - **AI Chatbot Help**: https://researcher-rag-helper.vercel.app/chat
 
 **Last updated**: January 22, 2025 (v1.2.1)

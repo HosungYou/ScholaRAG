@@ -536,7 +536,7 @@ Speaking Proficiency ~ Duration × Frequency × Proficiency Level × Time + (1|P
 
 ---
 
-**Proposal Prepared By**: ScholarRAG System
+**Proposal Prepared By**: ScholaRAG System
 **Evidence Base**: 45 PRISMA-selected papers, systematic gap analysis
 **Confidence Level**: HIGH (gaps clearly identified, design addresses gaps directly)
 

@@ -1,10 +1,10 @@
-# ScholarRAG v1.0.12 Release Notes
+# ScholaRAG v1.0.12 Release Notes
 
 **Release Date**: 2025-10-19
 
 ## 🎯 Major Feature: Dual-Mode Support
 
-ScholarRAG now supports **two distinct project types** to serve different research needs:
+ScholaRAG now supports **two distinct project types** to serve different research needs:
 
 ### 📊 Two Project Modes
 
@@ -148,8 +148,8 @@ None in this release.
 
 ## 📚 Related Updates
 
-- **ScholarRAG-helper v1.1.1**: Updated paper count expectations (100-1,000+)
-- **ScholarRAG-helper v1.1.1**: Added Semantic Scholar API key requirement
+- **ScholaRAG-helper v1.1.1**: Updated paper count expectations (100-1,000+)
+- **ScholaRAG-helper v1.1.1**: Added Semantic Scholar API key requirement
 
 ---
 
@@ -179,7 +179,7 @@ cp .env.example .env
 ## 🔗 Links
 
 - **GitHub Repository**: https://github.com/HosungYou/researcherRAG
-- **Documentation**: https://github.com/HosungYou/ScholarRAG-helper
+- **Documentation**: https://github.com/HosungYou/ScholaRAG-helper
 - **Previous Release**: v1.0.11
 
 ---

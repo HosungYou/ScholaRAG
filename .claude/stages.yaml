@@ -1,4 +1,4 @@
-# ScholarRAG Stage Configuration
+# ScholaRAG Stage Configuration
 # This file defines the 7-stage workflow for Claude Code automation
 
 version: "1.0"

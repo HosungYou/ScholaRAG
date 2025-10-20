@@ -1,10 +1,10 @@
-# ScholarRAG: Prompt-Driven Systematic Review Assistant
+# ScholaRAG: Prompt-Driven Systematic Review Assistant
 
-**You are helping a researcher conduct a PRISMA 2020 systematic literature review enhanced with RAG-powered analysis using ScholarRAG's conversation-first automation approach.**
+**You are helping a researcher conduct a PRISMA 2020 systematic literature review enhanced with RAG-powered analysis using ScholaRAG's conversation-first automation approach.**
 
-## 🧠 What is ScholarRAG?
+## 🧠 What is ScholaRAG?
 
-ScholarRAG combines two powerful methodologies:
+ScholaRAG combines two powerful methodologies:
 
 1. **PRISMA 2020 Protocol** (Stages 1-4): Systematic paper identification, screening, and selection
 2. **RAG (Retrieval-Augmented Generation)** (Stages 5-6): AI-powered data extraction and synthesis from selected papers
@@ -18,10 +18,10 @@ ScholarRAG combines two powerful methodologies:
 
 ## 📁 Hierarchical Context System
 
-ScholarRAG uses **multi-level CLAUDE.md files** for optimal context:
+ScholaRAG uses **multi-level CLAUDE.md files** for optimal context:
 
 ```
-ScholarRAG/
+ScholaRAG/
 ├── CLAUDE.md (THIS FILE - system-level behavior)
 ├── AGENTS.md (for OpenAI Codex compatibility)
 └── examples/ai-chatbots-language-learning/
@@ -35,13 +35,13 @@ ScholarRAG/
 **IMPORTANT**: When working in a project folder (`examples/*/`):
 1. **ALWAYS check for project-specific CLAUDE.md FIRST**
 2. Use project CLAUDE.md for expected results, domain terminology
-3. Use THIS file for general ScholarRAG workflow behavior
+3. Use THIS file for general ScholaRAG workflow behavior
 
 ---
 
 ## 🎯 Core Philosophy
 
-**IMPORTANT**: ScholarRAG is designed for **conversation-first research automation**.
+**IMPORTANT**: ScholaRAG is designed for **conversation-first research automation**.
 
 1. **Prompts are the primary interface** - Researchers interact ONLY through prompts
 2. **You (Claude Code) execute scripts automatically** - Based on conversation completion
@@ -56,7 +56,7 @@ ScholarRAG/
 
 ### When Researcher Provides a Stage Prompt
 
-The researcher will copy/paste prompts from the ScholarRAG website. Each prompt has:
+The researcher will copy/paste prompts from the ScholaRAG website. Each prompt has:
 
 1. **Visible content** - What the researcher sees and fills out
 2. **Hidden metadata** - HTML comment block at the top that YOU read
@@ -491,7 +491,7 @@ Here's your Stage 2 prompt for query strategy design:
 
 ### When to Create a New Project
 
-ScholarRAG supports **multiple independent projects** (e.g., "AI in Healthcare" and "Chatbots for Learning" are separate systematic reviews). You must detect when the user wants to create a **new project** vs. continue an **existing project**.
+ScholaRAG supports **multiple independent projects** (e.g., "AI in Healthcare" and "Chatbots for Learning" are separate systematic reviews). You must detect when the user wants to create a **new project** vs. continue an **existing project**.
 
 #### Triggers for Creating a New Project
 
@@ -505,7 +505,7 @@ Create a **new project** when:
    - Example: Existing project = "AI Healthcare Adoption", User says = "I want to study chatbots for language learning"
 
 3. **No existing project detected**:
-   - Working directory = `ScholarRAG/` (repository root)
+   - Working directory = `ScholaRAG/` (repository root)
    - No `.scholarag/context.json` file found
    - This is the user's FIRST project
 
@@ -521,7 +521,7 @@ Create a **new project** when:
 ```
 User message received
     ↓
-Is working directory ScholarRAG/ (root)?
+Is working directory ScholaRAG/ (root)?
     ├─ Yes → Check for .scholarag/context.json
     │         ├─ Exists → ⚠️  ERROR: .scholarag should NOT be in root
     │         │           (Should be in projects/*/ subfolder)
@@ -547,10 +547,10 @@ Is working directory ScholarRAG/ (root)?
               │         │                  You mentioned 'chatbots'. Create new project?"
               │         │
               │         └─ Not exists → ⚠️  WARNING: Project folder without metadata
-              │                         Ask: "Initialize this folder as ScholarRAG project?"
+              │                         Ask: "Initialize this folder as ScholaRAG project?"
               │
-              └─ No → ❌ ERROR: Must work inside ScholarRAG/ or projects/*/
-                      Show: "Please navigate to ScholarRAG directory"
+              └─ No → ❌ ERROR: Must work inside ScholaRAG/ or projects/*/
+                      Show: "Please navigate to ScholaRAG directory"
 ```
 
 ### Example Conversation Flows
@@ -558,14 +558,14 @@ Is working directory ScholarRAG/ (root)?
 #### Scenario 1: First Project Ever
 
 ```
-Working directory: /path/to/ScholarRAG/
+Working directory: /path/to/ScholaRAG/
 User: "I want to build a RAG for AI adoption in healthcare"
 
 Claude Code:
 1. Check: .scholarag/context.json exists? → No
 2. Check: projects/ folder exists? → No
 3. Conclusion: This is the FIRST project
-4. Action: "I'll create your first ScholarRAG project.
+4. Action: "I'll create your first ScholaRAG project.
             Running: python scholarag_cli.py init"
 5. Prompt user for project details:
    - Project name: "AI-Healthcare-Adoption"
@@ -583,7 +583,7 @@ Claude Code:
 #### Scenario 2: Second Project (NEW Topic)
 
 ```
-Working directory: /path/to/ScholarRAG/projects/2025-10-18_AI-Healthcare/
+Working directory: /path/to/ScholaRAG/projects/2025-10-18_AI-Healthcare/
 Current project context loaded:
   - project_name: "AI Healthcare Adoption"
   - research_question: "What factors influence AI adoption in hospitals?"
@@ -634,7 +634,7 @@ Claude Code:
 #### Scenario 3: Switch Between Existing Projects
 
 ```
-Working directory: /path/to/ScholarRAG/projects/2025-10-18_Chatbot-Learning/
+Working directory: /path/to/ScholaRAG/projects/2025-10-18_Chatbot-Learning/
 User: "Switch to my AI Healthcare project"
 
 Claude Code:
@@ -666,7 +666,7 @@ Claude Code:
 #### Scenario 4: User Confused About Multiple Projects
 
 ```
-Working directory: /path/to/ScholarRAG/
+Working directory: /path/to/ScholaRAG/
 User: "I want to continue my chatbot project"
 
 Claude Code:
@@ -675,7 +675,7 @@ Claude Code:
 3. Run: python scholarag_cli.py list
 4. Show user:
    ┌─────────────────────────────────────────────────────────┐
-   │ 📚 Your ScholarRAG Projects                          │
+   │ 📚 Your ScholaRAG Projects                          │
    ├─────────────────────────────────────────────────────────┤
    │ 1. AI-Healthcare-Adoption (Stage 3/7)                   │
    │    Research: "What factors influence AI adoption?"      │
@@ -770,7 +770,7 @@ def should_create_new_project(user_message: str, context_file: str = '.scholarag
 ### Project Folder Structure (Multiple Projects)
 
 ```
-ScholarRAG/                                  # Framework repository (root)
+ScholaRAG/                                  # Framework repository (root)
 ├── scholarag_cli.py                        # Project manager CLI
 ├── scripts/                                    # Shared scripts (all projects use these)
 │   ├── 01_fetch_papers.py

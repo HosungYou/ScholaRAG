@@ -93,7 +93,7 @@ This ensures high-quality, relevant answers backed by rigorous paper selection.
 python scripts/06_query_rag.py --project /path/to/project
 
 ╔═══════════════════════════════════════════════════════════╗
-║           ScholarRAG - Research Conversation            ║
+║           ScholaRAG - Research Conversation            ║
 ║                                                           ║
 ║  📚 Database: 45 PRISMA-selected papers                   ║
 ║  🔢 Chunks: 2,250 semantic units                          ║
@@ -288,6 +288,6 @@ If you don't see these indicators, you're NOT using RAG.
 
 ## 📚 Additional Resources
 
-- [ScholarRAG Documentation](https://researcher-rag-helper.vercel.app)
+- [ScholaRAG Documentation](https://researcher-rag-helper.vercel.app)
 - [Prompt Library (Web)](https://researcher-rag-helper.vercel.app/guide/prompt-library)
 - [GitHub Issues](https://github.com/HosungYou/researcherRAG/issues)

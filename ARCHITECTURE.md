@@ -1,9 +1,9 @@
-# ScholarRAG Architecture
+# ScholaRAG Architecture
 
 **Version**: 1.0.12
 **Last Updated**: 2025-10-19
 
-This document explains how all files in ScholarRAG connect and communicate with each other.
+This document explains how all files in ScholaRAG connect and communicate with each other.
 
 ---
 
