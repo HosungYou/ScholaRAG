@@ -12,15 +12,35 @@ Transform weeks of manual literature review into hours of automated, reproducibl
 
 ## 🎯 What is ResearcherRAG?
 
-ResearcherRAG is an **open-source framework** that helps researchers build custom RAG (Retrieval-Augmented Generation) systems for systematic literature reviews through **conversational AI guidance** in VS Code.
+ResearcherRAG is an **open-source framework** that helps researchers build custom RAG (Retrieval-Augmented Generation) systems for literature review and research through **conversational AI guidance** in VS Code.
 
-### What You'll Build
+### Two Modes for Different Research Needs
 
-In **3 hours of active work** + **3-4 hours of automated processing**, you'll create:
+ResearcherRAG supports **two project types** to serve different research goals:
 
-- ✅ **PRISMA 2020-Compliant Pipeline**: Screen 20,000+ papers → PRISMA-filtered relevant set
-- ✅ **Custom Vector Database**: Semantic search across your included papers (ChromaDB)
-- ✅ **Research RAG System**: Query with citations, methods, and effect sizes
+#### 📊 Knowledge Repository Mode 🗂️
+**For comprehensive domain coverage**
+
+In **3 hours of active work** + **2-4 hours of automated processing**, you'll create:
+
+- ✅ **Comprehensive Collection**: Broad queries fetch 20,000-30,000 papers
+- ✅ **Minimal Filtering**: AI removes only spam/duplicates (80-90% retention)
+- ✅ **Large Vector Database**: 15,000-20,000 papers for semantic search
+- ✅ **Interactive Q&A**: Explore entire domain, discover connections
+
+**Use for**: Domain mapping, teaching materials, exploratory research, AI research assistants
+
+#### 📄 Systematic Review Mode 📄
+**For publication-quality systematic reviews**
+
+In **3 hours of active work** + **3-5 hours of automated processing**, you'll create:
+
+- ✅ **PRISMA 2020-Compliant Pipeline**: Screen 1,000-5,000 papers → 50-300 final papers
+- ✅ **Strict Filtering**: Detailed inclusion/exclusion criteria (2-10% retention)
+- ✅ **Focused Vector Database**: High-quality papers for deep analysis
+- ✅ **Research RAG System**: Query with citations, methods, effect sizes
+
+**Use for**: Meta-analysis, systematic review publications, clinical guidelines, dissertations
 
 ### Why ResearcherRAG?
 
