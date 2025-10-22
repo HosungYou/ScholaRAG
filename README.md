@@ -23,7 +23,7 @@ ScholaRAG supports **two project types** to serve different research goals:
 #### 📊 Knowledge Repository Mode 🗂️
 **For comprehensive domain coverage**
 
-In **3 hours of active work** + **2-4 hours of automated processing**, you'll create:
+In **30 minutes of active setup** + **2-4 hours of automated processing**, you'll create:
 
 - ✅ **Comprehensive Collection**: Broad queries fetch 20,000-30,000 papers
 - ✅ **Minimal Filtering**: AI removes only spam/duplicates (80-90% retention)
@@ -35,7 +35,7 @@ In **3 hours of active work** + **2-4 hours of automated processing**, you'll cr
 #### 📄 Systematic Review Mode 📄
 **For publication-quality systematic reviews**
 
-In **3 hours of active work** + **3-5 hours of automated processing**, you'll create:
+In **30 minutes of active setup** + **3-5 hours of automated processing**, you'll create:
 
 - ✅ **PRISMA 2020-Compliant Pipeline**: Screen 1,000-5,000 papers → 50-300 final papers
 - ✅ **Strict Filtering**: Detailed inclusion/exclusion criteria (2-10% retention)
@@ -53,7 +53,7 @@ In **3 hours of active work** + **3-5 hours of automated processing**, you'll cr
 - ✍️ Extract findings, constantly re-read papers for citations
 
 **With ScholaRAG** (2-3 weeks):
-- 🤖 **3-hour setup**: Build RAG system with AI assistant step-by-step
+- 🤖 **30-minute setup**: Build RAG system with AI assistant step-by-step
 - ⚡ **2-hour screening**: AI-powered PRISMA (20,000 papers → PRISMA-filtered relevant set)
 - 💬 **Instant queries**: "What are the main effects?" → Evidence + citations
 - 💰 **Fixed $20/month**: Claude Pro subscription (Haiku 4.5 sufficient for individual researchers)
@@ -301,7 +301,7 @@ The website provides comprehensive guides with examples, code snippets, and inte
    📚 23 papers cited | Avg. similarity: 0.85
 
 💰 Total Cost: $20/month (Claude Pro with Haiku 4.5)
-⏱️ Total Time: 5.5 hours (vs. 2 weeks manual)
+⏱️ Total Time: 2.5 hours (30-min setup + 2-hour screening vs. 2 weeks manual)
 ```
 
 **See full walkthrough**: [Practical Guide - Chapter 5](https://researcher-rag-helper.vercel.app/guide/05-advanced-topics)
