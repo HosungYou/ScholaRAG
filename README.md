@@ -1,5 +1,7 @@
 # ScholaRAG
 
+![ScholaRAG Banner](ScholaRAG.png)
+
 **AI-Powered Systematic Literature Review Automation**
 
 Transform weeks of manual literature review into hours of automated, reproducible research.
