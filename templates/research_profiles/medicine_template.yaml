@@ -1,6 +1,14 @@
 # Medicine Research Profile Template
 # Use this template for clinical, biomedical, public health research
 
+# Project metadata (auto-populated by CLI)
+project:
+  name: ""  # Will be filled by CLI
+  created: ""  # Will be filled by CLI
+  research_question: ""  # Will be filled by CLI
+  domain: "medicine"
+  project_type: "systematic_review"  # Options: systematic_review or knowledge_repository
+
 name: "Medicine Research Template"
 description: "Template for medical and health sciences research"
 

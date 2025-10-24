@@ -1,3 +1,14 @@
+# HRM AI Bias Research Profile Template
+# AI bias and fairness in human resource management
+
+# Project metadata (auto-populated by CLI)
+project:
+  name: ""  # Will be filled by CLI
+  created: ""  # Will be filled by CLI
+  research_question: ""  # Will be filled by CLI
+  domain: "custom"
+  project_type: "systematic_review"  # Options: systematic_review or knowledge_repository
+
 name: "HRM AI Bias Research"
 description: "AI bias and fairness in human resource management"
 

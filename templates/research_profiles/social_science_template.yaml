@@ -1,6 +1,14 @@
 # Social Science Research Profile Template
 # Use this template for psychology, sociology, economics, political science research
 
+# Project metadata (auto-populated by CLI)
+project:
+  name: ""  # Will be filled by CLI
+  created: ""  # Will be filled by CLI
+  research_question: ""  # Will be filled by CLI
+  domain: "social-science"
+  project_type: "systematic_review"  # Options: systematic_review or knowledge_repository
+
 name: "Social Science Research Template"
 description: "Template for social science research (psychology, sociology, economics, etc.)"
 

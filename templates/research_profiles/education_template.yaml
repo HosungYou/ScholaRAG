@@ -1,6 +1,14 @@
 # Education Research Profile Template
 # Use this template for educational technology, pedagogy, learning sciences research
 
+# Project metadata (auto-populated by CLI)
+project:
+  name: ""  # Will be filled by CLI
+  created: ""  # Will be filled by CLI
+  research_question: ""  # Will be filled by CLI
+  domain: "education"
+  project_type: "systematic_review"  # Options: systematic_review or knowledge_repository
+
 name: "Education Research Template"
 description: "Template for educational research projects (K-12, higher education, learning sciences)"
 

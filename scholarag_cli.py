@@ -38,7 +38,12 @@ def cli():
               default='custom',
               prompt='Research domain',
               help='Research domain (loads template)')
-def init(name, question, domain):
+@click.option('--project-type',
+              type=click.Choice(['systematic_review', 'knowledge_repository']),
+              default='systematic_review',
+              prompt='Project type (systematic_review for publication, knowledge_repository for exploration)',
+              help='Project type: systematic_review (strict, 50-300 papers) or knowledge_repository (lenient, 15K+ papers)')
+def init(name, question, domain, project_type):
     """
     Initialize a new ScholaRAG project with standardized folder structure.
 
@@ -56,7 +61,8 @@ def init(name, question, domain):
         python scholarag_cli.py init \\
             --name "AI-Healthcare-Adoption" \\
             --question "What factors influence AI adoption in hospitals?" \\
-            --domain medicine
+            --domain medicine \\
+            --project-type systematic_review
     """
     # 1. Sanitize project name
     sanitized_name = name.replace(' ', '-').replace('_', '-')
@@ -101,12 +107,13 @@ def init(name, question, domain):
         config['project']['name'] = name
         config['project']['created'] = today
         config['project']['research_question'] = question
+        config['project']['project_type'] = project_type
         with open(f"{project_folder}/config.yaml", 'w') as f:
             yaml.dump(config, f, default_flow_style=False, sort_keys=False)
         click.echo(f"   ✓ config.yaml (from {domain} template)")
     else:
         # Create default config
-        _create_default_config(project_folder, name, question, domain, today)
+        _create_default_config(project_folder, name, question, domain, today, project_type)
         click.echo(f"   ✓ config.yaml (default)")
 
     # 5. Create README.md
@@ -120,6 +127,7 @@ def init(name, question, domain):
         'project_name': name,
         'research_question': question,
         'domain': domain,
+        'project_type': project_type,
         'current_stage': 1,
         'folder_structure_verified': True,
         'last_updated': today
@@ -409,14 +417,15 @@ def list():
 # Helper Functions
 # ============================================================================
 
-def _create_default_config(project_folder, name, question, domain, today):
+def _create_default_config(project_folder, name, question, domain, today, project_type):
     """Create default config.yaml"""
     config = {
         'project': {
             'name': name,
             'created': today,
             'research_question': question,
-            'domain': domain
+            'domain': domain,
+            'project_type': project_type
         },
         'databases': ['pubmed', 'scopus', 'openalex', 'eric'],
         'inclusion_criteria': {
