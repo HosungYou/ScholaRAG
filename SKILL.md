@@ -364,7 +364,19 @@ python scripts/07_generate_prisma.py --project projects/YYYY-MM-DD_ProjectName
 
 ---
 
+## Additional Resources
+
+**Detailed implementation guide**: See [CLAUDE.md](CLAUDE.md) for:
+- 🎓 User profile (researchers with limited coding experience)
+- How Claude Code should behave (DO/DON'T guidelines)
+- Auto-execution patterns (echo pipes, CLI arguments)
+- Full CLI reference and troubleshooting
+
+**For Codex/Cursor users**: See [AGENTS.md](AGENTS.md) for task-based bash workflows
+
+---
+
 **Last Updated**: 2025-10-24 (v2.0 - Agent Skills Integration)
-**Replaces**: CLAUDE.md (legacy, now redirect file)
+**Companion files**: CLAUDE.md (detailed guide), AGENTS.md (Codex workflows)
 **Compatible with**: Claude Code v1.0+, Anthropic API
-**Token Budget**: ~400 lines (this file) + ~300-500 lines (stage file) = ~700-900 lines per conversation
+**Token Budget**: ~380 lines (this file) + ~300-500 lines (stage file) = ~700-900 lines per conversation
