@@ -176,6 +176,121 @@ python scholarag_cli.py next
 
 ---
 
+## 📋 Domain Templates
+
+ScholaRAG provides **pre-configured templates** for common research domains to accelerate your project setup. Templates include domain-specific PRISMA criteria, recommended databases, and optimized query patterns.
+
+### Available Templates
+
+Located in `templates/research_profiles/`:
+
+| Template | Domain | Pre-configured Features |
+|----------|--------|------------------------|
+| **education** | Educational technology, learning sciences | ERIC, Semantic Scholar; pedagogy-focused PRISMA criteria |
+| **medicine** | Clinical research, public health | PubMed, MEDLINE; RCT-focused inclusion criteria |
+| **social_science** | Psychology, sociology, behavioral sciences | PsycINFO patterns; mixed-methods criteria |
+| **hrm** | Human resource management, organizational behavior | Business databases; workplace intervention criteria |
+| **default** | General multi-disciplinary research | Balanced configuration for any domain |
+
+### Usage
+
+```bash
+# Initialize project with domain template
+python scholarag_cli.py init --template education
+
+# Or specify during conversation mode
+# When Claude Code asks about your research domain,
+# mention the domain and it will auto-apply the template
+```
+
+### Benefits
+
+- **Faster setup**: Pre-filled inclusion/exclusion criteria
+- **Domain expertise**: PRISMA criteria validated by domain experts
+- **Optimized queries**: Database selection tailored to field conventions
+- **Less iteration**: Reduced back-and-forth during Stage 3 (PRISMA configuration)
+
+**Custom templates**: Copy `templates/research_profiles/default.yaml` and modify for your specific needs.
+
+---
+
+## 🖥️ Query Interfaces
+
+ScholaRAG provides **three interfaces** for querying your RAG system after pipeline completion. Choose based on your workflow preference.
+
+### Option 1: Claude Code CLI (Default)
+
+**Best for**: Conversational research, exploratory analysis
+
+```bash
+# Interactive conversation with Claude Code
+# Copy Stage 6 prompt from website, paste to Claude Code
+# Natural language queries with full context awareness
+```
+
+**Pros**: Context-aware follow-ups, handles complex multi-part questions, automatic citation formatting
+**Cons**: Requires Claude Code environment
+
+### Option 2: Streamlit Web UI
+
+**Best for**: Non-technical users, presentation/demos
+
+```bash
+cd interfaces/streamlit_app
+pip install -r requirements.txt
+streamlit run app.py
+```
+
+**Features**:
+- 🌐 Browser-based interface (no CLI required)
+- 📊 Visual result cards with relevance scores
+- 💾 Export results to CSV/JSON
+- 🔍 Filter by paper, date range, relevance threshold
+
+**Pros**: Intuitive GUI, shareable with colleagues, no coding needed
+**Cons**: Less sophisticated than conversational mode
+
+### Option 3: FastAPI Server
+
+**Best for**: Integrations, batch processing, custom applications
+
+```bash
+cd interfaces/fastapi_server
+pip install -r requirements.txt
+uvicorn main:app --reload
+```
+
+**API Endpoints**:
+```python
+# Query RAG system
+POST /query
+Body: {"query": "What are main findings?", "top_k": 5}
+
+# Get paper metadata
+GET /papers/{paper_id}
+
+# Batch processing
+POST /batch_query
+Body: {"queries": ["Q1", "Q2", "Q3"]}
+```
+
+**Pros**: Programmatic access, integrate with other tools, batch operations
+**Cons**: Requires API knowledge, no conversational context
+
+### Choosing an Interface
+
+| Your Need | Recommended Interface |
+|-----------|----------------------|
+| Exploratory research with complex questions | Claude Code CLI |
+| Share with non-technical collaborators | Streamlit Web UI |
+| Integrate with data pipeline | FastAPI Server |
+| Quick one-off queries | Any (Streamlit fastest to launch) |
+| Publication-quality analysis | Claude Code CLI |
+
+**All interfaces** use the same RAG database built in Stage 5, so you can switch between them anytime.
+
+---
+
 ## 📚 Complete Documentation
 
 🌐 **[Full Documentation Website](https://researcher-rag-helper.vercel.app/)**

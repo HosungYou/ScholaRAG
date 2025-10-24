@@ -83,9 +83,14 @@ outputs/*.csv
 credentials.json
 secrets.yaml
 
-# ResearcherRAG v1.0.6+ context (runtime state, not version-controlled)
+# Claude Code runtime state (not version-controlled)
 .claude/context.json
+.claude/*.log
 
-# ResearcherRAG user projects (local, not version-controlled)
-# Each user has their own systematic review projects
+# User projects (local, not version-controlled)
+# Each researcher has their own systematic review projects
 projects/
+
+# Archived files (for developers, hidden from researchers)
+# Note: .archive/ IS tracked in Git, but hidden from researcher view
+# DO NOT add .archive/ to .gitignore
