@@ -79,21 +79,12 @@ class PaperScreener:
         print(f"   ✓ Human review: {'Required' if self.require_human_review else 'Not required'}")
 
     def build_prisma_prompt(self, title: str, abstract: str) -> str:
-        """Build AI-PRISMA scoring prompt with 6-dimension rubric"""
+        """
+        Build template-free AI-PRISMA scoring prompt with 6-dimension rubric.
 
-        rubric = self.config.get('ai_prisma_rubric', {}).get('scoring_rubric', {})
-
-        # Format keyword lists for prompt
-        domain_kw = "\n   ".join([f"- \"{kw['keyword']}\" ({kw['weight']} points)"
-                                   for kw in rubric.get('domain_keywords', [])])
-        intervention_kw = "\n   ".join([f"- \"{kw['keyword']}\" ({kw['weight']} points)"
-                                        for kw in rubric.get('intervention_keywords', [])])
-        method_kw = "\n   ".join([f"- \"{kw['keyword']}\" ({kw['weight']} points)"
-                                   for kw in rubric.get('method_keywords', [])])
-        outcome_kw = "\n   ".join([f"- \"{kw['keyword']}\" ({kw['weight']} points)"
-                                    for kw in rubric.get('outcome_keywords', [])])
-        exclusion_kw = "\n   ".join([f"- \"{kw['keyword']}\" ({kw['penalty']} points)"
-                                      for kw in rubric.get('exclusion_keywords', [])])
+        Claude interprets the research question directly without keyword templates.
+        This provides flexibility for any research domain without manual configuration.
+        """
 
         prompt = f"""You are a research assistant conducting a PRISMA 2020 systematic literature review using AI-PRISMA methodology.
 
@@ -109,41 +100,89 @@ TASK: Evaluate this paper using the 6-dimension scoring rubric based on PICO fra
 
 SCORING RUBRIC:
 
-1. DOMAIN KEYWORDS (PICO: Population) - 0-10 points
-   Evaluate relevance to core research field.
-   {domain_kw}
+1. DOMAIN (PICO: Population) - 0-10 points
+   Evaluate if the paper addresses the core research domain/population relevant to the research question.
 
-   → Award points if keywords appear in title or abstract
-   → Multiple matches = highest weight keyword score
+   Scoring Guidelines:
+   - 10 points: Directly addresses the target domain/population
+   - 7-9 points: Related domain with significant overlap
+   - 4-6 points: Mentions domain but not primary focus
+   - 1-3 points: Tangentially related
+   - 0 points: Unrelated or no clear domain match
 
-2. INTERVENTION KEYWORDS (PICO: Intervention) - 0-10 points
-   Evaluate specific treatment/tool discussed.
-   {intervention_kw}
+   Examples for "{self.research_question}":
+   - Identify the target domain (e.g., "higher education", "K-12", "workplace training")
+   - Award 10 if paper explicitly focuses on this domain
+   - Award 7-9 if domain is major component
+   - Award 0-3 if domain is different or unclear
 
-   → Award points if intervention is central to the study
+2. INTERVENTION (PICO: Intervention) - 0-10 points
+   Evaluate if the paper discusses the specific intervention, technology, or tool mentioned in the research question.
 
-3. METHOD KEYWORDS (PICO: Comparison) - 0-5 points
-   Evaluate study design quality.
-   {method_kw}
+   Scoring Guidelines:
+   - 10 points: Intervention is the primary focus of the study
+   - 7-9 points: Intervention is a major component
+   - 4-6 points: Intervention mentioned but not central
+   - 1-3 points: Intervention vaguely related
+   - 0 points: No relevant intervention discussed
 
-   → Award points based on methodological rigor
+   Examples for "{self.research_question}":
+   - Identify the main intervention (e.g., "ChatGPT", "chatbot", "AI tool")
+   - Award 10 if paper directly studies this intervention
+   - Award 0 if intervention is absent or completely different
 
-4. OUTCOME KEYWORDS (PICO: Outcomes) - 0-10 points
-   Evaluate measured results.
-   {outcome_kw}
+3. METHOD (PICO: Comparison/Study Design) - 0-5 points
+   Evaluate the rigor of the research methodology.
 
-   → Award points if outcomes are explicitly measured
+   Scoring Guidelines:
+   - 5 points: RCT, randomized controlled trial, experimental design
+   - 4 points: Quasi-experimental, pre-test/post-test design
+   - 3 points: Mixed methods, quantitative survey, longitudinal study
+   - 2 points: Qualitative study, interviews, case study
+   - 1 point: Descriptive or exploratory study
+   - 0 points: No clear methodology, theoretical only, or opinion piece
 
-5. EXCLUSION KEYWORDS - (-20 to 0 points)
-   Penalize irrelevant contexts.
-   {exclusion_kw}
+   Note: Higher scores indicate more rigorous causal inference, not quality judgment
 
-   → Apply penalty if exclusion criteria are met
-   → -20 penalty = automatic exclusion
+4. OUTCOMES (PICO: Outcomes) - 0-10 points
+   Evaluate if outcomes/results are clearly measured and reported.
+
+   Scoring Guidelines:
+   - 10 points: Primary outcomes explicitly defined and rigorously measured
+   - 7-9 points: Outcomes clearly stated and evaluated
+   - 4-6 points: Outcomes mentioned but measurement unclear
+   - 1-3 points: Outcomes implied but not explicitly measured
+   - 0 points: No measurable outcomes or purely theoretical
+
+   Examples:
+   - Look for phrases like "improved by 23%", "significant effect (p<0.05)", "measured using X scale"
+   - Award 10 for quantitative outcomes with statistical analysis
+   - Award 0 for papers with no empirical results
+
+5. EXCLUSION - (-20 to 0 points)
+   Apply penalties for papers that should be excluded based on study type or irrelevance.
+
+   Penalty Guidelines:
+   - -20 points: Completely irrelevant domain (e.g., medical imaging for education research)
+   - -15 points: Wrong population (e.g., K-12 when research targets higher education)
+   - -10 points: Meta-analysis, systematic review, or literature review (not original research)
+   - -10 points: Editorial, commentary, opinion piece, or book review
+   - -5 points: Conference abstract without full paper
+   - 0 points: No exclusion criteria met
+
+   Note: Multiple penalties can stack (e.g., -10 for review + -15 for wrong population = -25, capped at -20)
 
 6. TITLE BONUS - 0 or +10 points
-   → Award +10 if domain keywords appear in title
-   → Rationale: Keywords in title indicate stronger relevance signal
+   Award +10 if BOTH the domain AND intervention appear in the title.
+
+   Rationale: Keywords in title indicate stronger relevance signal than abstract-only mentions.
+
+   Examples for "{self.research_question}":
+   - If research question is about "ChatGPT in higher education":
+     - Title "ChatGPT Use in University Classrooms" → +10 (both present)
+     - Title "AI Tools in Higher Education" → +10 (both implied)
+     - Title "ChatGPT for K-12 Learning" → 0 (wrong domain)
+     - Title "University Teaching Methods" → 0 (intervention missing)
 
 ═══════════════════════════════════════════════════════════════════
 TOTAL SCORE RANGE: -20 to 50 points
@@ -154,18 +193,33 @@ IMPORTANT REQUIREMENTS:
 1. EVIDENCE GROUNDING:
    - You MUST provide direct quotes from the abstract to justify each dimension score
    - Use exact quotes (in "quotation marks")
-   - If no evidence exists for a dimension, score it 0
+   - If no evidence exists for a dimension, score it 0 and explain why
+   - Do NOT paraphrase - use verbatim text from abstract
 
 2. NO HALLUCINATIONS:
    - Only use information explicitly stated in title or abstract
    - Do not infer or assume information not present
    - If abstract is vague, assign lower scores with explanation
+   - If you're uncertain, err on the side of lower scores
 
 3. CONFIDENCE CALCULATION:
    - confidence = 0-100 (quantitative percentage)
-   - High confidence (90-100): Clear evidence for all dimensions
-   - Medium confidence (40-89): Some dimensions unclear
-   - Low confidence (0-39): Abstract too vague or off-topic
+   - High confidence (90-100): Clear, explicit evidence for all key dimensions
+   - Medium confidence (40-89): Some dimensions unclear or partially addressed
+   - Low confidence (0-39): Abstract too vague, off-topic, or missing critical information
+
+   Confidence factors:
+   - +20: Abstract explicitly mentions domain AND intervention
+   - +15: Clear methodology and outcomes described
+   - +10: All 6 dimensions have concrete evidence
+   - -20: Abstract is vague or lacks detail
+   - -30: Title and abstract seem unrelated to research question
+
+4. DECISION LOGIC:
+   Your confidence score determines the final decision:
+   - confidence ≥ {self.screening_threshold}% AND total_score ≥ 30 → "auto-include"
+   - confidence ≤ {self.exclude_threshold}% OR total_score < 0 → "auto-exclude"
+   - Otherwise → "human-review" (requires expert validation)
 
 Respond in JSON format:
 {{
@@ -180,11 +234,12 @@ Respond in JSON format:
   "total_score": <sum of all scores>,
   "confidence": <0-100>,
   "decision": "auto-include" | "auto-exclude" | "human-review",
-  "reasoning": "Brief explanation of overall decision (2-3 sentences)",
+  "reasoning": "Brief explanation of overall decision (2-3 sentences, focus on why this paper is/isn't relevant)",
   "evidence_quotes": [
     "Direct quote from abstract supporting domain score",
     "Direct quote supporting intervention score",
-    ...
+    "Direct quote supporting method score (if applicable)",
+    "Direct quote supporting outcomes score (if applicable)"
   ]
 }}
 

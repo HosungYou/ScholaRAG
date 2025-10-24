@@ -33,17 +33,12 @@ def cli():
               help='Project name')
 @click.option('--question', prompt='Research question',
               help='Main research question')
-@click.option('--domain',
-              type=click.Choice(['education', 'medicine', 'psychology', 'social-science', 'custom']),
-              default='custom',
-              prompt='Research domain',
-              help='Research domain (loads template)')
 @click.option('--project-type',
               type=click.Choice(['systematic_review', 'knowledge_repository']),
               default='systematic_review',
               prompt='Project type (systematic_review for publication, knowledge_repository for exploration)',
               help='Project type: systematic_review (strict, 50-300 papers) or knowledge_repository (lenient, 15K+ papers)')
-def init(name, question, domain, project_type):
+def init(name, question, project_type):
     """
     Initialize a new ScholaRAG project with standardized folder structure.
 
@@ -92,29 +87,12 @@ def init(name, question, domain, project_type):
         os.makedirs(folder, exist_ok=True)
         click.echo(f"   ✓ Created: {folder}")
 
-    # 4. Create config.yaml from template
+    # 4. Create config.yaml (template-free AI-PRISMA)
     click.echo(f"\n📝 Creating configuration files...\n")
 
-    if domain != 'custom' and os.path.exists(f"templates/research_profiles/{domain}_template.yaml"):
-        # Use domain template
-        shutil.copy(
-            f"templates/research_profiles/{domain}_template.yaml",
-            f"{project_folder}/config.yaml"
-        )
-        # Update project metadata in config
-        with open(f"{project_folder}/config.yaml", 'r') as f:
-            config = yaml.safe_load(f)
-        config['project']['name'] = name
-        config['project']['created'] = today
-        config['project']['research_question'] = question
-        config['project']['project_type'] = project_type
-        with open(f"{project_folder}/config.yaml", 'w') as f:
-            yaml.dump(config, f, default_flow_style=False, sort_keys=False)
-        click.echo(f"   ✓ config.yaml (from {domain} template)")
-    else:
-        # Create default config
-        _create_default_config(project_folder, name, question, domain, today, project_type)
-        click.echo(f"   ✓ config.yaml (default)")
+    # Create template-free config
+    _create_template_free_config(project_folder, name, question, today, project_type)
+    click.echo(f"   ✓ config.yaml (template-free AI-PRISMA)")
 
     # 5. Create README.md
     _create_project_readme(project_folder, name, question, today, sanitized_name)
@@ -122,12 +100,12 @@ def init(name, question, domain, project_type):
 
     # 6. Create .scholarag metadata (for dashboard tracking)
     metadata = {
-        'version': '1.2.0',
+        'version': '2.0.0',
         'created': today,
         'project_name': name,
         'research_question': question,
-        'domain': domain,
         'project_type': project_type,
+        'template_free': True,
         'current_stage': 1,
         'folder_structure_verified': True,
         'last_updated': today
@@ -163,15 +141,16 @@ def init(name, question, domain, project_type):
     click.echo("   " + "-" * 66)
     click.echo(f"   I'm starting a new ScholaRAG project: {name}")
     click.echo(f"   Research question: {question}")
-    click.echo(f"   Domain: {domain}")
+    click.echo(f"   Project type: {project_type}")
     click.echo(f"   ")
-    click.echo(f"   Please read my config.yaml and guide me through Stage 1")
-    click.echo(f"   (Research Domain Setup) using the 5-stage workflow.")
-    click.echo(f"   ")
-    click.echo(f"   Make sure to save all outputs to the correct folders:")
-    click.echo(f"   - Stage 1 → data/01_identification/")
-    click.echo(f"   - Stage 2 → data/02_screening/")
-    click.echo(f"   - Stage 3 → data/03_full_text/")
+    click.echo(f"   Please guide me through the 7-stage ScholaRAG workflow:")
+    click.echo(f"   - Stage 1: Research question refinement")
+    click.echo(f"   - Stage 2: Paper fetching from databases")
+    click.echo(f"   - Stage 3: Deduplication")
+    click.echo(f"   - Stage 4: AI-PRISMA screening (template-free)")
+    click.echo(f"   - Stage 5: PDF download")
+    click.echo(f"   - Stage 6: RAG system building")
+    click.echo(f"   - Stage 7: PRISMA diagram generation")
     click.echo("   " + "-" * 66 + "\n")
 
     click.echo("📖 Documentation:")
@@ -417,34 +396,87 @@ def list():
 # Helper Functions
 # ============================================================================
 
-def _create_default_config(project_folder, name, question, domain, today, project_type):
-    """Create default config.yaml"""
+def _create_template_free_config(project_folder, name, question, today, project_type):
+    """
+    Create template-free config.yaml for AI-PRISMA v2.0
+
+    No keyword templates required - Claude interprets research question directly.
+    """
+    # Set thresholds based on project type
+    if project_type == 'knowledge_repository':
+        auto_include = 50
+        auto_exclude = 20
+        human_validation_required = False
+    else:  # systematic_review
+        auto_include = 90
+        auto_exclude = 10
+        human_validation_required = True
+
     config = {
         'project': {
             'name': name,
             'created': today,
             'research_question': question,
-            'domain': domain,
-            'project_type': project_type
+            'project_type': project_type,
+            'version': '2.0.0',
+            'template_free': True
         },
-        'databases': ['pubmed', 'scopus', 'openalex', 'eric'],
-        'inclusion_criteria': {
-            'year_start': 2010,
-            'year_end': 2025,
-            'study_types': ['empirical', 'systematic_review', 'meta_analysis'],
-            'languages': ['english']
+
+        # AI-PRISMA Configuration (Template-Free)
+        'ai_prisma_rubric': {
+            'enabled': True,
+            'llm': 'claude-3-5-sonnet-20241022',
+            'temperature': 0.1,
+
+            'decision_confidence': {
+                'auto_include': auto_include,
+                'auto_exclude': auto_exclude
+            },
+
+            'human_validation': {
+                'required': human_validation_required,
+                'sample_size': 50,
+                'kappa_threshold': 0.61
+            },
+
+            'notes': f"""
+Template-Free AI-PRISMA (v2.0):
+- Claude interprets your research question directly
+- No keyword templates needed
+- 6-dimension scoring: domain, intervention, method, outcomes, exclusion, title_bonus
+- Evidence grounding validates all AI quotes
+- Project type: {project_type} ({auto_include}/{auto_exclude} thresholds)
+            """
         },
-        'exclusion_criteria': [
-            'Opinion pieces',
-            'Editorials',
-            'Conference abstracts without full text'
-        ],
+
+        # Database Configuration
+        'databases': {
+            'open_access': {
+                'semantic_scholar': {'enabled': True},
+                'openalex': {'enabled': True},
+                'arxiv': {'enabled': True}
+            },
+            'institutional': {
+                'scopus': {'enabled': False, 'note': 'Requires API key'},
+                'web_of_science': {'enabled': False, 'note': 'Requires API key'}
+            }
+        },
+
+        # Search Parameters
+        'search': {
+            'year_range': {'start': 2015, 'end': 2025},
+            'languages': ['english'],
+            'max_results_per_db': 10000  # For knowledge_repository
+        },
+
+        # RAG Settings
         'rag': {
             'vector_db': 'chromadb',
-            'embeddings': 'text-embedding-3-small',
+            'embedding_model': 'text-embedding-3-large',
             'llm': 'claude-3-5-sonnet-20241022',
             'chunk_size': 1000,
-            'chunk_overlap': 200
+            'chunk_overlap': 200,
+            'retrieval_k': 10
         }
     }
 
