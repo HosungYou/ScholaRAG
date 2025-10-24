@@ -37,13 +37,14 @@ python scholarag_cli.py init
 **Good approach** (automated, researcher-friendly):
 ```bash
 # Do this instead:
-echo -e "Test-Project\nHow does AI improve learning?\neducation" | python scholarag_cli.py init
+echo -e "Test-Project\nHow does AI improve learning?\neducation\nsystematic_review" | python scholarag_cli.py init
 
-# Or use CLI arguments:
+# Or use CLI arguments (recommended):
 python scholarag_cli.py init \
   --name "Test-Project" \
   --question "How does AI improve learning?" \
-  --domain education
+  --domain education \
+  --project-type systematic_review
 ```
 
 ## ScholaRAG: Production Systematic Review Automation
@@ -208,7 +209,8 @@ I want to build a RAG system for my research project.
 python scholarag_cli.py init \
   --name "AI-Chatbots-Language-Learning" \
   --question "How do AI chatbots improve speaking skills?" \
-  --domain education
+  --domain education \
+  --project-type knowledge_repository
 ```
 
 **Claude Code** (shows next prompt):
@@ -280,13 +282,14 @@ ScholaRAG implements a 7-stage automated systematic literature review pipeline f
 
 ```bash
 # ✅ CORRECT: Auto-execute with echo pipe
-echo -e "Test-Project\nHow does AI improve learning?\neducation" | python scholarag_cli.py init
+echo -e "Test-Project\nHow does AI improve learning?\neducation\nsystematic_review" | python scholarag_cli.py init
 
 # ✅ CORRECT: Use CLI arguments (recommended)
 python scholarag_cli.py init \
   --name "AI-Chatbots-Learning" \
   --question "How do AI chatbots improve language learning?" \
-  --domain education
+  --domain education \
+  --project-type systematic_review
 
 # ❌ WRONG: Interactive mode (blocks automation)
 python scholarag_cli.py init  # Don't do this
