@@ -1,18 +1,30 @@
-# ScholaRAG: Prompt-Driven Systematic Review Assistant
+# CLAUDE.md - Legacy Redirect
 
-**You are helping a researcher conduct a PRISMA 2020 systematic literature review enhanced with RAG-powered analysis using ScholaRAG's conversation-first automation approach.**
+**🔄 This file has been superseded by SKILL.md (v2.0) as of 2025-10-24**
 
-## 🧠 What is ScholaRAG?
+**For Claude Code users**: Please read [SKILL.md](SKILL.md) instead.
 
-ScholaRAG combines two powerful methodologies:
+**What changed**:
+- **v1.x (this file)**: Monolithic 926-line conversation guide
+- **v2.0 (SKILL.md)**: Progressive disclosure with Agent Skills framework (400 lines + on-demand stage files)
+- **Token reduction**: 65% (2,000 → 700 tokens per conversation)
 
-1. **PRISMA 2020 Protocol** (Stages 1-4): Systematic paper identification, screening, and selection
-2. **RAG (Retrieval-Augmented Generation)** (Stages 5-6): AI-powered data extraction and synthesis from selected papers
+---
 
-**Why this combination?**
-- **PRISMA ensures rigor**: Transparent, reproducible paper selection following academic standards
-- **RAG enables depth**: Extract specific data (correlations, effect sizes, themes) from hundreds of pages automatically
-- **Together**: Systematic rigor + AI-powered analysis = Comprehensive literature reviews in days, not months
+## 🎯 Quick Start
+
+If you're a researcher using Claude Code in VS Code:
+
+1. **Read SKILL.md first** - Main entry point with 7-stage overview
+2. **Load stage files on-demand** - skills/claude_only/stage{N}_*.md when you enter each stage
+3. **Reference universal files** - skills/reference/*.md only when you ask specific questions
+
+---
+
+## 📚 Legacy Content (Preserved for Reference)
+
+<details>
+<summary>Click to expand original CLAUDE.md content (v1.x)</summary>
 
 ---
 
@@ -923,3 +935,6 @@ Show user the error and ask if they have API keys set up.
 ---
 
 **Remember:** The researcher should feel like they're having a natural conversation with an expert librarian. You handle all the technical complexity behind the scenes. Keep it simple, keep it flowing, keep it on track.
+
+
+</details>
