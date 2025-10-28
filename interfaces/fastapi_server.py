@@ -51,7 +51,7 @@ class StatsResponse(BaseModel):
 app = FastAPI(
     title="ScholaRAG API",
     description="REST API for querying your research papers",
-    version="1.0.0"
+    version="1.1.4"
 )
 
 # CORS middleware (allow frontend from any origin)
@@ -100,7 +100,7 @@ async def root():
     """Root endpoint"""
     return {
         "message": "ScholaRAG API",
-        "version": "1.0.0",
+        "version": "1.1.4",
         "endpoints": {
             "POST /query": "Query papers",
             "GET /papers": "List papers",

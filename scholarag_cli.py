@@ -1201,7 +1201,7 @@ def upgrade():
 
     # Create initial context.json
     initial_context = {
-        "version": "1.0",
+        "version": "1.1.4",
         "project": {
             "name": "Unknown",
             "created": datetime.now().isoformat(),
