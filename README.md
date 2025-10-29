@@ -176,41 +176,77 @@ python scholarag_cli.py next
 
 ---
 
-## 📋 Domain Templates
+## 🆕 Template-Free AI-PRISMA v2.0 (v1.1.4+)
 
-ScholaRAG provides **pre-configured templates** for common research domains to accelerate your project setup. Templates include domain-specific PRISMA criteria, recommended databases, and optimized query patterns.
+ScholaRAG v1.1.4 eliminates manual domain templates. Claude now **interprets your research question directly** using the PICO framework, making the system instantly applicable to **any research domain** without configuration overhead.
 
-### Available Templates
+### What Changed from v1.1.3
 
-Located in `templates/research_profiles/`:
+| Feature | v1.1.3 (Old) | v1.1.4 (New) |
+|---------|-------------|-------------|
+| **Setup time** | 30-60 minutes (manual keyword config) | 0 minutes (automatic interpretation) |
+| **Domain templates** | Required (`--domain education`) | ❌ Removed |
+| **Keyword lists** | Manual (`domain_keywords`, `method_keywords`) | ✅ Auto-inferred from research question |
+| **PRISMA config** | 20-30 min interactive configuration | 5-10 min validation |
+| **Supports** | Education, Medicine, Social Science templates only | **Any research domain** |
 
-| Template | Domain | Pre-configured Features |
-|----------|--------|------------------------|
-| **education** | Educational technology, learning sciences | ERIC, Semantic Scholar; pedagogy-focused PRISMA criteria |
-| **medicine** | Clinical research, public health | PubMed, MEDLINE; RCT-focused inclusion criteria |
-| **social_science** | Psychology, sociology, behavioral sciences | PsycINFO patterns; mixed-methods criteria |
-| **hrm** | Human resource management, organizational behavior | Business databases; workplace intervention criteria |
-| **default** | General multi-disciplinary research | Balanced configuration for any domain |
+### How It Works
 
-### Usage
-
+**Step 1: Initialize** (no domain needed)
 ```bash
-# Initialize project with domain template
-python scholarag_cli.py init --template education
-
-# Or specify during conversation mode
-# When Claude Code asks about your research domain,
-# mention the domain and it will auto-apply the template
+python scholarag_cli.py init \
+  --name "AI-Chatbots-Language-Learning" \
+  --question "How do AI chatbots improve speaking proficiency in EFL learners?" \
+  --project-type systematic_review
 ```
 
-### Benefits
+**Step 2: Claude interprets using PICO**
+- **Population**: EFL learners (university/adult)
+- **Intervention**: AI chatbots
+- **Comparison**: Study design (RCT, experimental, survey)
+- **Outcomes**: Speaking proficiency metrics
 
-- **Faster setup**: Pre-filled inclusion/exclusion criteria
-- **Domain expertise**: PRISMA criteria validated by domain experts
-- **Optimized queries**: Database selection tailored to field conventions
-- **Less iteration**: Reduced back-and-forth during Stage 3 (PRISMA configuration)
+**Step 3: Automatic threshold configuration**
+- `systematic_review`: 90/10 thresholds + human validation
+- `knowledge_repository`: 50/20 thresholds + AI-only
 
-**Custom templates**: Copy `templates/research_profiles/default.yaml` and modify for your specific needs.
+**Step 4: Evidence-grounded scoring**
+Every score includes direct quotes from the abstract (no hallucinations).
+
+### Example: Template-Free Config
+
+```yaml
+ai_prisma_rubric:
+  enabled: true
+  decision_confidence:
+    auto_include: 90  # Based on project_type
+    auto_exclude: 10
+  notes: |
+    Population: University or adult L2 learners (18+).
+    Intervention: AI-enabled conversational agents (ChatGPT, GPT-4, LLMs).
+    Outcomes: Speaking proficiency (fluency, pronunciation, oral exams).
+    Exclude: K-12 only studies, rule-based bots, purely theoretical papers.
+  guidance:
+    domain_signals:
+      - "Higher education or adult ESL/EFL learners"
+    intervention_signals:
+      - "AI chatbot, conversational agent, LLM tutor"
+    outcomes_signals:
+      - "Measured speaking improvements"
+    exclusion_signals:
+      - "Editorial/opinion only"
+      - "Non-AI rule-based bot"
+```
+
+No `templates/` directory needed—`config.yaml` is the single source of truth.
+
+### Migration from v1.1.3
+
+If upgrading from v1.1.3:
+1. ❌ Remove `--domain` parameter from CLI commands
+2. ❌ Delete `templates/research_profiles/` references in config
+3. ✅ Use template-free `ai_prisma_rubric` structure (see above)
+4. ✅ Claude will guide rubric calibration in Stage 3
 
 ---
 
@@ -432,17 +468,11 @@ ScholaRAG/
 ├── prompts/                    # 7 stage conversation templates
 │   ├── 01_research_domain_setup.md
 │   ├── 02_query_strategy.md
-│   ├── 03_prisma_configuration.md
+│   ├── 03_prisma_configuration.md  # v1.1.4: Template-free AI-PRISMA
 │   ├── 04_rag_design.md
 │   ├── 05_execution_plan.md
 │   ├── 06_research_conversation/    # 7 specialized scenarios
 │   └── 07_documentation_writing.md
-│
-├── templates/                  # Pre-configured YAML templates
-│   └── research_profiles/
-│       ├── education_template.yaml
-│       ├── medicine_template.yaml
-│       └── social_science_template.yaml
 │
 ├── scripts/                    # Automation scripts
 │   ├── 01_fetch_papers.py
@@ -468,7 +498,7 @@ ScholaRAG/
 - **[CLAUDE.md](CLAUDE.md)**: Complete implementation guide for Claude Code
 - **[AGENTS.md](AGENTS.md)**: Implementation guide for GPT-5-Codex and other AI assistants
 - **[7-Stage Prompts](prompts/)**: Copy-paste templates for each stage
-- **[Research Profiles](templates/research_profiles/)**: Pre-configured YAML for Education, Medicine, Social Science
+- **[Template-Free Config](config.yaml)**: Single source of truth with AI-PRISMA rubric (v1.1.4+)
 
 ---
 
@@ -523,7 +553,7 @@ ScholaRAG/
 We welcome contributions! Ways to help:
 
 - 🐛 **[Report Bugs](https://github.com/HosungYou/ScholaRAG/issues)**: Found an issue? Let us know
-- 📝 **Share Templates**: Add research profiles for your domain
+- 📝 **Share Rubric Guidance**: Document AI-PRISMA calibration patterns for specific research domains
 - 📚 **Improve Docs**: Fix typos, add examples, clarify instructions
 - ⭐ **Success Stories**: Share your research results using ScholaRAG
 - 💡 **Feature Requests**: Suggest improvements via GitHub Discussions

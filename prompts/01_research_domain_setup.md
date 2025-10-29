@@ -58,7 +58,7 @@ conversation_flow:
       claude_action: "Ask clarifying questions about specificity, constraints, and goals"
     - turn: 2-3
       user_action: "Answers clarifying questions, refines scope"
-      claude_action: "Suggest domain-specific keywords, validate feasibility, estimate paper counts"
+      claude_action: "Translate scope into AI-PRISMA rubric context (population, intervention, outcomes), validate feasibility, estimate paper counts"
     - turn: 4-5
       user_action: "Confirms scope or requests adjustments"
       claude_action: "Provide data source recommendations, explain next stages"

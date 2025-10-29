@@ -56,7 +56,6 @@ def init(name, question, project_type):
         python scholarag_cli.py init \\
             --name "AI-Healthcare-Adoption" \\
             --question "What factors influence AI adoption in hospitals?" \\
-            --domain medicine \\
             --project-type systematic_review
     """
     # 1. Sanitize project name

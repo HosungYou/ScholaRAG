@@ -279,7 +279,7 @@ See full decision tree: [skills/reference/project_type_decision_tree.md](skills/
 python scholarag_cli.py init \
   --name "AI-Chatbots-Language-Learning" \
   --question "How do AI chatbots improve speaking proficiency in EFL learners?" \
-  --domain education
+  --project-type systematic_review
 ```
 
 ### Stage 5: Run Pipeline (All 5 Scripts)

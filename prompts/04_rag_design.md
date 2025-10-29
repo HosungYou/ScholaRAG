@@ -6,7 +6,7 @@ expected_duration: "20-30 minutes"
 conversation_mode: "interactive"
 prerequisites:
   - stage: 3
-    requirement: "PRISMA profile saved, ready to process papers"
+    requirement: "Template-free AI-PRISMA rubric calibrated (Stage 3 complete)"
 outputs:
   - pdf_strategy: "Download plan with fallback options"
   - chunking_config: "Chunk size, overlap, metadata preservation"

@@ -164,7 +164,7 @@ Please design 2-3 query options (broad/focused/narrow) and estimate the expected
 5. **Save Final Query** (automatic)
    - Update `config.yaml` with selected query
    - Save alternative queries as backups
-   - Prepare for Stage 3 PRISMA configuration
+   - Prepare for Stage 3 AI-PRISMA calibration
 
 ### ✅ Stage Completion Checklist
 

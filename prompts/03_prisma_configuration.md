@@ -1,615 +1,378 @@
 <!-- METADATA
 stage: 3
-stage_name: "PRISMA Configuration"
-stage_goal: "Design inclusion/exclusion criteria and screening thresholds"
-expected_duration: "20-30 minutes"
+stage_name: "AI-PRISMA Calibration"
+stage_goal: "Calibrate template-free AI-PRISMA rubric and document screening rules"
+expected_duration: "5-10 minutes"
 conversation_mode: "interactive"
 prerequisites:
   - stage: 2
-    requirement: "Search query designed and saved to config.yaml"
+    requirement: "Query strategy finalized and saved to config.yaml"
 outputs:
-  - prisma_criteria: "Inclusion/exclusion keyword lists with weights"
-  - thresholds: "Screening, eligibility, and review queue cutoffs"
-  - research_profile: "YAML configuration for automated screening"
+  - ai_prisma_rubric: "Updated template-free rubric notes & thresholds in config.yaml"
+  - inclusion_brief: "Plain-language inclusion/exclusion rationale saved under ai_prisma_rubric"
+  - validation_plan: "Decision on human validation (required, sample size, reviewer notes)"
 validation_rules:
-  domain_keywords:
+  research_question:
     required: true
-    min_count: 3
-    validation: "Must cover core research domain"
-  exclusion_keywords:
-    required: false
-    validation: "Should include hard exclusions (e.g., animal studies, K-12 if irrelevant)"
-  screening_threshold:
+    validation: "Matches config.project.research_question"
+  ai_prisma_guidance:
     required: true
-    range: [15, 35]
-    default: 25
-    validation: "Should result in 50-70% pass rate"
-  eligibility_threshold:
+    validation: "ai_prisma_rubric.notes or guidance fields populated with domain-specific cues"
+  decision_confidence:
     required: true
-    range: [35, 55]
-    default: 45
-    validation: "Should result in 20-40% final inclusion rate"
+    validation: "auto_include > auto_exclude and aligned with project_type defaults unless justified"
 cli_commands:
-  - command: "scholarag test-prisma --profile config/research_profile.yaml"
-    when: "User wants to preview PRISMA results before committing"
+  - command: "python scripts/validate_config.py --config config.yaml"
+    when: "After editing config.yaml to confirm schema compliance"
     auto_execute: false
 scripts_triggered:
-  - none (configuration only, PRISMA runs in Stage 5)
+  - none (rubric calibration; screening runs later in Stage 5)
 next_stage:
   stage: 4
-  condition: "User confirms PRISMA profile and thresholds are appropriate"
+  condition: "Rubric guidance captured, thresholds confirmed, human validation plan agreed"
   prompt_file: "04_rag_design.md"
 divergence_handling:
   common_divergences:
-    - pattern: "User wants to run PRISMA screening immediately"
-      response: "PRISMA execution happens in Stage 5. Right now in Stage 3, let's design the criteria. We'll run all scripts together in Stage 5."
-    - pattern: "User asks about PDF downloading"
-      response: "PDF downloading is part of Stage 5 execution. Let's first finish designing PRISMA criteria in Stage 3, then RAG design in Stage 4."
-    - pattern: "User confused about scoring system"
-      response: "The scoring system is multi-dimensional (domain, method, topic, context, exclusion, title). Each dimension contributes points, total range -20 to 50. Papers scoring ≥screening threshold pass to next stage."
-    - pattern: "User wants to skip PRISMA and manually select papers"
-      response: "Manual selection is fine for exploratory research, but ScholaRAG is designed for PRISMA 2020 systematic reviews. If you prefer manual selection, this might not be the right tool."
+    - pattern: "User asks for keyword lists or templates"
+      response: "v1.1.4 is template-free—Claude now infers signals directly from your research question. We'll describe inclusion/exclusion expectations in plain language instead of maintaining keyword YAML."
+    - pattern: "User wants to run screening immediately"
+      response: "We'll capture the rubric now; actual screening happens during Stage 5 execution after PDFs are ready."
+    - pattern: "User unsure about thresholds"
+      response: "Thresholds come from project_type: 50/20 for knowledge repositories, 90/10 with optional human validation for systematic reviews. We can document any adjustments here."
 conversation_flow:
-  expected_turns: 6-12
+  expected_turns: 6-10
   typical_pattern:
     - turn: 1
-      user_action: "Provides paper collection details (count, sources)"
-      claude_action: "Analyze metadata if available, ask about preferred methodologies"
+      user_action: "Shares research question summary and project_type confirmation"
+      claude_action: "Explain template-free AI-PRISMA rubric and verify research question matches config"
     - turn: 2-4
-      user_action: "Specifies inclusion preferences (methods, contexts, exclusions)"
-      claude_action: "Design keyword lists across 6 dimensions with weights"
+      user_action: "Clarifies desired inclusion/exclusion signals (population, intervention, outcomes, study types)"
+      claude_action: "Drafts narrative guidance for each of the six scoring dimensions and highlights automatic thresholds"
     - turn: 5-7
-      user_action: "Reviews keyword lists, requests adjustments"
-      claude_action: "Refine weights, add synonyms, adjust exclusions"
-    - turn: 8-10
-      user_action: "Tests preview or adjusts thresholds"
-      claude_action: "Estimate pass rates, explain trade-offs, show sample scores"
-    - turn: "final"
-      user_action: "Confirms PRISMA profile"
-      claude_action: "Save research_profile.yaml to config/, show Stage 4 prompt"
+      user_action: "Reviews guidance, decides on human validation requirements"
+      claude_action: "Adjusts ai_prisma_rubric.notes/guidance, documents human validation plan"
+    - turn: final
+      user_action: "Approves rubric summary"
+      claude_action: "Writes config snippet under ai_prisma_rubric, restates next steps, surfaces Stage 4 prompt"
 validation_checklist:
-  - "Domain keywords cover core research area (3+ keywords)"
-  - "Method keywords reflect preferred study designs"
-  - "Exclusion keywords prevent irrelevant papers"
-  - "Thresholds are realistic (screening: 50-70% pass, eligibility: 20-40% pass)"
-  - "User understands multi-dimensional scoring system"
-  - "Research profile saved to config/research_profile.yaml"
+  - "Research question in config.project.research_question confirmed and echoed in rubric notes"
+  - "ai_prisma_rubric.notes (or guidance) captures population, intervention, outcomes, and exclusion cues in plain language"
+  - "decision_confidence.auto_include / auto_exclude align with project_type defaults or have justification documented"
+  - "Human validation expectations recorded (required?, sample size, reviewer role)"
+  - "User understands 6-dimension scoring (domain, intervention, method, outcomes, exclusion, title bonus) and evidence requirements"
 -->
 
-# Stage 3: PRISMA Configuration
+# Stage 3: AI-PRISMA Calibration
 
-**🎯 Your Current Stage**: Stage 3 of 7
-**⏱️ Expected Time**: 20-30 minutes
+**🎯 Current Stage**: 3 of 7
+**⏱️ Time**: 5-10 minutes
 **💬 Format**: Interactive conversation with Claude Code
-**📋 Prerequisites**: Stages 1-2 completed (research scope + query designed)
+**📋 Prerequisite**: Stage 2 query strategy saved to `config.yaml`
 
 ---
 
 ## 🚀 Quick Start
 
-After completing Stages 1-2, copy this prompt to Claude Code:
+Copy the prompt below into Claude Code once Stage 2 is complete:
 
 ---
 
-Now that we have our search queries, I need help configuring PRISMA (Preferred Reporting Items for Systematic Reviews and Meta-Analyses) screening criteria.
+We finished Stage 2, and I'm ready to calibrate AI-PRISMA screening for Stage 3.
 
-**My Project Type** (from Stage 1):
-[knowledge_repository OR systematic_review]
+**Project Snapshot**
+- Project type: [knowledge_repository | systematic_review]
+- Research question: "[Paste from config.project.research_question]"
+- Query scope: "[Short summary of the Stage 2 query and expected paper count]"
 
-**Research Focus**: [Brief summary from Stage 1]
+**What I need now**
+1. Summarize how the template-free AI-PRISMA rubric works in v1.1.4 (no keyword templates).
+2. Confirm thresholds (auto_include / auto_exclude) and whether human validation is required for my project type.
+3. Draft plain-language guidance for the six scoring dimensions (domain, intervention, method, outcomes, exclusion, title bonus) based on my research question.
+4. List clear inclusion signals and exclusion triggers the AI should look for in titles/abstracts.
+5. Document any human validation plan (sample size, reviewer role) inside `ai_prisma_rubric`.
+6. Provide the YAML edits I should append to `config.yaml` under `ai_prisma_rubric`.
 
-**Search Query**: [Your selected query from Stage 2]
-
-**Expected Paper Count**: [Estimated from Stage 2]
-
----
-
-## 📊 PRISMA Configuration by Project Type
-
-### If Knowledge Repository 🗂️
-
-Please help me design **minimal filtering criteria**:
-1. **Technical criteria only**: Language, publication format, duplicates
-2. **Spam/noise detection**: Remove clearly irrelevant papers (not domain-related)
-3. **Lenient thresholds**: 80-90% retention rate (AI screening only, no human review)
-
-**My Preferences**:
-- Languages: [e.g., English only, or multilingual]
-- Exclude formats: [e.g., patents, posters, editorials]
-- Domain boundaries: [e.g., exclude papers completely unrelated to X field]
-
-### If Systematic Review 📄
-
-Please help me design **strict PRISMA criteria**:
-1. **Inclusion criteria**: Domain, method, population, intervention, outcomes (with keyword weights)
-2. **Exclusion criteria**: Specific exclusions (animal studies, age groups, study designs)
-3. **Strict thresholds**: 2-10% final retention rate (human review required)
-4. **Research profile**: Detailed YAML configuration for multi-stage screening
-
-**My Preferences**:
-- Preferred study designs: [e.g., RCT only, experimental + quasi-experimental, include qualitative]
-- Must include: [e.g., specific outcomes, populations, interventions]
-- Must exclude: [e.g., animal studies, K-12 if focusing on higher ed, specific contexts]
+Please keep everything template-free—the model should infer keywords dynamically from the research question rather than maintaining static lists.
 
 ---
 
-## 📋 What Happens in This Stage
+## 🔍 How Stage 3 Works in v1.1.4
 
-### For Knowledge Repository 🗂️
+### 🆕 Template-Free AI-PRISMA v2.0
 
-**Claude Code Will**:
+v1.1.4 eliminates manual keyword configuration. Claude now interprets your research question directly using the PICO framework.
 
-1. **Explain Minimal Filtering Approach** (Turn 1)
-   - Goal: Maximize coverage, minimize false negatives
-   - AI screening only (no human review required)
-   - Technical filters: Language, format, duplicates
+**Key Changes from v1.1.3:**
+- ❌ No `domain_keywords` lists
+- ❌ No `method_keywords` lists
+- ❌ No `exclusion_keywords` lists
+- ❌ No `templates/research_profiles/` files
+- ✅ Plain-language guidance in `ai_prisma_rubric.notes`
+- ✅ Automatic keyword inference from research question
 
-2. **Design Simple Criteria** (Turn 2-3)
-   - **Language filter**: English only or multilingual
-   - **Format exclusions**: Patents, posters, editorials (if desired)
-   - **Domain relevance**: Broad keywords to catch spam/noise only
-   - **No strict thresholds**: Accept 80-90% of papers
-
-3. **Configure AI Screening** (Turn 4)
-   - Lenient confidence thresholds (auto_include: 50, auto_exclude: 20)
-   - No human validation required
-   - Focus: Remove spam, duplicates, clearly irrelevant papers
-
-4. **Save Minimal Profile** (automatic)
-   - Update `config.yaml` with lenient settings
-   - Expected retention: 80-90% of initial papers
-   - Ready for Stage 5 execution
-
----
-
-### For Systematic Review 📄
-
-**Claude Code Will**:
-
-1. **Explain PRISMA 2020 Workflow** (Turn 1)
-   - 4 stages: Identification → Screening → Eligibility → Inclusion
-   - Multi-dimensional scoring system (6 dimensions)
-   - Threshold-based filtering with human review
-
-2. **Design Detailed Keyword Lists** (Turn 2-5)
-   - **Domain keywords** (0-10 points): Core research area
-   - **Method keywords** (0-5 points): Study designs (RCT, experimental, etc.)
-   - **Population keywords** (0-5 points): Target groups (age, setting, etc.)
-   - **Intervention keywords** (0-10 points): Specific interventions tested
-   - **Outcome keywords** (0-10 points): Measured outcomes
-   - **Exclusion keywords** (-20 to 0 points): Hard exclusions
-
-3. **Set Strict Thresholds** (Turn 6-8)
-   - Screening threshold (recommended: 25 points, expect 50-70% pass)
-   - Eligibility threshold (recommended: 45 points, expect 20-40% final)
-   - Review queue range (35-44 points, manual review needed)
-   - Final retention: 2-10% of initial papers
-
-4. **Configure Human Review** (Turn 9)
-   - Require human validation (review sample papers)
-   - Set confidence thresholds (auto_include: 90, auto_exclude: 10)
-   - Flag borderline cases for manual decision
-
-5. **Preview and Test** (if requested)
-   - Estimate pass rates based on keyword analysis
-   - Show sample papers from each score range
-   - Adjust thresholds if needed
-
-6. **Save Detailed Profile** (automatic)
-   - Create `config/research_profile.yaml`
-   - Include all keyword lists and thresholds
-   - Ready for Stage 5 execution
-
-### ✅ Stage Completion Checklist
-
-Before moving to Stage 4, ensure:
-
-- [ ] **Domain keywords** cover core research area (3+ keywords)
-- [ ] **Method keywords** reflect preferred study designs
-- [ ] **Exclusion keywords** filter out irrelevant papers
-- [ ] **Thresholds** are realistic (screening: 50-70% pass, eligibility: 20-40% final)
-- [ ] You **understand scoring system** (6 dimensions, -20 to 50 range)
-- [ ] **Research profile saved** to `config/research_profile.yaml`
-
----
-
-## 🔍 PRISMA 2020 Workflow
-
-```
-Stage 1: Identification
-├─ Papers fetched from databases (X papers)
-└─ Duplicates removed (Y papers)
-    ↓
-Stage 2: Screening (Title/Abstract)
-├─ Score ≥25 points → PASS (50-70% of Y)
-└─ Score <25 points → EXCLUDE
-    ↓
-Stage 3: Eligibility (Detailed Assessment)
-├─ Score ≥45 points → INCLUDE (20-40% of Y)
-├─ Score 35-44 points → MANUAL REVIEW (10-15% of Y)
-└─ Score <35 points → EXCLUDE
-    ↓
-Stage 4: Inclusion
-└─ Final papers for RAG system (W papers)
-```
-
----
-
-## 📊 Multi-Dimensional Scoring System
+### 📊 Six Scoring Dimensions
 
 Papers are scored across **6 dimensions** (total range: **-20 to 50 points**):
 
-### 1. Domain Match (0-10 points)
+1. **Domain** (0-10 points) - Core research domain/population
+2. **Intervention** (0-10 points) - Technology/treatment being studied
+3. **Method** (0-5 points) - Study design rigor (RCT=5, Survey=3, Case study=2)
+4. **Outcomes** (0-10 points) - Measured results relevant to research question
+5. **Exclusion** (-20 to 0 points) - Hard exclusions (animal studies, editorials, etc.)
+6. **Title Bonus** (+10 points) - Domain + intervention keywords in title
 
-Core research domain keywords
+### 🎯 Decision Logic
 
-**Example (Education):**
-```yaml
-domain_keywords:
-  - "language learning": 10
-  - "education": 9
-  - "pedagogy": 8
+Three decision thresholds based on **confidence** (0-100%) and **total score**:
+
+```
+IF confidence ≥ auto_include AND total_score ≥ 30:
+    → AUTO-INCLUDE ✅
+ELIF confidence ≤ auto_exclude OR total_score < 0:
+    → AUTO-EXCLUDE ❌
+ELSE:
+    → HUMAN-REVIEW 👤
 ```
 
-**Example (Medicine):**
-```yaml
-domain_keywords:
-  - "clinical": 10
-  - "patient": 9
-  - "treatment": 8
+### 📐 Project Type Thresholds
+
+| Project Type | auto_include | auto_exclude | Human Validation |
+|--------------|--------------|--------------|------------------|
+| `knowledge_repository` | 50% | 20% | Optional (default: false) |
+| `systematic_review` | 90% | 10% | Required (default: true) |
+
+### 📝 Evidence-Based Scoring
+
+Every score must include **direct quotes** from the abstract:
+
+```json
+{
+  "scores": {
+    "domain": 10,
+    "intervention": 10,
+    "method": 4,
+    "outcomes": 9
+  },
+  "evidence_quotes": [
+    "ChatGPT was integrated into three undergraduate courses",
+    "Student engagement increased by 23% (p<0.05)",
+    "Quasi-experimental design with pre-test/post-test"
+  ],
+  "confidence": 87
+}
 ```
 
-**Scoring:**
-- 10 points: Perfect match (3+ domain keywords)
-- 7-9 points: Good match (2 domain keywords)
-- 4-6 points: Moderate match (1 domain keyword)
-- 0-3 points: Poor match (no domain keywords)
+If evidence is missing, confidence decreases automatically.
 
 ---
 
-### 2. Method Match (0-5 points)
+## 🧭 Conversation Outline
 
-Research methodology preferences
+### Turn 1 – Recap & Reality Check
+
+Claude restates the research question and confirms it matches `config.project.research_question`.
 
 **Example:**
+```
+Your research question is: "How do AI chatbots improve speaking proficiency in EFL learners?"
+
+This is a systematic_review project, so I'll use:
+- auto_include threshold: 90%
+- auto_exclude threshold: 10%
+- Human validation: Required (sample size: 50, κ ≥ 0.61)
+
+The AI-PRISMA rubric will interpret this question using PICO framework:
+- Population: EFL learners (likely university/adult)
+- Intervention: AI chatbots
+- Outcomes: Speaking proficiency improvements
+- Comparison: Any study design (RCT, quasi-experimental, survey)
+
+Does this align with your intent?
+```
+
+### Turn 2-3 – Inclusion Signals
+
+Discuss populations, interventions, outcomes, and study designs that **must** appear.
+
+**Example Questions:**
+- "Should I include K-12 students, or only university/adult learners?"
+- "Are rule-based chatbots acceptable, or only AI/LLM-powered bots?"
+- "Must the paper measure speaking proficiency directly, or are indirect measures (engagement, confidence) acceptable?"
+
+**Claude drafts narrative guidance:**
 ```yaml
-method_keywords:
-  - "RCT": 5
-  - "experimental": 5
-  - "quasi-experimental": 4
-  - "survey": 3
-  - "case study": 2
+notes: |
+  Population: University or adult EFL learners (18+). Exclude K-12 only studies.
+  Intervention: AI-enabled conversational agents (ChatGPT, GPT-4, Claude, custom LLMs).
+    Exclude rule-based bots without AI/NLP.
+  Outcomes: Speaking proficiency metrics (fluency, pronunciation, oral exams).
+    Accept: Pre-test/post-test, standardized tests (TOEFL speaking, IELTS oral).
+    Exclude: Only self-reported confidence without objective measures.
+  Study designs: Accept experimental, quasi-experimental, survey, mixed methods.
+    Prefer RCT/experimental but don't exclude surveys.
 ```
 
-**Scoring:**
-- 5 points: Preferred method (RCT, experimental)
-- 3-4 points: Acceptable method (survey, quasi-experimental)
-- 1-2 points: Weak method (case study, descriptive)
-- 0 points: No method mentioned
+### Turn 4 – Exclusion Logic
 
----
+Gather "red flag" conditions that trigger penalties.
 
-### 3. Topic Match (0-5 points)
+**Example Exclusions:**
+- **Hard exclusions (-20 points)**: Animal studies, in vitro research, K-12 only populations, editorials/opinion pieces
+- **Soft exclusions (-5 to -10)**: Purely theoretical papers, literature-only reviews, rule-based (non-AI) chatbots
 
-Specific research focus
-
-**Example:**
+**Claude documents:**
 ```yaml
-topic_keywords:
-  - "chatbot": 5
-  - "conversational agent": 5
-  - "learning outcomes": 4
-  - "engagement": 3
+guidance:
+  exclusion_signals:
+    - "Editorial/commentary only"
+    - "Non-AI rule-based bot"
+    - "Primary outcome unrelated to speaking"
+    - "K-12 only population (if adult focus)"
+    - "Animal study"
 ```
 
-**Scoring:**
-- 5 points: Highly relevant (3+ topic keywords)
-- 3-4 points: Relevant (2 topic keywords)
-- 1-2 points: Somewhat relevant (1 topic keyword)
-- 0 points: Not relevant
+### Turn 5 – Human Validation Plan
 
----
+Decide if expert review is required.
 
-### 4. Context Match (0-10 points)
-
-Research context and outcomes
-
-**Example:**
+**For systematic_review (default):**
 ```yaml
-context_keywords:
-  - "effectiveness": 10
-  - "impact": 9
-  - "speaking proficiency": 8
-  - "higher education": 7
+human_validation:
+  required: true
+  sample_size: 50  # Recommended: 50-100 papers
+  kappa_threshold: 0.61  # Substantial agreement
+  notes: "Dual screening by PI + senior RA; reconcile disagreements weekly."
 ```
 
-**Scoring:**
-- 10 points: Perfect context (strong outcomes + setting)
-- 7-9 points: Good context
-- 4-6 points: Moderate context
-- 0-3 points: Poor context
-
----
-
-### 5. Exclusion Penalty (-20 to 0 points)
-
-Papers to filter out
-
-**Example:**
+**For knowledge_repository (default):**
 ```yaml
-exclusion_keywords:
-  - "animal study": -20  # Hard exclusion (auto-fail)
-  - "K-12": -10          # Strong exclusion
-  - "children": -5       # Soft exclusion (penalty)
+human_validation:
+  required: false
+  sample_size: 0
+  notes: "AI-only review for comprehensive coverage."
 ```
 
-**Scoring:**
-- -20 points: Hard exclusion (paper automatically fails)
-- -10 points: Strong exclusion (very hard to recover)
-- -5 points: Soft exclusion (penalty, not elimination)
-- 0 points: No exclusion keywords
+### Turn 6 – YAML Patch
 
----
-
-### 6. Title Bonus (0 or 10 points)
-
-Keywords in title are stronger signals
-
-**Scoring:**
-- +10 points: Domain keyword appears in title
-- 0 points: No domain keyword in title
-
----
-
-## 🎯 Total Score Calculation
-
-```
-Total Score =
-  Domain Match (0-10) +
-  Method Match (0-5) +
-  Topic Match (0-5) +
-  Context Match (0-10) +
-  Exclusion Penalty (-20 to 0) +
-  Title Bonus (0 or 10)
-
-Range: -20 to 50 points
-```
-
-**Example paper:**
-- Domain: "language learning" + "education" in abstract (8 points)
-- Method: "experimental" mentioned (5 points)
-- Topic: "chatbot" + "engagement" (4 points)
-- Context: "effectiveness" + "higher education" (8 points)
-- Exclusion: No exclusion keywords (0 penalty)
-- Title: "language learning" in title (+10 bonus)
-
-**Total: 8 + 5 + 4 + 8 + 0 + 10 = 35 points** (Manual review queue)
-
----
-
-## ⚙️ Threshold Settings
-
-| Stage | Threshold | Expected Pass Rate | Purpose |
-|-------|-----------|-------------------|---------|
-| **Screening** | 25 points | 50-70% | Remove obviously irrelevant |
-| **Eligibility** | 45 points | 20-40% | High-quality papers only |
-| **Review Queue** | 35-44 points | 10-15% | Manual review needed |
-| **Auto-include** | 50 points | 5-10% | Perfect matches |
-
-### How to Adjust Thresholds
-
-**Too many papers passing (>70%)?**
-- Increase screening threshold (25 → 30 or 35)
-- Add more exclusion keywords
-- Increase method/topic weight requirements
-
-**Too few papers passing (<20%)?**
-- Decrease screening threshold (25 → 20 or 15)
-- Remove or soften exclusion keywords
-- Add more synonyms for domain/topic keywords
-- Lower method requirements (allow surveys, case studies)
-
----
-
-## 📚 Example: Education Research
-
-### Research Focus
-"Effectiveness of AI chatbots in improving speaking proficiency for language learners in higher education"
-
-### Research Profile (YAML)
+Claude produces the exact YAML snippet to paste into `config.yaml`:
 
 ```yaml
-name: "AI Chatbots for Language Learning Speaking Skills"
-description: "Systematic review of chatbot interventions for speaking proficiency in higher education"
-
-# Domain keywords (max weight: 10)
-domain_keywords:
-  - "language learning": 10
-  - "second language acquisition": 10
-  - "foreign language": 9
-  - "L2": 8
-  - "education": 7
-
-# Method keywords (max weight: 5)
-method_keywords:
-  - "RCT": 5
-  - "randomized": 5
-  - "experimental": 5
-  - "quasi-experimental": 4
-  - "survey": 3
-  - "mixed methods": 3
-
-# Topic keywords (max weight: 5)
-topic_keywords:
-  - "chatbot": 5
-  - "conversational agent": 5
-  - "dialogue system": 4
-  - "virtual agent": 4
-  - "AI tutor": 4
-
-# Context keywords (max weight: 10)
-context_keywords:
-  - "speaking proficiency": 10
-  - "oral proficiency": 10
-  - "fluency": 9
-  - "pronunciation": 8
-  - "higher education": 7
-  - "university": 7
-  - "college": 6
-  - "effectiveness": 8
-  - "learning outcomes": 7
-
-# Exclusion keywords (negative weights)
-exclusion_keywords:
-  - "animal study": -20
-  - "in vitro": -20
-  - "K-12": -5              # Soft (some papers compare K-12 + university)
-  - "children": -10
-  - "elementary": -10
-  - "secondary school": -5
-  - "review article": -15  # Exclude meta-analyses/reviews
-  - "opinion": -15
-
-# Thresholds
-thresholds:
-  screening: 25        # Stage 2 cutoff (expect 60% pass)
-  eligibility: 45      # Stage 3 cutoff (expect 30% final)
-  review_queue: 35     # Manual review needed
-  min_inclusion: 50    # Auto-include threshold (perfect matches)
+ai_prisma_rubric:
+  enabled: true
+  llm: claude-3-5-sonnet-20241022
+  temperature: 0.1
+  decision_confidence:
+    auto_include: 90
+    auto_exclude: 10
+  human_validation:
+    required: true
+    sample_size: 50
+    kappa_threshold: 0.61
+    notes: "Dual screening by PI + senior RA; reconcile disagreements weekly."
+  notes: |
+    Population focus: University or adult L2 learners (18+).
+    Interventions: AI-enabled conversational agents, large language-model chatbots.
+    Outcomes: Speaking proficiency metrics (fluency, pronunciation, oral exams).
+    Must exclude: K-12 only studies, purely theoretical papers, rule-based chatbots.
+    Accept borderline: Mixed-methods studies if speaking outcomes are reported.
+  guidance:
+    domain_signals:
+      - "Higher education or adult ESL/EFL learners"
+      - "Language learning / speaking proficiency context"
+    intervention_signals:
+      - "AI chatbot, conversational agent, LLM tutor"
+    outcomes_signals:
+      - "Measured improvements in speaking, pronunciation, or fluency"
+    exclusion_signals:
+      - "Editorials, opinion pieces, literature-only reviews"
+      - "Rule-based bot without AI"
+      - "Primary outcome unrelated to speaking"
+    evidence_requirements:
+      - "Quote one sentence for each scoring dimension."
+      - "If abstract lacks detail, assign lower scores and explain the uncertainty."
 ```
-
-### Expected Conversation Flow
-
-**Claude**: "Based on your research focus, I've designed a PRISMA profile emphasizing:
-
-1. **Domain**: Language learning + higher education contexts
-2. **Methods**: Experimental studies preferred (RCT=5), but surveys allowed (3)
-3. **Topics**: Chatbots and conversational agents (high weights)
-4. **Contexts**: Speaking proficiency outcomes (10), university settings (7)
-5. **Exclusions**: K-12 softly excluded (-5 to allow comparative studies)
-
-With these settings, I estimate:
-- Screening pass: ~60% (if you collect 500 papers → 300 pass)
-- Eligibility pass: ~30% (500 → 150 final papers)
-- Manual review: ~12% (500 → 60 borderline papers)
-
-Does this align with your research goals?"
-
-**You**: "Yes, but I'm worried we're being too strict on methods. Some good qualitative studies might be excluded."
-
-**Claude**: "Excellent point! Qualitative studies can provide rich insights. I'll add qualitative methods:
-
-```yaml
-method_keywords:
-  - "RCT": 5
-  - "experimental": 5
-  - "quasi-experimental": 4
-  - "survey": 3
-  - "mixed methods": 3
-  - "interview": 3         # Added
-  - "case study": 2        # Added
-  - "qualitative": 2       # Added
-```
-
-New estimates:
-- Screening pass: ~65% (500 → 325 papers)
-- Eligibility pass: ~35% (500 → 175 papers)
-
-This allows strong qualitative studies to pass if they score well in other dimensions."
-
-**You**: "Perfect! Let's proceed."
 
 ---
 
-## 🔄 What Happens Next
+## ✅ Stage 3 Completion Checklist
 
-### After This Conversation
+You're ready for Stage 4 when:
 
-1. **Research Profile Saved** ✓
-   - `config/research_profile.yaml` created
-   - All keyword lists and thresholds configured
-   - Ready for Stage 5 automated screening
+- [ ] `config.project.research_question` is confirmed and referenced in `ai_prisma_rubric.notes`
+- [ ] `ai_prisma_rubric.decision_confidence` uses `50/20` (knowledge repository) or `90/10` (systematic review) unless justified
+- [ ] Plain-language guidance for inclusion and exclusion signals is documented (`notes` and/or `guidance` keys)
+- [ ] Human validation requirements are explicit (`required`, `sample_size`, `kappa_threshold`, reviewer notes)
+- [ ] No keyword lists, template paths, or `research_profile.yaml` references remain
 
-2. **You Receive Stage 4 Prompt** ➡️
-   - Copy/paste to continue conversation
-   - Design RAG system (chunking, embeddings, retrieval)
-   - Expected time: 20-30 minutes
+---
 
-3. **Progress Tracking**
-   - Conversation context updated in `.scholarag/context.json`
-   - PRISMA configuration saved for execution in Stage 5
+## 🔄 Next Steps
+
+1. **Save updates**
+   Append Claude's YAML snippet to `config.yaml` under `ai_prisma_rubric`.
+
+2. **Optional validation**
+   Run `python scripts/validate_config.py --config config.yaml` to confirm structure.
+
+3. **Preview Stage 5 usage**
+   Screening will later be executed with:
+   ```bash
+   python scripts/03_screen_papers.py --project . --question "<research question>"
+   ```
+
+4. **Proceed to Stage 4**
+   Copy `prompts/04_rag_design.md` once rubric calibration is signed off.
 
 ---
 
 ## 🚨 Troubleshooting
 
-### "I don't understand the scoring system"
+### "Do I still need to provide keyword lists?"
 
-Think of it like a college application:
-- **Domain** (0-10): Is this the right field? (like major fit)
-- **Method** (0-5): Is the methodology rigorous? (like GPA)
-- **Topic** (0-5): Is it about your specific interest? (like extracurriculars)
-- **Context** (0-10): Is it the right setting/outcome? (like location preference)
-- **Exclusion** (-20 to 0): Deal-breakers? (like "must not be X")
-- **Title bonus** (+10): Keywords in title = stronger signal
+No. Template-based lists were removed in v1.1.4. Capture expectations as narrative guidance instead.
 
-Papers need to score well across MULTIPLE dimensions to pass.
+### "Why do I need a research question if it's already in config?"
 
-### "How do I choose keyword weights?"
+Stage 3 ensures the research question is up-to-date and matches what the screening script requires. This becomes the single source of truth passed to `03_screen_papers.py`.
 
-**High weight (8-10)**: Core to your research question
-**Medium weight (5-7)**: Important but not essential
-**Low weight (2-4)**: Nice to have, slightly relevant
+### "Can I change thresholds?"
 
-**Example**: If studying "chatbot speaking proficiency in universities":
-- "speaking proficiency" = 10 (core outcome)
-- "university" = 7 (important context)
-- "engagement" = 4 (nice to have, but not core)
+Only if you switch project_type or have a documented rationale. Otherwise keep defaults:
+- 90/10 for systematic review
+- 50/20 for knowledge repository
 
-### "Should I use hard exclusions (-20) or soft (-5)?"
+### "How do I document edge cases?"
 
-**Hard exclusion (-20)**: Use for completely irrelevant contexts
-- Animal studies (if human-only research)
-- K-12 (if ONLY interested in higher education)
-- Review articles (if want primary research only)
+Add notes under `guidance` (e.g., "allow mixed populations if adult learners constitute >50% of sample").
 
-**Soft exclusion (-5 to -10)**: Use when context is mostly irrelevant but exceptions exist
-- K-12 (if some papers compare K-12 + university)
-- Specific diseases (if medical research with narrow focus)
+### "What if I'm migrating from v1.1.3?"
 
-**Test**: If you'd NEVER include a paper with this keyword, use -20. If exceptions are possible, use -5 or -10.
-
-### "What if I want to test before committing?"
-
-Ask Claude: "Can you show me example scores for these papers?" Provide 3-5 paper titles/abstracts, and Claude will calculate their PRISMA scores using your profile.
-
----
-
-## 🎯 Stage 3 Success Criteria
-
-You're ready to move to Stage 4 when:
-
-✅ **Domain keywords** cover core research area (3+ keywords)
-✅ **Method keywords** reflect preferred study designs
-✅ **Exclusion keywords** filter out irrelevant contexts
-✅ **Thresholds** are realistic (screening: 50-70% pass, eligibility: 20-40% final)
-✅ You **understand the scoring system** (6 dimensions)
-✅ **Research profile saved** to `config/research_profile.yaml`
-
----
-
-## 📍 Your Progress
-
-```
-[●●●○○○○] Stage 3/7: PRISMA Configuration
+Delete old keyword-based config:
+```bash
+# Remove old structure
+vim config.yaml
+# Delete these sections if they exist:
+# - domain_keywords
+# - method_keywords
+# - topic_keywords
+# - exclusion_keywords
+# - templates/research_profiles/ references
 ```
 
-**Next**: Stage 4 - RAG Design (20-30 min)
-**After That**: Stage 5 - Execution Plan & Run (2-4 hours)
-
-**Progress So Far**: ~55-80 minutes
-**Remaining Time**: ~3-6 hours across stages 4-7
+Add new rubric guidance as shown in Turn 6 above.
 
 ---
 
-**Ready to continue?** Copy the prompt template above, fill in your research details, and paste it to Claude Code!
+## 📍 Progress Tracker
+
+```
+[●●●○○○○] Stage 3/7: AI-PRISMA Calibration
+```
+
+**Next**: Stage 4 – RAG Design (20-30 min)
+**Later**: Stage 5 – Pipeline Execution (2-4 hours)
+**Cumulative time so far**: ~40-60 minutes (down from ~70-110 in v1.1.3)
+
+---
+
+**Ready for Stage 4?** Paste the updated prompt and continue the pipeline with confidence in your template-free rubric.
