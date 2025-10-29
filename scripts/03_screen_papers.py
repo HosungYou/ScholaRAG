@@ -85,15 +85,15 @@ class PaperScreener:
         Claude interprets the research question directly without keyword templates.
         This provides flexibility for any research domain without manual configuration.
 
-        Framework: PICO-inspired with intentional adaptations for multidisciplinary research.
-        - Domain (PICO: Population) → Research field + participant context
-        - Intervention (PICO: same) → Technology/tool being studied
-        - Method (PICO: Comparison) → Study design rigor, not control groups
-        - Outcomes (PICO: same) → Measurable results
-        - Exclusion (NEW) → Hard filters for irrelevant contexts
-        - Title Bonus (NEW) → Relevance signal from title-abstract alignment
+        Framework: PICOC+S-derived relevance scoring with automation-aware prioritisation.
+        - Domain (PICOC: Context) → Context-sensitive population definition (Booth et al., 2012)
+        - Intervention (PICO: same) → Technology/tool being studied (Richardson et al., 1995)
+        - Method (PICOS: Study design) → Study design rigor prioritization (Higgins et al., 2022)
+        - Outcomes (PICO: same) → Measurable results (Richardson et al., 1995)
+        - Exclusion (PRISMA 2020) → PRISMA-derived eligibility criteria (Page et al., 2021)
+        - Title Bonus (Automation) → Title-abstract alignment (O'Mara-Eves et al., 2015)
 
-        See RELEASE_NOTES_v1.1.5.md for academic justification.
+        See RELEASE_NOTES_v1.1.6.md for complete academic lineage with 13 scholarly citations.
         """
 
         prompt = f"""You are a research assistant conducting a PRISMA 2020 systematic literature review using AI-PRISMA methodology.
@@ -105,16 +105,18 @@ Paper Title: {title}
 Abstract: {abstract}
 
 ═══════════════════════════════════════════════════════════════════
-TASK: Evaluate this paper using the 6-dimension scoring rubric based on PICO-inspired framework.
+TASK: Evaluate this paper using the 6-dimension scoring rubric based on PICOC+S-derived framework.
 
-NOTE: This is a PICO-inspired rubric with intentional adaptations for multidisciplinary research.
-See RELEASE_NOTES_v1.1.5.md for academic justification of Domain/Method extensions.
+NOTE: This rubric synthesizes PICOC (Booth et al., 2012), PICOS (Higgins et al., 2022),
+and PRISMA 2020 (Page et al., 2021) with automation research (O'Mara-Eves et al., 2015).
+See RELEASE_NOTES_v1.1.6.md for complete academic lineage with 13 scholarly citations.
 ═══════════════════════════════════════════════════════════════════
 
 SCORING RUBRIC:
 
-1. DOMAIN (PICO: Population) - 0-10 points
+1. DOMAIN (PICOC: Context) - 0-10 points
    Evaluate if the paper addresses the core research domain/population relevant to the research question.
+   Context-sensitive population definition following PICOC framework (Booth et al., 2012).
 
    Scoring Guidelines:
    - 10 points: Directly addresses the target domain/population
@@ -144,8 +146,9 @@ SCORING RUBRIC:
    - Award 10 if paper directly studies this intervention
    - Award 0 if intervention is absent or completely different
 
-3. METHOD (PICO: Comparison/Study Design) - 0-5 points
+3. METHOD (PICOS: Study Design) - 0-5 points
    Evaluate the rigor of the research methodology.
+   Study design rigor prioritization following PICOS guidance (Higgins et al., 2022; Cochrane Handbook).
 
    Scoring Guidelines:
    - 5 points: RCT, randomized controlled trial, experimental design
@@ -172,8 +175,9 @@ SCORING RUBRIC:
    - Award 10 for quantitative outcomes with statistical analysis
    - Award 0 for papers with no empirical results
 
-5. EXCLUSION - (-20 to 0 points)
+5. EXCLUSION (PRISMA 2020: Eligibility Criteria) - (-20 to 0 points)
    Apply penalties for papers that should be excluded based on study type or irrelevance.
+   PRISMA-derived eligibility exclusions (Page et al., 2021; Higgins et al., 2022).
 
    Penalty Guidelines:
    - -20 points: Completely irrelevant domain (e.g., medical imaging for education research)
@@ -185,10 +189,11 @@ SCORING RUBRIC:
 
    Note: Multiple penalties can stack (e.g., -10 for review + -15 for wrong population = -25, capped at -20)
 
-6. TITLE BONUS - 0 or +10 points
+6. TITLE BONUS (Automation Research: Title-Abstract Alignment) - 0 or +10 points
    Award +10 if BOTH the domain AND intervention appear in the title.
 
-   Rationale: Keywords in title indicate stronger relevance signal than abstract-only mentions.
+   Rationale: Title-abstract term weighting from systematic review automation research
+   (O'Mara-Eves et al., 2015; Wallace et al., 2010).
 
    Examples for "{self.research_question}":
    - If research question is about "ChatGPT in higher education":

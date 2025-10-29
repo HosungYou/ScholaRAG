@@ -178,9 +178,9 @@ python scholarag_cli.py next
 
 ## 🆕 Template-Free AI-PRISMA v2.0 (v1.1.4+)
 
-ScholaRAG v1.1.4 eliminates manual domain templates. Claude now **interprets your research question directly** using a **PICO-inspired 6-dimension rubric** with intentional adaptations for multidisciplinary research, making the system instantly applicable to **any research domain** without configuration overhead.
+ScholaRAG v1.1.4 eliminates manual domain templates. Claude now **interprets your research question directly** using **PICOC+S-derived relevance scoring with automation-aware prioritisation**, making the system instantly applicable to **any research domain** without configuration overhead.
 
-**⚠️ Framework Clarification (v1.1.5):** ScholaRAG uses PICO-**inspired** scoring, not strict PICO. See [RELEASE_NOTES_v1.1.5.md](RELEASE_NOTES_v1.1.5.md) for academic justification.
+**🎓 Academic Positioning (v1.1.6):** ScholaRAG synthesizes **PICOC** (context-sensitive population, Booth et al., 2012) and **PICOS** (study design rigor, Higgins et al., 2022) with automation research insights (O'Mara-Eves et al., 2015). See [RELEASE_NOTES_v1.1.6.md](RELEASE_NOTES_v1.1.6.md) for complete academic lineage with 13 scholarly citations.
 
 ### What Changed from v1.1.3
 
@@ -202,15 +202,15 @@ python scholarag_cli.py init \
   --project-type systematic_review
 ```
 
-**Step 2: Claude interprets using PICO-inspired rubric**
-- **Domain** (PICO: Population): Research field + participant context ("education", "adult EFL learners")
-- **Intervention** (PICO: same): AI chatbots ✅
-- **Method** (PICO: ~~Comparison~~): Study design rigor (RCT=5, Survey=3, Case study=2)
-- **Outcomes** (PICO: same): Speaking proficiency metrics ✅
-- **Exclusion** (NEW): Hard filters (K-12 only studies, opinion pieces)
-- **Title Bonus** (NEW): Relevance signal (+10 if keywords in title)
+**Step 2: Claude interprets using PICOC+S-derived rubric**
+- **Domain** (PICOC: Context): Research field + participant context, context-sensitive population definition (Booth et al., 2012) ✅
+- **Intervention** (PICO: same): AI chatbots (Richardson et al., 1995) ✅
+- **Method** (PICOS: Study design): Study design rigor prioritization (Higgins et al., 2022; Cochrane Handbook) ✅
+- **Outcomes** (PICO: same): Speaking proficiency metrics (Richardson et al., 1995) ✅
+- **Exclusion** (PRISMA 2020): PRISMA-derived hard filters for eligibility (Page et al., 2021) ✅
+- **Title Bonus** (Automation research): Title-abstract alignment signal from text-mining automation (O'Mara-Eves et al., 2015) ✅
 
-**Why not strict PICO?** See [PICO Adaptations Explained](RELEASE_NOTES_v1.1.5.md#why-these-adaptations)
+**Academic lineage:** Every dimension maps to established frameworks or automation research. See [Complete Academic Lineage](RELEASE_NOTES_v1.1.6.md#-academic-lineage-of-scholorags-6-dimension-rubric)
 
 **Step 3: Automatic threshold configuration**
 - `systematic_review`: 90/10 thresholds + human validation

@@ -100,7 +100,7 @@ Please keep everything template-free—the model should infer keywords dynamical
 
 ### 🆕 Template-Free AI-PRISMA v2.0
 
-v1.1.4 eliminates manual keyword configuration. Claude now interprets your research question directly using the PICO framework.
+v1.1.4 eliminates manual keyword configuration. Claude now interprets your research question directly using the PICOC+S-derived framework with automation-aware prioritisation.
 
 **Key Changes from v1.1.3:**
 - ❌ No `domain_keywords` lists
@@ -181,11 +181,11 @@ This is a systematic_review project, so I'll use:
 - auto_exclude threshold: 10%
 - Human validation: Required (sample size: 50, κ ≥ 0.61)
 
-The AI-PRISMA rubric will interpret this question using PICO framework:
-- Population: EFL learners (likely university/adult)
-- Intervention: AI chatbots
-- Outcomes: Speaking proficiency improvements
-- Comparison: Any study design (RCT, quasi-experimental, survey)
+The AI-PRISMA rubric will interpret this question using PICOC+S-derived framework:
+- Domain (PICOC: Context): EFL learners in higher education context (Booth et al., 2012)
+- Intervention (PICO): AI chatbots (Richardson et al., 1995)
+- Method (PICOS: Study design): Study rigor prioritization (Higgins et al., 2022)
+- Outcomes (PICO): Speaking proficiency improvements (Richardson et al., 1995)
 
 Does this align with your intent?
 ```

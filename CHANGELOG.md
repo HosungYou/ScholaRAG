@@ -7,6 +7,89 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.1.6] - 2025-10-29
+
+### 🎓 Academic Positioning: PICOC+S-Derived Framework with Scholarly Citations
+
+**Purpose**: Provides complete academic justification for ScholaRAG's 6-dimension rubric by mapping it to established evidence-synthesis frameworks. This release positions ScholaRAG as a **PICOC+S-derived, automation-aware framework** with full scholarly citations.
+
+### Added
+
+- **RELEASE_NOTES_v1.1.6.md**: Comprehensive academic lineage document (299 lines)
+  - Complete mapping of all 6 dimensions to established frameworks
+  - 13 primary scholarly citations with full bibliographic details
+  - Citation templates for researchers (BibTeX, LaTeX methodology section)
+  - Academic positioning statement for papers
+  - Full reference list with DOIs and citation counts
+
+### Changed
+
+- **Framework Terminology**: "PICO-inspired" → "PICOC+S-derived with automation-aware prioritisation"
+  - **Previous (v1.1.5)**: "PICO-inspired 6-dimension rubric"
+  - **Current (v1.1.6)**: "PICOC+S-derived relevance scoring with automation-aware prioritisation"
+
+- **Academic Lineage Mapping**:
+  | ScholaRAG Dimension | Established Framework | Key Citations |
+  |---------------------|----------------------|---------------|
+  | Domain (0-10) | PICOC: Context, SPICE: Setting | Booth et al., 2012; Lockwood et al., 2015 |
+  | Intervention (0-10) | PICO: Intervention, SPIDER: Phenomenon | Richardson et al., 1995; Cooke et al., 2012 |
+  | Method (0-5) | PICOS: Study design, SPIDER: Design | Higgins et al., 2022; Cooke et al., 2012 |
+  | Outcomes (0-10) | PICO: Outcomes | Richardson et al., 1995 |
+  | Exclusion (-20 to 0) | PRISMA 2020: Eligibility exclusions | Page et al., 2021; Higgins et al., 2022 |
+  | Title Bonus (+10) | Text-mining automation | O'Mara-Eves et al., 2015; Wallace et al., 2010 |
+
+- **Documentation Updates**:
+  - **README.md**: Updated framework description with PICOC+S positioning and scholarly citations
+  - **scripts/03_screen_papers.py**: Added academic citations to docstring and prompt text
+  - **prompts/03_prisma_configuration.md**: Updated framework references with scholarly grounding
+
+### Key Academic Justifications
+
+1. **Domain (Population → Context)**
+   - **Scholarly precedent**: PICOC (Booth et al., 2012) adds contextual/setting constraints to capture organizational conditions
+   - **ScholaRAG application**: Domain scoring reflects established practice of coupling population with contextual qualifiers
+
+2. **Method (Comparison → Study Design Rigor)**
+   - **Scholarly precedent**: PICOS (Higgins et al., 2022, Cochrane Handbook) requires specifying eligible study designs to safeguard methodological rigor
+   - **ScholaRAG application**: Explicit scoring of design quality mirrors these standards by prioritising higher-rigor studies
+
+3. **Exclusion (Negative Scoring)**
+   - **Scholarly precedent**: PRISMA 2020 (Page et al., 2021) and Cochrane Handbook (Higgins et al., 2022) emphasize documenting exclusions for reproducibility
+   - **ScholaRAG innovation**: Quantitative exclusion scoring (-20 to 0) operationalizes this guidance
+
+4. **Title Bonus (Novel Dimension)**
+   - **Scholarly precedent**: Text-mining automation (O'Mara-Eves et al., 2015) shows title/abstract term weighting improves prioritisation accuracy
+   - **ScholaRAG innovation**: Integrates title bonus aligning with validated machine-learning triage practices
+
+### Why This Matters
+
+- **Honest academic positioning**: Every dimension has scholarly precedent (except Title Bonus, which has automation research justification)
+- **Clear lineage**: Transparent about which frameworks influenced each dimension
+- **Citation-ready**: Researchers can now cite ScholaRAG with complete academic context
+- **No overclaiming**: ScholaRAG IS a PICOC+S synthesis, NOT "another PICO variant"
+
+### Migration
+
+**Action Required**: None! This is a documentation-only update with no code changes.
+
+**For Researchers Citing ScholaRAG**: Update citations to reference PICOC+S-derived framework:
+```bibtex
+@software{scholarag2025,
+  title = {ScholaRAG: Template-Free AI-PRISMA Systematic Review Automation},
+  author = {You, Hosung},
+  year = {2025},
+  version = {1.1.6},
+  note = {Uses PICOC+S-derived 6-dimension rubric (Booth et al., 2012; Higgins et al., 2022)},
+  url = {https://github.com/HosungYou/ScholaRAG}
+}
+```
+
+### References
+
+See [RELEASE_NOTES_v1.1.6.md](RELEASE_NOTES_v1.1.6.md) for complete reference list (13 primary sources).
+
+---
+
 ## [1.1.5] - 2025-10-29
 
 ### 🎓 Documentation: PICO Framework Terminology Clarification
