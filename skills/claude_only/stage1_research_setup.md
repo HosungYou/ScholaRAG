@@ -392,22 +392,25 @@ What's your end goal for this literature review?"
 
 **Solution**:
 ```
-"Your research question is very broad. Let's narrow it using PICO framework:
+"Your research question is very broad. Let's narrow it using the PICOC+S framework:
 
 **Current**: 'What is the impact of AI in education?'
 **Too broad because**: AI (many types) + education (many levels) + impact (many outcomes)
 
-**PICO refinement**:
-- **P**opulation: University students (not K-12, not corporate)
-- **I**ntervention: AI chatbots (not all AI)
-- **C**omparison: Traditional instruction (optional)
-- **O**utcome: Speaking proficiency (not all skills)
+**PICOC+S refinement** (ScholaRAG's framework):
+- **Domain (Context)**: University language learning (not K-12, not corporate training)
+- **Intervention**: AI chatbots (not all AI tools)
+- **Method**: Experimental/quasi-experimental studies (prioritizes rigorous designs)
+- **Outcomes**: Speaking proficiency (not all skills)
 
-**Refined**: 'How do AI chatbots improve speaking proficiency in university language learners compared to traditional instruction?'
+**Refined**: 'How do AI chatbots improve speaking proficiency in university language learners?'
 
 **Result**: 50,000 → 500 papers (manageable!)
 
-Shall we refine your question using PICO?"
+Note: ScholaRAG uses PICOC+S-derived framework (Booth et al., 2012; Higgins et al., 2022)
+for multidisciplinary research. See v1.1.6 Release Notes for academic lineage.
+
+Shall we refine your question using PICOC+S?"
 ```
 
 ### Issue 2: Research question too narrow
