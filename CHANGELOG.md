@@ -7,6 +7,56 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.1.5] - 2025-10-29
+
+### 🎓 Documentation: PICO Framework Terminology Clarification
+
+**Purpose**: Honest academic positioning for framework claims. Clarifies that ScholaRAG uses a **PICO-inspired** rubric with intentional adaptations, not strict PICO compliance.
+
+### Changed
+
+- **Terminology Updates**: "PICO framework" → "PICO-inspired 6-dimension rubric"
+  - Updated Release Notes, README, prompts, code comments
+  - Added academic justification for Domain/Method adaptations
+  - Maintained transparency: 2/4 PICO dimensions directly matched, 2/4 intentionally extended, 2 new dimensions
+
+- **Documentation Improvements**
+  - Added RELEASE_NOTES_v1.1.5.md with comprehensive academic justification
+  - Updated RELEASE_NOTES_v1.1.4.md with terminology warning
+  - Clarified Domain (Population extension) vs Method (Study rigor, not Comparison)
+  - Explained why strict PICO doesn't fit multidisciplinary research
+
+- **Code Comments**
+  - Added framework justification to `scripts/03_screen_papers.py` docstring
+  - Updated prompt text: "based on PICO framework" → "based on PICO-inspired framework"
+  - Referenced RELEASE_NOTES_v1.1.5.md for academic context
+
+### Key Clarifications
+
+| PICO Dimension | ScholaRAG Adaptation | Alignment |
+|----------------|----------------------|-----------|
+| Population | Domain (research field + participant context) | ✨ Intentional extension |
+| Intervention | Intervention (same) | ✅ Direct match |
+| Comparison | Method (study design rigor) | ✨ Intentional extension |
+| Outcomes | Outcomes (same) | ✅ Direct match |
+| N/A | Exclusion (hard filters) | ➕ New dimension |
+| N/A | Title Bonus (relevance signal) | ➕ New dimension |
+
+### Why This Matters
+
+- **Academic credibility**: Honest framework claims prevent overclaiming clinical compliance
+- **No functional changes**: Algorithm, scoring logic, thresholds unchanged
+- **User impact**: Zero - existing projects continue working identically
+- **Citation accuracy**: Researchers can now cite ScholaRAG with correct terminology
+
+### Migration
+
+**Action Required**: None! This is a documentation-only update.
+
+**For Researchers**: Update citations from "uses PICO framework" to "uses PICO-inspired 6-dimension rubric with documented adaptations"
+
+---
+
 ## [1.1.4] - 2025-10-24
 
 ### 🎯 Major Feature: Template-Free AI-PRISMA v2.0

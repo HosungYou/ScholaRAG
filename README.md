@@ -178,7 +178,9 @@ python scholarag_cli.py next
 
 ## 🆕 Template-Free AI-PRISMA v2.0 (v1.1.4+)
 
-ScholaRAG v1.1.4 eliminates manual domain templates. Claude now **interprets your research question directly** using the PICO framework, making the system instantly applicable to **any research domain** without configuration overhead.
+ScholaRAG v1.1.4 eliminates manual domain templates. Claude now **interprets your research question directly** using a **PICO-inspired 6-dimension rubric** with intentional adaptations for multidisciplinary research, making the system instantly applicable to **any research domain** without configuration overhead.
+
+**⚠️ Framework Clarification (v1.1.5):** ScholaRAG uses PICO-**inspired** scoring, not strict PICO. See [RELEASE_NOTES_v1.1.5.md](RELEASE_NOTES_v1.1.5.md) for academic justification.
 
 ### What Changed from v1.1.3
 
@@ -200,11 +202,15 @@ python scholarag_cli.py init \
   --project-type systematic_review
 ```
 
-**Step 2: Claude interprets using PICO**
-- **Population**: EFL learners (university/adult)
-- **Intervention**: AI chatbots
-- **Comparison**: Study design (RCT, experimental, survey)
-- **Outcomes**: Speaking proficiency metrics
+**Step 2: Claude interprets using PICO-inspired rubric**
+- **Domain** (PICO: Population): Research field + participant context ("education", "adult EFL learners")
+- **Intervention** (PICO: same): AI chatbots ✅
+- **Method** (PICO: ~~Comparison~~): Study design rigor (RCT=5, Survey=3, Case study=2)
+- **Outcomes** (PICO: same): Speaking proficiency metrics ✅
+- **Exclusion** (NEW): Hard filters (K-12 only studies, opinion pieces)
+- **Title Bonus** (NEW): Relevance signal (+10 if keywords in title)
+
+**Why not strict PICO?** See [PICO Adaptations Explained](RELEASE_NOTES_v1.1.5.md#why-these-adaptations)
 
 **Step 3: Automatic threshold configuration**
 - `systematic_review`: 90/10 thresholds + human validation

@@ -35,20 +35,24 @@ project:
 # Claude interprets it automatically - no keywords needed!
 ```
 
-### 2. Intelligent PICO Framework Analysis
+### 2. PICO-Inspired 6-Dimension Framework
 
-Claude now analyzes your research question using the PICO framework:
+**⚠️ Terminology Update (v1.1.5):** ScholaRAG uses a **PICO-inspired** rubric with intentional adaptations for multidisciplinary research. See [RELEASE_NOTES_v1.1.5.md](RELEASE_NOTES_v1.1.5.md) for detailed explanation.
 
-| Dimension | What Claude Identifies | Example |
-|-----------|----------------------|---------|
-| **Domain** (Population) | Target research domain | "higher education", "university", "college" |
-| **Intervention** | Technology/tool being studied | "ChatGPT", "generative AI", "LLM" |
-| **Method** (Comparison) | Study design rigor | RCT (5 pts), Survey (3 pts), Case study (2 pts) |
-| **Outcomes** | Measurable results | "learning outcomes", "engagement", "performance" |
-| **Exclusion** | Irrelevant contexts | K-12 (-15), Medical imaging (-20) |
-| **Title Bonus** | Relevance signal | +10 if both domain & intervention in title |
+Claude now analyzes your research question using a PICO-inspired 6-dimension rubric:
+
+| Dimension | PICO Equivalent | ScholaRAG Implementation | Notes |
+|-----------|-----------------|--------------------------|-------|
+| **Domain** | Population | Research field + participant context<br>("higher education", "adult learners") | ✨ **PICO-inspired extension**<br>Broader than strict demographics |
+| **Intervention** | Intervention | Technology/tool being studied<br>("ChatGPT", "generative AI", "LLM") | ✅ **Direct PICO match** |
+| **Method** | ~~Comparison~~ | Study design rigor<br>RCT (5 pts), Survey (3 pts), Case study (2 pts) | ✨ **PICO-inspired extension**<br>Rigor, not control groups |
+| **Outcomes** | Outcomes | Measurable results<br>("learning outcomes", "engagement", "performance") | ✅ **Direct PICO match** |
+| **Exclusion** | N/A | Irrelevant contexts<br>K-12 (-15), Medical imaging (-20) | ➕ **New dimension** |
+| **Title Bonus** | N/A | Relevance signal<br>+10 if domain & intervention in title | ➕ **New dimension** |
 
 **Total Score Range**: -20 to 50 points
+
+**Alignment:** 2/4 PICO dimensions directly matched, 2/4 intentionally extended, 2 new dimensions added.
 
 ### 3. Evidence-Grounded Scoring
 

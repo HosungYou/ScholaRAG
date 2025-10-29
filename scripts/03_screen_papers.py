@@ -84,6 +84,16 @@ class PaperScreener:
 
         Claude interprets the research question directly without keyword templates.
         This provides flexibility for any research domain without manual configuration.
+
+        Framework: PICO-inspired with intentional adaptations for multidisciplinary research.
+        - Domain (PICO: Population) → Research field + participant context
+        - Intervention (PICO: same) → Technology/tool being studied
+        - Method (PICO: Comparison) → Study design rigor, not control groups
+        - Outcomes (PICO: same) → Measurable results
+        - Exclusion (NEW) → Hard filters for irrelevant contexts
+        - Title Bonus (NEW) → Relevance signal from title-abstract alignment
+
+        See RELEASE_NOTES_v1.1.5.md for academic justification.
         """
 
         prompt = f"""You are a research assistant conducting a PRISMA 2020 systematic literature review using AI-PRISMA methodology.
@@ -95,7 +105,10 @@ Paper Title: {title}
 Abstract: {abstract}
 
 ═══════════════════════════════════════════════════════════════════
-TASK: Evaluate this paper using the 6-dimension scoring rubric based on PICO framework.
+TASK: Evaluate this paper using the 6-dimension scoring rubric based on PICO-inspired framework.
+
+NOTE: This is a PICO-inspired rubric with intentional adaptations for multidisciplinary research.
+See RELEASE_NOTES_v1.1.5.md for academic justification of Domain/Method extensions.
 ═══════════════════════════════════════════════════════════════════
 
 SCORING RUBRIC:
