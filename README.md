@@ -180,7 +180,7 @@ python scholarag_cli.py next
 
 ScholaRAG v1.1.4 eliminates manual domain templates. Claude now **interprets your research question directly** using **PICOC+S-derived relevance scoring with automation-aware prioritisation**, making the system instantly applicable to **any research domain** without configuration overhead.
 
-**🎓 Academic Positioning (v1.1.6):** ScholaRAG synthesizes **PICOC** (context-sensitive population, Booth et al., 2012) and **PICOS** (study design rigor, Higgins et al., 2022) with automation research insights (O'Mara-Eves et al., 2015). See [RELEASE_NOTES_v1.1.6.md](RELEASE_NOTES_v1.1.6.md) for complete academic lineage with 13 scholarly citations.
+**🎓 Academic Positioning (v1.1.6):** ScholaRAG synthesizes **PICOC** (context-sensitive population, Booth et al., 2012) and **PICOS** (study design rigor, Higgins et al., 2022) with automation research insights (O'Mara-Eves et al., 2015). See [v1.1.6 Release Notes](https://github.com/HosungYou/ScholaRAG/releases/tag/v1.1.6) for complete academic lineage with 13 scholarly citations.
 
 ### What Changed from v1.1.3
 
@@ -210,7 +210,7 @@ python scholarag_cli.py init \
 - **Exclusion** (PRISMA 2020): PRISMA-derived hard filters for eligibility (Page et al., 2021) ✅
 - **Title Bonus** (Automation research): Title-abstract alignment signal from text-mining automation (O'Mara-Eves et al., 2015) ✅
 
-**Academic lineage:** Every dimension maps to established frameworks or automation research. See [Complete Academic Lineage](RELEASE_NOTES_v1.1.6.md#-academic-lineage-of-scholorags-6-dimension-rubric)
+**Academic lineage:** Every dimension maps to established frameworks or automation research. See [Complete Academic Lineage](https://github.com/HosungYou/ScholaRAG/releases/tag/v1.1.6)
 
 **Step 3: Automatic threshold configuration**
 - `systematic_review`: 90/10 thresholds + human validation

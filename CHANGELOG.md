@@ -15,7 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- **RELEASE_NOTES_v1.1.6.md**: Comprehensive academic lineage document (299 lines)
+- **[GitHub Release v1.1.6](https://github.com/HosungYou/ScholaRAG/releases/tag/v1.1.6)**: Comprehensive academic lineage documentation
   - Complete mapping of all 6 dimensions to established frameworks
   - 13 primary scholarly citations with full bibliographic details
   - Citation templates for researchers (BibTeX, LaTeX methodology section)
@@ -86,7 +86,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### References
 
-See [RELEASE_NOTES_v1.1.6.md](RELEASE_NOTES_v1.1.6.md) for complete reference list (13 primary sources).
+See [GitHub Release v1.1.6](https://github.com/HosungYou/ScholaRAG/releases/tag/v1.1.6) for complete reference list (13 primary sources).
 
 ---
 
@@ -104,15 +104,15 @@ See [RELEASE_NOTES_v1.1.6.md](RELEASE_NOTES_v1.1.6.md) for complete reference li
   - Maintained transparency: 2/4 PICO dimensions directly matched, 2/4 intentionally extended, 2 new dimensions
 
 - **Documentation Improvements**
-  - Added RELEASE_NOTES_v1.1.5.md with comprehensive academic justification
-  - Updated RELEASE_NOTES_v1.1.4.md with terminology warning
+  - Added [GitHub Release v1.1.5](https://github.com/HosungYou/ScholaRAG/releases/tag/v1.1.5) with comprehensive academic justification
+  - Updated [GitHub Release v1.1.4](https://github.com/HosungYou/ScholaRAG/releases/tag/v1.1.4) with terminology warning
   - Clarified Domain (Population extension) vs Method (Study rigor, not Comparison)
   - Explained why strict PICO doesn't fit multidisciplinary research
 
 - **Code Comments**
   - Added framework justification to `scripts/03_screen_papers.py` docstring
   - Updated prompt text: "based on PICO framework" → "based on PICO-inspired framework"
-  - Referenced RELEASE_NOTES_v1.1.5.md for academic context
+  - Referenced GitHub Releases for academic context
 
 ### Key Clarifications
 
@@ -245,7 +245,7 @@ python scripts/03_screen_papers.py \
 
 ### Documentation
 
-- Added `RELEASE_NOTES_v1.1.4.md` with detailed migration guide
+- Added [GitHub Release v1.1.4](https://github.com/HosungYou/ScholaRAG/releases/tag/v1.1.4) with detailed migration guide
 - Added `CHANGELOG.md` for version tracking
 
 ### Commits
@@ -297,7 +297,7 @@ python scripts/03_screen_papers.py \
 ## Release Notes
 
 Detailed release notes available at:
-- [v1.1.4 Release Notes](./RELEASE_NOTES_v1.1.4.md)
+- [GitHub Releases](https://github.com/HosungYou/ScholaRAG/releases)
 
 ---
 

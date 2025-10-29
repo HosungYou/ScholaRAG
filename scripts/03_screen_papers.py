@@ -93,7 +93,7 @@ class PaperScreener:
         - Exclusion (PRISMA 2020) → PRISMA-derived eligibility criteria (Page et al., 2021)
         - Title Bonus (Automation) → Title-abstract alignment (O'Mara-Eves et al., 2015)
 
-        See RELEASE_NOTES_v1.1.6.md for complete academic lineage with 13 scholarly citations.
+        See https://github.com/HosungYou/ScholaRAG/releases/tag/v1.1.6 for complete academic lineage with 13 scholarly citations.
         """
 
         prompt = f"""You are a research assistant conducting a PRISMA 2020 systematic literature review using AI-PRISMA methodology.
@@ -109,7 +109,7 @@ TASK: Evaluate this paper using the 6-dimension scoring rubric based on PICOC+S-
 
 NOTE: This rubric synthesizes PICOC (Booth et al., 2012), PICOS (Higgins et al., 2022),
 and PRISMA 2020 (Page et al., 2021) with automation research (O'Mara-Eves et al., 2015).
-See RELEASE_NOTES_v1.1.6.md for complete academic lineage with 13 scholarly citations.
+See GitHub Releases (v1.1.6) for complete academic lineage with 13 scholarly citations.
 ═══════════════════════════════════════════════════════════════════
 
 SCORING RUBRIC:
