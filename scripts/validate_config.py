@@ -141,7 +141,7 @@ def validate_config(config_path):
         if "llm" not in rag:
             warnings.append(
                 "⚠️  No LLM specified for RAG\n"
-                "   → Will use default (claude-3-5-sonnet-20241022)"
+                "   → Will use default (claude-haiku-4-5)"
             )
 
     is_valid = len(errors) == 0

@@ -119,7 +119,7 @@ class ScholaRAGChat:
         print("💭 Generating answer with Claude...\n")
 
         response = self.anthropic.messages.create(
-            model="claude-3-5-sonnet-20241022",
+            model="claude-haiku-4-5",
             max_tokens=2048,
             temperature=0,
             messages=[{

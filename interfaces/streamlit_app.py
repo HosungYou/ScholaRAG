@@ -96,7 +96,7 @@ def query_rag(question: str, collection, anthropic_client, top_k: int = 5):
 
     # Generate answer
     response = anthropic_client.messages.create(
-        model="claude-3-5-sonnet-20241022",
+        model="claude-haiku-4-5",
         max_tokens=2048,
         temperature=0,
         messages=[{

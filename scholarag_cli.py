@@ -424,7 +424,7 @@ def _create_template_free_config(project_folder, name, question, today, project_
         # AI-PRISMA Configuration (Template-Free)
         'ai_prisma_rubric': {
             'enabled': True,
-            'llm': 'claude-3-5-sonnet-20241022',
+            'llm': 'claude-haiku-4-5',
             'temperature': 0.1,
 
             'decision_confidence': {
@@ -472,7 +472,7 @@ Template-Free AI-PRISMA (v2.0):
         'rag': {
             'vector_db': 'chromadb',
             'embedding_model': 'text-embedding-3-large',
-            'llm': 'claude-3-5-sonnet-20241022',
+            'llm': 'claude-haiku-4-5',
             'chunk_size': 1000,
             'chunk_overlap': 200,
             'retrieval_k': 10

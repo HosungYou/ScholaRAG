@@ -259,7 +259,7 @@ Claude produces the exact YAML snippet to paste into `config.yaml`:
 ```yaml
 ai_prisma_rubric:
   enabled: true
-  llm: claude-3-5-sonnet-20241022
+  llm: claude-haiku-4-5
   temperature: 0.1
   decision_confidence:
     auto_include: 90
