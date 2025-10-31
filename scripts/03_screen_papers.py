@@ -39,8 +39,13 @@ class PaperScreener:
         # Load project config
         self.load_config()
 
-        # Load API key
-        load_dotenv()
+        # Load API key from project .env file
+        env_path = self.project_path / ".env"
+        if env_path.exists():
+            load_dotenv(env_path)
+        else:
+            load_dotenv()  # Try current directory
+
         api_key = os.getenv('ANTHROPIC_API_KEY')
         if not api_key:
             print("❌ Error: ANTHROPIC_API_KEY not found in environment")

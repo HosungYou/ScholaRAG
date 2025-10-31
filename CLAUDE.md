@@ -16,14 +16,16 @@ This file provides guidance to Claude Code (claude.ai/code) when working with Sc
 - ✅ **Auto-execute commands** whenever possible (don't ask "would you like me to run X?")
 - ✅ **Handle interactive inputs** automatically using echo pipes or CLI arguments
 - ✅ **Provide default values** for test/demo scenarios
-- ✅ **Run commands in sequence** without waiting for approval (unless API costs involved)
+- ✅ **Run commands in sequence** without waiting for approval
 - ✅ **Show results** after execution (e.g., "✅ Project initialized successfully!")
+- ✅ **ALWAYS ask user to choose `project_type`** before initialization (critical branching point)
 
 **DON'T:**
 - ❌ Say "You'll need to run: `python script.py`" (run it for them instead!)
 - ❌ Stop at interactive prompts (use automation techniques)
 - ❌ Assume users can debug Python/shell errors
 - ❌ Provide manual workarounds (automate the fix)
+- ❌ **Auto-select `project_type` without explicit user confirmation**
 
 ### Example: Auto-Executing Interactive Commands
 
@@ -190,25 +192,44 @@ I want to build a RAG system for my research project.
 
 **Claude Code** (reads metadata, knows this is Stage 1):
 - Asks clarifying questions (2-3 rounds)
-- Suggests project_type based on researcher goals
 - Validates scope is realistic
 - Recommends databases
 
-**Researcher** confirms scope is good
+**Claude Code** (MANDATORY: Present project_type options):
+"I need to know which project type to use. ScholaRAG offers two modes:
+
+**Option 1: knowledge_repository**
+- Stage 1-2: Fetch & deduplicate ~10,000-20,000 papers (same for both modes)
+- Stage 3 PRISMA screening: 50% confidence threshold (lenient)
+- Typical result: ~5,000-15,000 papers pass screening
+- Best for: Domain exploration, teaching materials, AI research assistant
+
+**Option 2: systematic_review**
+- Stage 1-2: Fetch & deduplicate ~10,000-20,000 papers (same for both modes)
+- Stage 3 PRISMA screening: 90% confidence threshold (strict)
+- Typical result: ~50-300 papers pass screening
+- Best for: Meta-analysis, journal publication, clinical guidelines
+
+⚠️  IMPORTANT: Both modes fetch the SAME papers in Stage 1.
+The difference is Stage 3 PRISMA screening threshold, which naturally filters papers.
+
+Which option matches your research goals?"
+
+**Researcher** selects project_type
 
 **Claude Code** (validates against checklist):
 - ✅ Research question is specific
-- ✅ Project type chosen (knowledge_repository or systematic_review)
+- ✅ Project type explicitly chosen by user
 - ✅ Scope constraints realistic
-- ✅ Paper count aligned with project_type
+- ✅ Expected paper count explained
 - ✅ Databases selected
 
-**Claude Code** (auto-executes):
+**Claude Code** (auto-executes with user-chosen project_type):
 ```bash
 python scholarag_cli.py init \
   --name "AI-Chatbots-Language-Learning" \
   --question "How do AI chatbots improve speaking skills?" \
-  --project-type knowledge_repository
+  --project-type knowledge_repository  # ← USER CHOICE
 ```
 
 **Claude Code** (shows next prompt):
@@ -230,14 +251,20 @@ USER (in Stage 1): "What's the difference between the two modes?"
 CLAUDE: "ScholaRAG offers two project types:
 
 **knowledge_repository**:
-- 50% threshold (lenient, removes only spam)
-- 15,000-20,000 papers output
-- For: Teaching, exploration, AI assistant
+- Stage 1-2: Fetch & deduplicate ~10,000-20,000 papers (same for both)
+- Stage 3 PRISMA: 50% confidence threshold → naturally retains ~5K-15K papers
+- Lenient filtering (removes only spam/clearly off-topic)
+- Best for: Teaching materials, AI research assistant, domain exploration
 
 **systematic_review**:
-- 90% threshold (strict, PRISMA 2020)
-- 50-300 papers output
-- For: Meta-analysis, publication
+- Stage 1-2: Fetch & deduplicate ~10,000-20,000 papers (same for both)
+- Stage 3 PRISMA: 90% confidence threshold → naturally retains ~50-300 papers
+- Strict PRISMA 2020 filtering (rigorous inclusion criteria)
+- Best for: Meta-analysis, journal publication, clinical guidelines
+
+⚠️  CRITICAL: Both modes fetch IDENTICAL papers in Stage 1-2.
+Stage 3 PRISMA screening naturally filters based on confidence threshold.
+NO manual paper count limits in Stage 1!
 
 Which best matches your research goals?"
 ```

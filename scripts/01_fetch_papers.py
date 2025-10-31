@@ -24,6 +24,7 @@ from pathlib import Path
 from typing import List, Dict, Optional
 import yaml
 from urllib.parse import quote
+from dotenv import load_dotenv
 
 
 class PaperFetcher:
@@ -33,6 +34,11 @@ class PaperFetcher:
         self.project_path = Path(project_path)
         self.output_dir = self.project_path / "data" / "01_identification"
         self.output_dir.mkdir(parents=True, exist_ok=True)
+
+        # Load environment variables from project .env file
+        env_path = self.project_path / ".env"
+        if env_path.exists():
+            load_dotenv(env_path)
 
         # Load project config
         config_path = self.project_path / "config.yaml"
@@ -46,6 +52,9 @@ class PaperFetcher:
         self.semantic_scholar_api = "https://api.semanticscholar.org/graph/v1/paper/search"
         self.openalex_api = "https://api.openalex.org/works"
         self.arxiv_api = "http://export.arxiv.org/api/query"
+
+        # API keys
+        self.semantic_scholar_api_key = os.getenv('SEMANTIC_SCHOLAR_API_KEY')
 
     def fetch_semantic_scholar(
         self,
@@ -84,9 +93,14 @@ class PaperFetcher:
             }
 
             try:
+                headers = {}
+                if self.semantic_scholar_api_key:
+                    headers['x-api-key'] = self.semantic_scholar_api_key
+
                 response = requests.get(
                     self.semantic_scholar_api,
                     params=params,
+                    headers=headers,
                     timeout=30
                 )
                 response.raise_for_status()
@@ -121,7 +135,7 @@ class PaperFetcher:
                 print(f"   Retrieved {len(papers)} papers so far...")
 
                 offset += batch_size
-                time.sleep(1)  # Rate limiting
+                time.sleep(3)  # Rate limiting - increased to 3 seconds
 
                 # Check if we've reached the end
                 if len(data['data']) < batch_size:
@@ -132,8 +146,11 @@ class PaperFetcher:
                 break
 
         df = pd.DataFrame(papers)
-        pdf_count = df['pdf_url'].notna().sum()
-        print(f"   ✓ Found {len(df)} papers ({pdf_count} with PDF URLs, {pdf_count/len(df)*100:.1f}%)")
+        if len(df) > 0:
+            pdf_count = df['pdf_url'].notna().sum()
+            print(f"   ✓ Found {len(df)} papers ({pdf_count} with PDF URLs, {pdf_count/len(df)*100:.1f}%)")
+        else:
+            print(f"   ⚠️  No papers found")
 
         return df
 
@@ -233,8 +250,11 @@ class PaperFetcher:
                 break
 
         df = pd.DataFrame(papers)
-        pdf_count = df['pdf_url'].notna().sum()
-        print(f"   ✓ Found {len(df)} papers ({pdf_count} with PDF URLs, {pdf_count/len(df)*100:.1f}%)")
+        if len(df) > 0:
+            pdf_count = df['pdf_url'].notna().sum()
+            print(f"   ✓ Found {len(df)} papers ({pdf_count} with PDF URLs, {pdf_count/len(df)*100:.1f}%)")
+        else:
+            print(f"   ⚠️  No papers found")
 
         return df
 

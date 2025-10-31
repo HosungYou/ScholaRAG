@@ -82,15 +82,26 @@ cd "/Volumes/External SSD/Projects/Research/ScholaRAG"
 
 ### Quick Context: project_type Decision
 
-**Ask researcher these 2 questions**:
+**ALWAYS present both options to researcher**:
 
-1. **Will you publish this as a systematic review in an academic journal?**
-   - Yes → `systematic_review` ✅ (Skip to Step 2)
-   - No → Go to Question 2
+**Option 1: knowledge_repository**
+- Stage 1-2: Fetch & deduplicate ~10,000-20,000 papers (identical for both)
+- Stage 3 PRISMA: 50% confidence threshold → naturally retains ~5K-15K
+- Lenient screening (removes spam/clearly off-topic via AI confidence scores)
+- Best for: Domain exploration, teaching materials, AI research assistant
 
-2. **Do you need comprehensive domain coverage (15,000+ papers)?**
-   - Yes → `knowledge_repository` ✅ (For teaching, AI assistant, exploration)
-   - No → `systematic_review` ✅ (Focused high-quality subset)
+**Option 2: systematic_review**
+- Stage 1-2: Fetch & deduplicate ~10,000-20,000 papers (identical for both)
+- Stage 3 PRISMA: 90% confidence threshold → naturally retains ~50-300
+- Strict PRISMA 2020 screening (rigorous AI-based relevance filtering)
+- Best for: Meta-analysis, journal publication, clinical guidelines
+
+⚠️  **CRITICAL Understanding**:
+- Stage 1 fetches IDENTICAL papers regardless of project_type
+- Stage 3 applies confidence threshold via AI scoring (NOT manual limits)
+- Papers naturally filter through PRISMA protocol, not arbitrary cutoffs
+
+**Ask researcher**: "Which option best matches your research goals?"
 
 **Reference**: [skills/reference/project_type_decision_tree.md](skills/reference/project_type_decision_tree.md)
 
