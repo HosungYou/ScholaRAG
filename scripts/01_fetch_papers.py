@@ -340,7 +340,7 @@ class PaperFetcher:
         query: str,
         year_start: int = 2015,
         year_end: int = 2025,
-        max_results: int = 500
+        max_results: int = 5000
     ) -> pd.DataFrame:
         """
         Fetch papers from arXiv API
