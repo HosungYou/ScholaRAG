@@ -7,6 +7,145 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.2.0] - 2025-10-31
+
+### 🎯 Major Change: Confidence Mechanism Removal
+
+**BREAKING CHANGE**: Removed AI confidence scoring in favor of total_score-only approach. This enables Human-AI symmetric scoring for Cohen's Kappa calculation.
+
+### Philosophy
+
+**Previous approach (v1.1.x)**:
+- Decision = f(total_score, confidence)
+- AI: quantitative confidence (0-100%)
+- Human: subjective confidence (low/medium/high)
+- **Problem**: Incomparable scales → Cohen's Kappa impossible
+
+**New approach (v1.2.0)**:
+- Decision = f(total_score)
+- Both AI and Human use identical 6-dimension rubric
+- Both produce total_score (-20 to 50 range)
+- **Benefit**: Reproducible, symmetric, Kappa-calculable
+
+### Breaking Changes
+
+#### 1. Configuration Schema
+
+```yaml
+# REMOVED (v1.1.x)
+ai_prisma_rubric:
+  decision_confidence:
+    auto_include: 50   # % confidence
+    auto_exclude: 20   # % confidence
+
+# ADDED (v1.2.0)
+ai_prisma_rubric:
+  score_threshold:
+    auto_include: 25   # total_score (knowledge_repository)
+    auto_exclude: 0    # total_score
+```
+
+#### 2. CSV Output Schema
+
+**`03_screen_papers.py` outputs**:
+- ❌ REMOVED: `confidence` column
+- ✅ RETAINED: `total_score`, `decision`, all dimension scores
+
+**`03b_human_review.py` outputs**:
+- ❌ REMOVED: `ai_confidence`, `human_confidence`
+- ✅ ADDED:
+  - `human_total_score`, `human_domain`, `human_intervention`, etc.
+  - `score_difference` (abs(AI - Human))
+
+### Changed
+
+#### scripts/03_screen_papers.py
+- Decision logic: removed confidence threshold, use total_score only
+- Knowledge Repository: `score ≥ 25` (was `confidence ≥ 50% AND score ≥ 30`)
+- Systematic Review: `score ≥ 40` (was `confidence ≥ 90% AND score ≥ 30`)
+- Hallucination → human-review flag (was confidence penalty)
+- Prompt: removed confidence calculation section
+- Console: show score thresholds instead of confidence
+
+#### scripts/03b_human_review.py
+- Human reviewers score all 6 dimensions (not subjective confidence)
+- Removed 1/2/3 confidence input
+- Added auto total_score calculation
+- CSV includes all dimension scores for Kappa analysis
+
+#### scripts/validate_config.py
+- Validates `score_threshold` (20-50 range) instead of `decision_confidence`
+
+#### scripts/test_full_pipeline.py
+- Zone validation: score-based instead of confidence-based
+- Mock data: includes 6-dimension scores + score_difference
+
+#### scripts/test_ai_prisma_scoring.py
+- Mock config: `score_threshold` instead of `decision_confidence`
+
+#### scripts/run_validation_workflow.py
+- Messages: "borderline scores" instead of "11-89% confidence"
+
+### Added
+
+- **PIPELINE_ANALYSIS.md**: Complete dependency graph, workflow documentation
+- **Cohen's Kappa Support**: Now possible with symmetric scoring
+
+### Removed
+
+- All confidence calculation logic
+- Confidence-based thresholds in config
+- Confidence columns in CSV outputs
+
+### Migration Guide
+
+**Step 1: Update config.yaml**
+```yaml
+# Knowledge Repository
+ai_prisma_rubric:
+  score_threshold:
+    auto_include: 25
+    auto_exclude: 0
+
+# Systematic Review
+ai_prisma_rubric:
+  score_threshold:
+    auto_include: 40
+    auto_exclude: 0
+```
+
+**Step 2: Optional re-screening**
+```bash
+python scripts/03_screen_papers.py \
+  --project projects/YOUR_PROJECT \
+  --question "Your research question"
+```
+
+**Step 3: Update human review workflow**
+- Train reviewers on 6-dimension scoring
+- Use same rubric as AI (see prompt guidelines)
+
+### Performance Impact
+
+| Metric | v1.1.x | v1.2.0 | Change |
+|--------|--------|--------|--------|
+| Decision Logic Complexity | Dual criteria (AND/OR) | Single criterion | -50% |
+| Human Review Time | 2-3 min/paper | 3-5 min/paper | +50% (more thorough) |
+| Cohen's Kappa Calculable | ❌ No | ✅ Yes | Enabled |
+| Academic Reproducibility | Medium | High | Improved |
+
+### Documentation
+
+- Added [GitHub Release v1.2.0](https://github.com/HosungYou/ScholaRAG/releases/tag/v1.2.0)
+- Added `PIPELINE_ANALYSIS.md` (complete workflow documentation)
+- Updated `CHANGELOG.md` with migration guide
+
+### Commits
+
+- `[commit hash]` - BREAKING CHANGE: Remove confidence mechanism, use total_score only
+
+---
+
 ## [1.1.6] - 2025-10-29
 
 ### 🎓 Academic Positioning: PICOC+S-Derived Framework with Scholarly Citations

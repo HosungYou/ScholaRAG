@@ -75,22 +75,22 @@ def validate_config(config_path):
         if "llm" not in rubric:
             errors.append("❌ AI-PRISMA enabled but no LLM specified")
 
-        # Check decision confidence thresholds
-        if "decision_confidence" in rubric:
-            dc = rubric["decision_confidence"]
-            auto_include = dc.get("auto_include", 0)
-            auto_exclude = dc.get("auto_exclude", 0)
+        # Check score thresholds
+        if "score_threshold" in rubric:
+            st = rubric["score_threshold"]
+            auto_include = st.get("auto_include", 0)
+            auto_exclude = st.get("auto_exclude", 0)
 
             if auto_include <= auto_exclude:
                 errors.append(
-                    f"❌ Invalid confidence thresholds\n"
+                    f"❌ Invalid score thresholds\n"
                     f"   → auto_include ({auto_include}) must be > auto_exclude ({auto_exclude})"
                 )
 
-            if auto_include < 80:
+            if auto_include < 20 or auto_include > 50:
                 warnings.append(
-                    f"⚠️  auto_include threshold ({auto_include}) is low\n"
-                    f"   → Recommended: ≥90 for high-confidence decisions"
+                    f"⚠️  auto_include threshold ({auto_include}) is outside typical range\n"
+                    f"   → Recommended: 25-40 (total_score range is -20 to 50)"
                 )
 
         # Check sub-criteria

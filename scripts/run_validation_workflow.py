@@ -65,7 +65,7 @@ class ValidationWorkflow:
         # Check if we should sample from human review queue or all papers
         if self.human_review_queue_file.exists():
             df_queue = pd.read_csv(self.human_review_queue_file)
-            print(f"   Human review queue: {len(df_queue)} papers (11-89% confidence)")
+            print(f"   Human review queue: {len(df_queue)} papers (borderline scores)")
 
             # Sample from queue (priority)
             sample_from_queue = min(self.sample_size, len(df_queue))

@@ -3,12 +3,10 @@
 Stage 3b: Human Review of Borderline Papers
 
 Interactive CLI for human reviewers to make final decisions on papers
-flagged by AI-PRISMA as requiring expert validation (11-89% confidence).
+flagged by AI-PRISMA as requiring expert validation (ambiguous scores).
 
-This implements the Zone 3 workflow of the Human-AI Collaboration Model:
-- Zone 1: 100% AI automation (deduplication, format validation)
-- Zone 2: AI-assisted (≥90% or ≤10% confidence) with sample validation
-- Zone 3: Human-required (11-89% confidence) - 100% dual screening
+This implements human review for papers that fall between auto-include
+and auto-exclude thresholds based on total_score from 6-dimension rubric.
 
 Usage:
     python scripts/03b_human_review.py --project <project_path>
@@ -99,7 +97,6 @@ class HumanReviewer:
 
         print(f"\n🤖 AI-PRISMA Assessment:")
         print(f"   ├─ Total Score: {row['total_score']}/50")
-        print(f"   ├─ Confidence: {row['confidence']}%")
         print(f"   └─ Decision: {row['decision']} (borderline)")
 
         print(f"\n📊 Dimension Breakdown:")
@@ -158,29 +155,40 @@ class HumanReviewer:
             else:
                 print("❌ Invalid input. Please enter i, e, s, v, or q.")
 
-        # Get reasoning
+        # Get 6-dimension scores from human
         print(f"\n{'✅ INCLUDE' if decision == 'i' else '⛔ EXCLUDE'}")
-        reasoning = input("Brief reasoning (or press Enter to skip): ").strip()
+        print("\n📊 Please score each dimension (same rubric as AI):")
+
+        scores = {}
+        try:
+            scores['domain'] = int(input("  Domain (0-10): ").strip())
+            scores['intervention'] = int(input("  Intervention (0-10): ").strip())
+            scores['method'] = int(input("  Method (0-5): ").strip())
+            scores['outcomes'] = int(input("  Outcomes (0-10): ").strip())
+            scores['exclusion'] = int(input("  Exclusion (-20 to 0): ").strip())
+            scores['title_bonus'] = int(input("  Title Bonus (0 or 10): ").strip())
+
+            # Calculate human total score
+            human_total = sum(scores.values())
+            print(f"\n  Your total score: {human_total}/50")
+
+        except ValueError:
+            print("⚠️  Invalid scores entered. Using 0 for all dimensions.")
+            scores = {'domain': 0, 'intervention': 0, 'method': 0,
+                     'outcomes': 0, 'exclusion': 0, 'title_bonus': 0}
+            human_total = 0
+
+        # Optional reasoning
+        reasoning = input("\nBrief reasoning (or press Enter to skip): ").strip()
         if not reasoning:
             reasoning = "No reasoning provided"
-
-        # Confidence in decision
-        while True:
-            try:
-                confidence = input("How confident are you? (1=low, 2=medium, 3=high): ").strip()
-                if confidence in ['1', '2', '3']:
-                    confidence_map = {'1': 'low', '2': 'medium', '3': 'high'}
-                    confidence = confidence_map[confidence]
-                    break
-                print("❌ Please enter 1, 2, or 3")
-            except:
-                print("❌ Please enter 1, 2, or 3")
 
         return {
             'action': 'decide',
             'decision': 'include' if decision == 'i' else 'exclude',
             'reasoning': reasoning,
-            'confidence': confidence
+            'scores': scores,
+            'total_score': human_total
         }
 
     def review_papers(self):
@@ -246,11 +254,23 @@ class HumanReviewer:
                         'doi': row.get('doi', 'N/A'),
                         'ai_decision': row['decision'],
                         'ai_total_score': row['total_score'],
-                        'ai_confidence': row['confidence'],
+                        'ai_domain': row.get('domain_score', 0),
+                        'ai_intervention': row.get('intervention_score', 0),
+                        'ai_method': row.get('method_score', 0),
+                        'ai_outcomes': row.get('outcomes_score', 0),
+                        'ai_exclusion': row.get('exclusion_score', 0),
+                        'ai_title_bonus': row.get('title_bonus', 0),
                         'ai_reasoning': row.get('reasoning', ''),
                         'human_decision': decision_result['decision'],
+                        'human_total_score': decision_result['total_score'],
+                        'human_domain': decision_result['scores']['domain'],
+                        'human_intervention': decision_result['scores']['intervention'],
+                        'human_method': decision_result['scores']['method'],
+                        'human_outcomes': decision_result['scores']['outcomes'],
+                        'human_exclusion': decision_result['scores']['exclusion'],
+                        'human_title_bonus': decision_result['scores']['title_bonus'],
                         'human_reasoning': decision_result['reasoning'],
-                        'human_confidence': decision_result['confidence'],
+                        'score_difference': abs(decision_result['total_score'] - row['total_score']),
                         'agreement': (decision_result['decision'] == 'include' and
                                     row['decision'] == 'auto-include') or \
                                    (decision_result['decision'] == 'exclude' and
@@ -262,7 +282,7 @@ class HumanReviewer:
                     reviewed_papers.add(paper_id)
                     papers_reviewed_this_session += 1
 
-                    print(f"✓ Recorded: {decision_result['decision'].upper()} (confidence: {decision_result['confidence']})")
+                    print(f"✓ Recorded: {decision_result['decision'].upper()} (score: {decision_result['total_score']})")
 
                     # Save progress periodically (every 5 papers)
                     if papers_reviewed_this_session % 5 == 0:
@@ -323,10 +343,10 @@ class HumanReviewer:
         print(f"   Include: {included} ({included/len(results)*100:.1f}%)")
         print(f"   Exclude: {excluded} ({excluded/len(results)*100:.1f}%)")
 
-        print(f"\n🎯 Confidence Distribution:")
-        conf_counts = df_results['human_confidence'].value_counts()
-        for conf, count in conf_counts.items():
-            print(f"   {conf.capitalize()}: {count} ({count/len(results)*100:.1f}%)")
+        print(f"\n📊 Score Statistics:")
+        print(f"   AI mean score: {df_results['ai_total_score'].mean():.1f}")
+        print(f"   Human mean score: {df_results['human_total_score'].mean():.1f}")
+        print(f"   Mean score difference: {df_results['score_difference'].mean():.1f}")
 
         print(f"\n🤝 Agreement with AI:")
         agreement = df_results['agreement'].sum()
@@ -341,8 +361,8 @@ class HumanReviewer:
             disagreed = df_results[~df_results['agreement']]
             for idx, row in disagreed.head(3).iterrows():
                 print(f"\n   • {row['title'][:60]}...")
-                print(f"     AI: {row['ai_decision']} ({row['ai_confidence']:.0f}%)")
-                print(f"     Human: {row['human_decision']} ({row['human_confidence']})")
+                print(f"     AI: {row['ai_decision']} (score: {row['ai_total_score']:.0f})")
+                print(f"     Human: {row['human_decision']} (score: {row['human_total_score']:.0f})")
                 print(f"     Reason: {row['human_reasoning'][:80]}...")
 
         print(f"\n" + "="*70)

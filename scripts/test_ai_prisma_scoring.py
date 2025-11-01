@@ -142,9 +142,9 @@ def create_test_config(test_dir: Path):
                     {'keyword': 'medical', 'penalty': -10}
                 ]
             },
-            'decision_confidence': {
-                'auto_include': 90,
-                'auto_exclude': 10
+            'score_threshold': {
+                'auto_include': 40,
+                'auto_exclude': 0
             },
             'human_validation': {
                 'required': True,

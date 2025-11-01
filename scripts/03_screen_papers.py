@@ -67,20 +67,20 @@ class PaperScreener:
         project_type = self.config.get('project_type', 'systematic_review')
 
         if project_type == 'knowledge_repository':
-            # Lenient thresholds for comprehensive coverage
-            self.screening_threshold = self.config.get('ai_prisma_rubric', {}).get('decision_confidence', {}).get('auto_include', 50)
-            self.exclude_threshold = self.config.get('ai_prisma_rubric', {}).get('decision_confidence', {}).get('auto_exclude', 20)
+            # Lenient threshold for comprehensive coverage
+            self.score_threshold_include = self.config.get('ai_prisma_rubric', {}).get('score_threshold', {}).get('auto_include', 25)
+            self.score_threshold_exclude = self.config.get('ai_prisma_rubric', {}).get('score_threshold', {}).get('auto_exclude', 0)
             self.require_human_review = False
             print(f"   📊 Project type: Knowledge Repository (lenient filtering)")
         else:
-            # Strict thresholds for systematic review
-            self.screening_threshold = self.config.get('ai_prisma_rubric', {}).get('decision_confidence', {}).get('auto_include', 90)
-            self.exclude_threshold = self.config.get('ai_prisma_rubric', {}).get('decision_confidence', {}).get('auto_exclude', 10)
+            # Strict threshold for systematic review
+            self.score_threshold_include = self.config.get('ai_prisma_rubric', {}).get('score_threshold', {}).get('auto_include', 40)
+            self.score_threshold_exclude = self.config.get('ai_prisma_rubric', {}).get('score_threshold', {}).get('auto_exclude', 0)
             self.require_human_review = self.config.get('ai_prisma_rubric', {}).get('human_validation', {}).get('required', False)
             print(f"   📊 Project type: Systematic Review (strict filtering)")
 
-        print(f"   ✓ Include threshold: {self.screening_threshold}%")
-        print(f"   ✓ Exclude threshold: {self.exclude_threshold}%")
+        print(f"   ✓ Include threshold: total_score ≥ {self.score_threshold_include}")
+        print(f"   ✓ Exclude threshold: total_score < {self.score_threshold_exclude}")
         print(f"   ✓ Human review: {'Required' if self.require_human_review else 'Not required'}")
 
     def build_prisma_prompt(self, title: str, abstract: str) -> str:
@@ -225,23 +225,16 @@ IMPORTANT REQUIREMENTS:
    - If abstract is vague, assign lower scores with explanation
    - If you're uncertain, err on the side of lower scores
 
-3. CONFIDENCE CALCULATION:
-   - confidence = 0-100 (quantitative percentage)
-   - High confidence (90-100): Clear, explicit evidence for all key dimensions
-   - Medium confidence (40-89): Some dimensions unclear or partially addressed
-   - Low confidence (0-39): Abstract too vague, off-topic, or missing critical information
-
-   Confidence factors:
-   - +20: Abstract explicitly mentions domain AND intervention
-   - +15: Clear methodology and outcomes described
-   - +10: All 6 dimensions have concrete evidence
-   - -20: Abstract is vague or lacks detail
-   - -30: Title and abstract seem unrelated to research question
+3. SCORING ACCURACY:
+   - Calculate total_score as the sum of all 6 dimension scores
+   - Double-check your arithmetic
+   - Each score must be within its specified range
+   - Negative total scores are possible (due to exclusion penalties)
 
 4. DECISION LOGIC:
-   Your confidence score determines the final decision:
-   - confidence ≥ {self.screening_threshold}% AND total_score ≥ 30 → "auto-include"
-   - confidence ≤ {self.exclude_threshold}% OR total_score < 0 → "auto-exclude"
+   Your total_score determines the final decision:
+   - total_score ≥ {self.score_threshold_include} → "auto-include"
+   - total_score < {self.score_threshold_exclude} → "auto-exclude"
    - Otherwise → "human-review" (requires expert validation)
 
 Respond in JSON format:
@@ -255,7 +248,6 @@ Respond in JSON format:
     "title_bonus": <0 or 10>
   }},
   "total_score": <sum of all scores>,
-  "confidence": <0-100>,
   "decision": "auto-include" | "auto-exclude" | "human-review",
   "reasoning": "Brief explanation of overall decision (2-3 sentences, focus on why this paper is/isn't relevant)",
   "evidence_quotes": [
@@ -267,8 +259,8 @@ Respond in JSON format:
 }}
 
 DECISION RULES:
-- confidence ≥ {self.screening_threshold} AND total_score ≥ 30 → "auto-include"
-- confidence ≤ {self.exclude_threshold} OR total_score < 0 → "auto-exclude"
+- total_score ≥ {self.score_threshold_include} → "auto-include"
+- total_score < {self.score_threshold_exclude} → "auto-exclude"
 - Otherwise → "human-review" (requires expert validation)
 """
         return prompt
@@ -294,25 +286,24 @@ DECISION RULES:
                 return False
         return True
 
-    def determine_decision(self, confidence: int, total_score: int) -> str:
+    def determine_decision(self, total_score: int) -> str:
         """
-        Determine decision based on confidence and total score
+        Determine decision based on total score only
 
         Args:
-            confidence: AI confidence score (0-100)
             total_score: Total 6-dimension score (-20 to 50)
 
         Returns:
             Decision: "auto-include", "auto-exclude", or "human-review"
 
-        Decision rules (configurable):
-        - High confidence (≥90%) AND high score (≥30) → auto-include
-        - Low confidence (≤10%) OR negative score → auto-exclude
-        - Medium confidence (11-89%) → human-review
+        Decision rules (configurable based on project_type):
+        - Knowledge Repository: score ≥ 25 → auto-include, < 0 → auto-exclude
+        - Systematic Review: score ≥ 40 → auto-include, < 0 → auto-exclude
+        - Otherwise → human-review
         """
-        if confidence >= self.screening_threshold and total_score >= 30:
+        if total_score >= self.score_threshold_include:
             return 'auto-include'
-        elif confidence <= self.exclude_threshold or total_score < 0:
+        elif total_score < self.score_threshold_exclude:
             return 'auto-exclude'
         else:
             return 'human-review'
@@ -359,7 +350,6 @@ DECISION RULES:
                     'title_bonus': 0
                 },
                 'total_score': 0,
-                'confidence': 0,
                 'decision': 'auto-exclude',
                 'reasoning': 'No abstract available for screening',
                 'evidence_quotes': []
@@ -386,13 +376,12 @@ DECISION RULES:
             # Validate evidence grounding
             if not self.validate_evidence_grounding(result.get('evidence_quotes', []), abstract):
                 print(f"   ⚠️  WARNING: Hallucination detected in evidence quotes")
-                result['confidence'] = max(0, result['confidence'] - 20)  # Penalty
-
-            # Apply decision rules based on confidence and score
-            result['decision'] = self.determine_decision(
-                result['confidence'],
-                result['total_score']
-            )
+                # Mark for human review if hallucination detected
+                result['decision'] = 'human-review'
+                result['reasoning'] += " [FLAGGED: Potential hallucination in evidence]"
+            else:
+                # Apply decision rules based on total score only
+                result['decision'] = self.determine_decision(result['total_score'])
 
             return result
 
@@ -402,7 +391,6 @@ DECISION RULES:
                 'scores': {'domain': 0, 'intervention': 0, 'method': 0,
                           'outcomes': 0, 'exclusion': 0, 'title_bonus': 0},
                 'total_score': 0,
-                'confidence': 0,
                 'decision': 'error',
                 'reasoning': str(e),
                 'evidence_quotes': []
@@ -436,7 +424,7 @@ DECISION RULES:
 
             # Merge with original dataframe
             df = df.merge(
-                df_progress[['title', 'total_score', 'confidence', 'decision', 'reasoning',
+                df_progress[['title', 'total_score', 'decision', 'reasoning',
                             'domain_score', 'intervention_score', 'method_score',
                             'outcomes_score', 'exclusion_score', 'title_bonus']],
                 on='title',
@@ -473,7 +461,6 @@ DECISION RULES:
                 'exclusion_score': result['scores']['exclusion'],
                 'title_bonus': result['scores']['title_bonus'],
                 'total_score': result['total_score'],
-                'confidence': result['confidence'],
                 'decision': result['decision'],
                 'reasoning': result['reasoning']
             })
@@ -482,7 +469,7 @@ DECISION RULES:
             screened_count = len(results) + already_screened
             decision_emoji = {'auto-include': '✅', 'auto-exclude': '⛔', 'human-review': '⚠️', 'error': '❌'}
             emoji = decision_emoji.get(result['decision'], '?')
-            print(f"   [{screened_count}/{len(df)}] {row['title'][:50]}... → {emoji} {result['decision']} (score: {result['total_score']}, conf: {result['confidence']}%)")
+            print(f"   [{screened_count}/{len(df)}] {row['title'][:50]}... → {emoji} {result['decision']} (score: {result['total_score']})")
 
             # Save progress periodically
             if len(results) % batch_size == 0:
@@ -506,7 +493,7 @@ DECISION RULES:
 
         # Merge with original dataframe
         df = df.merge(
-            df_results[['title', 'total_score', 'confidence', 'decision', 'reasoning',
+            df_results[['title', 'total_score', 'decision', 'reasoning',
                        'domain_score', 'intervention_score', 'method_score',
                        'outcomes_score', 'exclusion_score', 'title_bonus']],
             on='title',
@@ -535,9 +522,9 @@ DECISION RULES:
         errors = (df['decision'] == 'error').sum()
 
         print(f"\nTotal papers: {total}")
-        print(f"✅ Auto-include (≥{self.screening_threshold}% confidence): {auto_included} ({auto_included/total*100:.1f}%)")
-        print(f"⛔ Auto-exclude (≤{self.exclude_threshold}% confidence): {auto_excluded} ({auto_excluded/total*100:.1f}%)")
-        print(f"⚠️  Human review required ({self.exclude_threshold+1}-{self.screening_threshold-1}%): {human_review} ({human_review/total*100:.1f}%)")
+        print(f"✅ Auto-include (score ≥ {self.score_threshold_include}): {auto_included} ({auto_included/total*100:.1f}%)")
+        print(f"⛔ Auto-exclude (score < {self.score_threshold_exclude}): {auto_excluded} ({auto_excluded/total*100:.1f}%)")
+        print(f"⚠️  Human review required ({self.score_threshold_exclude} ≤ score < {self.score_threshold_include}): {human_review} ({human_review/total*100:.1f}%)")
         if errors > 0:
             print(f"❌ Errors: {errors} ({errors/total*100:.1f}%)")
 
@@ -579,7 +566,7 @@ DECISION RULES:
             print("\n📋 Sample Auto-Included Papers:")
             for idx, row in df_auto_include.head(2).iterrows():
                 print(f"\n  • {row['title'][:70]}...")
-                print(f"    Total Score: {row['total_score']:.0f} | Confidence: {row['confidence']:.0f}%")
+                print(f"    Total Score: {row['total_score']:.0f}")
                 print(f"    Scores: D={row['domain_score']:.0f} I={row['intervention_score']:.0f} M={row['method_score']:.0f} O={row['outcomes_score']:.0f} E={row['exclusion_score']:.0f} TB={row['title_bonus']:.0f}")
                 print(f"    Reasoning: {row['reasoning'][:150]}...")
 
@@ -587,7 +574,7 @@ DECISION RULES:
             print("\n📋 Sample Human Review Queue:")
             for idx, row in df_human_review.head(2).iterrows():
                 print(f"\n  • {row['title'][:70]}...")
-                print(f"    Total Score: {row['total_score']:.0f} | Confidence: {row['confidence']:.0f}%")
+                print(f"    Total Score: {row['total_score']:.0f}")
                 print(f"    Scores: D={row['domain_score']:.0f} I={row['intervention_score']:.0f} M={row['method_score']:.0f} O={row['outcomes_score']:.0f} E={row['exclusion_score']:.0f} TB={row['title_bonus']:.0f}")
                 print(f"    Reasoning: {row['reasoning'][:150]}...")
 
@@ -595,7 +582,7 @@ DECISION RULES:
             print("\n📋 Sample Auto-Excluded Papers:")
             for idx, row in df_auto_exclude.head(2).iterrows():
                 print(f"\n  • {row['title'][:70]}...")
-                print(f"    Total Score: {row['total_score']:.0f} | Confidence: {row['confidence']:.0f}%")
+                print(f"    Total Score: {row['total_score']:.0f}")
                 print(f"    Reasoning: {row['reasoning'][:150]}...")
 
         # Show next step based on human review requirement
