@@ -115,8 +115,8 @@ Now that we've defined my research scope, please help me design effective search
    - [ ] Semantic Scholar (CS, Engineering, Sciences - 40% open access PDFs)
 
      ⚠️  **Performance Tip**: Get a free API key for 10x faster retrieval
-     - Without key: 100 requests/5 min (slower, may take 30-60 minutes)
-     - With key: 1,000 requests/5 min (faster, ~5-10 minutes)
+     - Without key: 100 requests/5 min (slower, ~60-120 minutes for 10K papers)
+     - With key: 1,000 requests/5 min (faster, ~10-20 minutes)
      - Get free key: https://www.semanticscholar.org/product/api#api-key
      - You'll be prompted to enter it when fetching papers (optional)
 

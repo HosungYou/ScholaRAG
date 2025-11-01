@@ -71,8 +71,8 @@ class PaperFetcher:
         print("⚠️  Semantic Scholar API Key Not Found")
         print("="*70)
         print("\n📊 Rate Limits:")
-        print("   • Without API key: 100 requests/5 min (slower, ~30-60 minutes)")
-        print("   • With API key:    1,000 requests/5 min (10x faster, ~5-10 minutes)")
+        print("   • Without API key: 100 requests/5 min (slower, ~60-120 minutes for 10K papers)")
+        print("   • With API key:    1,000 requests/5 min (10x faster, ~10-20 minutes)")
         print("\n🔑 Get a FREE API key:")
         print("   https://www.semanticscholar.org/product/api#api-key")
         print("\n💡 Enter your API key below (or press Enter to skip)")
@@ -138,7 +138,7 @@ class PaperFetcher:
         query: str,
         year_start: int = 2015,
         year_end: int = 2025,
-        limit: int = 1000
+        limit: int = 10000
     ) -> pd.DataFrame:
         """
         Fetch papers from Semantic Scholar API
@@ -236,7 +236,7 @@ class PaperFetcher:
         query: str,
         year_start: int = 2015,
         year_end: int = 2025,
-        limit: int = 1000
+        limit: int = 10000
     ) -> pd.DataFrame:
         """
         Fetch papers from OpenAlex API
@@ -479,7 +479,7 @@ class PaperFetcher:
             # Modify query for arXiv format
             arxiv_query = f"all:{query.replace(' ', ' AND all:')}"
             results['arxiv'] = self.fetch_arxiv(
-                arxiv_query, year_start, year_end, max_results=100
+                arxiv_query, year_start, year_end
             )
             # Save immediately
             output_file = self.output_dir / "arxiv_results.csv"
