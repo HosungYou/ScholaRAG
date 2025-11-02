@@ -465,7 +465,7 @@ Template-Free AI-PRISMA (v2.0):
         'search': {
             'year_range': {'start': 2015, 'end': 2025},
             'languages': ['english'],
-            'max_results_per_db': 10000  # For knowledge_repository
+            'max_results_per_db': 10000  # For all project types (PRISMA: cast wide net, filter via screening)
         },
 
         # RAG Settings

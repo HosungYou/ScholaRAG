@@ -56,12 +56,89 @@ class PaperFetcher:
         # API keys
         self.semantic_scholar_api_key = os.getenv('SEMANTIC_SCHOLAR_API_KEY')
 
+        # Prompt user for API key if not found
+        if not self.semantic_scholar_api_key:
+            self._prompt_for_api_key()
+
+    def _prompt_for_api_key(self):
+        """
+        Prompt user for Semantic Scholar API key if not found in environment.
+
+        Offers 10x rate limit improvement (100 → 1,000 requests/5 min).
+        Saves key to project .env file for future use.
+        """
+        print("\n" + "="*70)
+        print("⚠️  Semantic Scholar API Key Not Found")
+        print("="*70)
+        print("\n📊 Rate Limits:")
+        print("   • Without API key: 100 requests/5 min (slower, ~60-120 minutes for 10K papers)")
+        print("   • With API key:    1,000 requests/5 min (10x faster, ~10-20 minutes)")
+        print("\n🔑 Get a FREE API key:")
+        print("   https://www.semanticscholar.org/product/api#api-key")
+        print("\n💡 Enter your API key below (or press Enter to skip)")
+        print("   (Key will be saved to .env file for future use)")
+        print("="*70 + "\n")
+
+        try:
+            api_key_input = input("Semantic Scholar API key (or Enter to skip): ").strip()
+
+            if api_key_input:
+                # Validate format (basic check)
+                if len(api_key_input) < 20:
+                    print("⚠️  Warning: API key seems too short. Proceeding anyway...")
+
+                self.semantic_scholar_api_key = api_key_input
+
+                # Save to project .env file
+                env_path = self.project_path / ".env"
+
+                # Check if .env exists
+                if env_path.exists():
+                    # Append to existing .env
+                    with open(env_path, 'r') as f:
+                        env_content = f.read()
+
+                    # Check if SEMANTIC_SCHOLAR_API_KEY already exists
+                    if 'SEMANTIC_SCHOLAR_API_KEY' in env_content:
+                        # Replace existing key
+                        import re
+                        env_content = re.sub(
+                            r'SEMANTIC_SCHOLAR_API_KEY=.*',
+                            f'SEMANTIC_SCHOLAR_API_KEY={api_key_input}',
+                            env_content
+                        )
+                    else:
+                        # Append new key
+                        env_content += f"\n# Semantic Scholar API (added {Path(__file__).name})\n"
+                        env_content += f"SEMANTIC_SCHOLAR_API_KEY={api_key_input}\n"
+
+                    with open(env_path, 'w') as f:
+                        f.write(env_content)
+                else:
+                    # Create new .env file
+                    with open(env_path, 'w') as f:
+                        f.write(f"# ScholaRAG Project Environment\n")
+                        f.write(f"# Created by {Path(__file__).name}\n\n")
+                        f.write(f"SEMANTIC_SCHOLAR_API_KEY={api_key_input}\n")
+
+                print(f"✅ API key saved to {env_path}")
+                print("   10x faster retrieval enabled!\n")
+            else:
+                print("⏩ Skipping API key. Using free tier (100 requests/5 min)")
+                print("   (You can add it later to .env file)\n")
+
+        except KeyboardInterrupt:
+            print("\n\n⏩ Skipping API key prompt. Using free tier.\n")
+        except Exception as e:
+            print(f"\n⚠️  Error during API key setup: {e}")
+            print("   Continuing with free tier...\n")
+
     def fetch_semantic_scholar(
         self,
         query: str,
         year_start: int = 2015,
         year_end: int = 2025,
-        limit: int = 1000
+        limit: int = 10000
     ) -> pd.DataFrame:
         """
         Fetch papers from Semantic Scholar API
@@ -159,7 +236,7 @@ class PaperFetcher:
         query: str,
         year_start: int = 2015,
         year_end: int = 2025,
-        limit: int = 1000
+        limit: int = 10000
     ) -> pd.DataFrame:
         """
         Fetch papers from OpenAlex API
@@ -263,7 +340,7 @@ class PaperFetcher:
         query: str,
         year_start: int = 2015,
         year_end: int = 2025,
-        max_results: int = 500
+        max_results: int = 5000
     ) -> pd.DataFrame:
         """
         Fetch papers from arXiv API
@@ -402,7 +479,7 @@ class PaperFetcher:
             # Modify query for arXiv format
             arxiv_query = f"all:{query.replace(' ', ' AND all:')}"
             results['arxiv'] = self.fetch_arxiv(
-                arxiv_query, year_start, year_end, max_results=100
+                arxiv_query, year_start, year_end
             )
             # Save immediately
             output_file = self.output_dir / "arxiv_results.csv"
