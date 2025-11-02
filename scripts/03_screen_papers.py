@@ -258,6 +258,10 @@ Respond in JSON format:
   ]
 }}
 
+CRITICAL: In evidence_quotes, provide ONLY the exact quote text from the abstract.
+DO NOT add any labels, prefixes, or commentary (e.g., "Domain alignment:", "Evidence:", etc.).
+ONLY include verbatim text that appears in the abstract.
+
 DECISION RULES:
 - total_score ≥ {self.score_threshold_include} → "auto-include"
 - total_score < {self.score_threshold_exclude} → "auto-exclude"
@@ -280,8 +284,26 @@ DECISION RULES:
             return True  # No quotes to validate
 
         for quote in quotes:
-            # Check if quote exists in abstract (case-insensitive, ignore punctuation)
-            if quote.lower().strip() not in abstract.lower():
+            # Remove any labels/prefixes that Claude might add
+            # Pattern: "Label: 'actual quote'" or "Label: actual quote"
+            clean_quote = quote
+
+            # Remove patterns like "Domain alignment: ", "Evidence: ", etc.
+            if ':' in quote:
+                # Check if this looks like "Label: 'quote'" or "Label: quote"
+                parts = quote.split(':', 1)
+                if len(parts) == 2:
+                    potential_quote = parts[1].strip()
+                    # Remove surrounding quotes if present
+                    if potential_quote.startswith("'") and potential_quote.endswith("'"):
+                        clean_quote = potential_quote[1:-1]
+                    elif potential_quote.startswith('"') and potential_quote.endswith('"'):
+                        clean_quote = potential_quote[1:-1]
+                    else:
+                        clean_quote = potential_quote
+
+            # Check if cleaned quote exists in abstract (case-insensitive)
+            if clean_quote.lower().strip() not in abstract.lower():
                 print(f"   ⚠️  Hallucination detected: \"{quote[:50]}...\"")
                 return False
         return True
@@ -369,9 +391,28 @@ DECISION RULES:
 
             result_text = response.content[0].text.strip()
 
-            # Parse JSON response
+            # Remove markdown code blocks if present
+            if result_text.startswith('```'):
+                # Remove ```json\n from start and \n``` from end
+                lines = result_text.split('\n')
+                if lines[0].startswith('```'):
+                    lines = lines[1:]  # Remove first line
+                if lines and lines[-1].strip() == '```':
+                    lines = lines[:-1]  # Remove last line
+                result_text = '\n'.join(lines)
+
+            # Parse JSON response (extract only first complete JSON object)
             import json
-            result = json.loads(result_text)
+            # Use JSONDecoder to parse only the first valid JSON object
+            # This ignores any extra text after the JSON
+            decoder = json.JSONDecoder()
+            result, end_idx = decoder.raw_decode(result_text)
+
+            # Optional: warn if there's extra text after JSON
+            if end_idx < len(result_text.strip()):
+                remaining_text = result_text[end_idx:].strip()
+                if remaining_text and len(remaining_text) > 10:
+                    pass  # Silent - Claude often adds helpful commentary
 
             # Validate evidence grounding
             if not self.validate_evidence_grounding(result.get('evidence_quotes', []), abstract):

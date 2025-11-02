@@ -479,7 +479,7 @@ class PaperFetcher:
             # Modify query for arXiv format
             arxiv_query = f"all:{query.replace(' ', ' AND all:')}"
             results['arxiv'] = self.fetch_arxiv(
-                arxiv_query, year_start, year_end
+                arxiv_query, year_start, year_end, max_results=5000
             )
             # Save immediately
             output_file = self.output_dir / "arxiv_results.csv"
