@@ -38,7 +38,7 @@ class PaperFetcher:
         # Load environment variables from project .env file
         env_path = self.project_path / ".env"
         if env_path.exists():
-            load_dotenv(env_path)
+            load_dotenv(env_path, override=True)  # Use override to ensure it loads
 
         # Load project config
         config_path = self.project_path / "config.yaml"
@@ -56,82 +56,229 @@ class PaperFetcher:
         # API keys
         self.semantic_scholar_api_key = os.getenv('SEMANTIC_SCHOLAR_API_KEY')
 
-        # Prompt user for API key if not found
-        if not self.semantic_scholar_api_key:
-            self._prompt_for_api_key()
-
-    def _prompt_for_api_key(self):
+    def _show_api_key_requirement(self):
         """
-        Prompt user for Semantic Scholar API key if not found in environment.
+        Show error message when Semantic Scholar API key is missing.
 
-        Offers 10x rate limit improvement (100 → 1,000 requests/5 min).
-        Saves key to project .env file for future use.
+        API key is now REQUIRED for Semantic Scholar (not optional).
+        Free tier rate limits are too slow for systematic literature reviews.
         """
-        print("\n" + "="*70)
-        print("⚠️  Semantic Scholar API Key Not Found")
-        print("="*70)
-        print("\n📊 Rate Limits:")
-        print("   • Without API key: 100 requests/5 min (slower, ~60-120 minutes for 10K papers)")
-        print("   • With API key:    1,000 requests/5 min (10x faster, ~10-20 minutes)")
-        print("\n🔑 Get a FREE API key:")
-        print("   https://www.semanticscholar.org/product/api#api-key")
-        print("\n💡 Enter your API key below (or press Enter to skip)")
-        print("   (Key will be saved to .env file for future use)")
-        print("="*70 + "\n")
+        print("\n" + "="*80)
+        print("❌ ERROR: Semantic Scholar API Key Required")
+        print("="*80)
+        print("\n🔑 **API Key is now REQUIRED for Semantic Scholar**")
+        print("\nWhy?")
+        print("   • Free tier: 100 requests/5 min → Too slow for systematic reviews")
+        print("   • With API key: 1,000 requests/5 min → 10x faster retrieval")
+        print("   • For 10,000 papers: Free tier = 60-120 min, API key = 10-20 min")
+        print("\n📋 How to get a FREE API key:")
+        print("   1. Visit: https://www.semanticscholar.org/product/api#api-key")
+        print("   2. Sign up with your email")
+        print("   3. Copy your API key")
+        print("\n💾 How to add API key to your project:")
+        print(f"   1. Create/edit: {self.project_path}/.env")
+        print(f"   2. Add this line: SEMANTIC_SCHOLAR_API_KEY=your_key_here")
+        print("\n🚀 Quick setup script:")
+        print(f"   python scripts/setup_api_keys.py --project {self.project_path}")
+        print("\n💡 Alternative: Skip Semantic Scholar")
+        print("   Use --databases openalex arxiv (OpenAlex works without API key)")
+        print("="*80 + "\n")
 
-        try:
-            api_key_input = input("Semantic Scholar API key (or Enter to skip): ").strip()
+        # Exit if Semantic Scholar is requested but no API key
+        print("❌ Exiting: Please add Semantic Scholar API key to continue.\n")
+        sys.exit(1)
 
-            if api_key_input:
-                # Validate format (basic check)
-                if len(api_key_input) < 20:
-                    print("⚠️  Warning: API key seems too short. Proceeding anyway...")
+    def _parse_and_parts(self, query: str) -> list:
+        """
+        Parse top-level AND-separated parts from query.
 
-                self.semantic_scholar_api_key = api_key_input
+        Returns:
+            List of AND-separated query parts
+        """
+        parts = []
+        depth = 0
+        current_part = ""
 
-                # Save to project .env file
-                env_path = self.project_path / ".env"
+        i = 0
+        while i < len(query):
+            char = query[i]
 
-                # Check if .env exists
-                if env_path.exists():
-                    # Append to existing .env
-                    with open(env_path, 'r') as f:
-                        env_content = f.read()
-
-                    # Check if SEMANTIC_SCHOLAR_API_KEY already exists
-                    if 'SEMANTIC_SCHOLAR_API_KEY' in env_content:
-                        # Replace existing key
-                        import re
-                        env_content = re.sub(
-                            r'SEMANTIC_SCHOLAR_API_KEY=.*',
-                            f'SEMANTIC_SCHOLAR_API_KEY={api_key_input}',
-                            env_content
-                        )
-                    else:
-                        # Append new key
-                        env_content += f"\n# Semantic Scholar API (added {Path(__file__).name})\n"
-                        env_content += f"SEMANTIC_SCHOLAR_API_KEY={api_key_input}\n"
-
-                    with open(env_path, 'w') as f:
-                        f.write(env_content)
-                else:
-                    # Create new .env file
-                    with open(env_path, 'w') as f:
-                        f.write(f"# ScholaRAG Project Environment\n")
-                        f.write(f"# Created by {Path(__file__).name}\n\n")
-                        f.write(f"SEMANTIC_SCHOLAR_API_KEY={api_key_input}\n")
-
-                print(f"✅ API key saved to {env_path}")
-                print("   10x faster retrieval enabled!\n")
+            if char == '(':
+                depth += 1
+                current_part += char
+            elif char == ')':
+                depth -= 1
+                current_part += char
+            elif depth == 0 and i + 4 <= len(query) and query[i:i+5] == ' AND ':
+                if current_part.strip():
+                    parts.append(current_part.strip())
+                    current_part = ""
+                i += 4  # Skip ' AND'
+                continue
             else:
-                print("⏩ Skipping API key. Using free tier (100 requests/5 min)")
-                print("   (You can add it later to .env file)\n")
+                current_part += char
 
-        except KeyboardInterrupt:
-            print("\n\n⏩ Skipping API key prompt. Using free tier.\n")
-        except Exception as e:
-            print(f"\n⚠️  Error during API key setup: {e}")
-            print("   Continuing with free tier...\n")
+            i += 1
+
+        # Add last part
+        if current_part.strip():
+            parts.append(current_part.strip())
+
+        return parts
+
+    def _extract_or_terms(self, part: str) -> list:
+        """
+        Extract OR-separated terms from a query part.
+
+        Example:
+            "(AI OR ML OR machine learning)" -> ["AI", "ML", "machine learning"]
+        """
+        # Remove outer parentheses
+        part = part.strip()
+        if part.startswith('(') and part.endswith(')'):
+            part = part[1:-1]
+
+        # Split by OR
+        terms = []
+        depth = 0
+        current_term = ""
+
+        i = 0
+        while i < len(part):
+            char = part[i]
+
+            if char == '(':
+                depth += 1
+                current_term += char
+            elif char == ')':
+                depth -= 1
+                current_term += char
+            elif depth == 0 and i + 4 <= len(part) and part[i:i+4] == ' OR ':
+                if current_term.strip():
+                    terms.append(current_term.strip())
+                    current_term = ""
+                i += 3  # Skip ' OR'
+                continue
+            else:
+                current_term += char
+
+            i += 1
+
+        # Add last term
+        if current_term.strip():
+            terms.append(current_term.strip())
+
+        return terms
+
+    def _select_best_terms(self, or_terms: list, max_terms: int = 3) -> list:
+        """
+        Select best terms from OR list for Semantic Scholar query.
+
+        Strategy:
+        - Prefer full phrases over abbreviations (e.g., "artificial intelligence" > "AI")
+        - Balance specificity with query length
+        - Avoid overly broad terms alone (e.g., "algorithm", "automation")
+
+        Args:
+            or_terms: List of OR-separated terms
+            max_terms: Maximum terms to return
+
+        Returns:
+            Best terms for Semantic Scholar query
+        """
+        if len(or_terms) <= max_terms:
+            return or_terms
+
+        # Prioritize full phrases (contain spaces)
+        phrases = [t for t in or_terms if ' ' in t]
+        abbreviations = [t for t in or_terms if ' ' not in t]
+
+        # Mix: prefer 1-2 full phrases + 1-2 abbreviations
+        selected = []
+
+        # Add up to 2 shortest full phrases
+        if phrases:
+            phrases_sorted = sorted(phrases, key=len)
+            selected.extend(phrases_sorted[:min(2, len(phrases))])
+
+        # Fill remaining with shortest abbreviations
+        if len(selected) < max_terms and abbreviations:
+            abbrev_sorted = sorted(abbreviations, key=len)
+            remaining = max_terms - len(selected)
+            selected.extend(abbrev_sorted[:remaining])
+
+        # If still not enough, add more
+        if len(selected) < max_terms:
+            all_terms_sorted = sorted(or_terms, key=len)
+            for term in all_terms_sorted:
+                if term not in selected:
+                    selected.append(term)
+                    if len(selected) >= max_terms:
+                        break
+
+        return selected[:max_terms]
+
+    def _optimize_semantic_scholar_query(self, query: str, max_or_terms: int = 3) -> str:
+        """
+        Optimize complex Boolean queries for Semantic Scholar API.
+
+        Semantic Scholar has undocumented limitations:
+        - Max 2 AND-separated parts work reliably
+        - Too many OR terms (>4-5) cause query to fail silently
+        - Overly broad terms cause poor results
+
+        Strategy:
+        1. Keep only first 2 AND parts
+        2. Limit OR terms to max_or_terms (default: 3) per part
+        3. Prioritize full phrases over abbreviations
+
+        Args:
+            query: Original Boolean query
+            max_or_terms: Maximum OR terms to keep per AND part
+
+        Returns:
+            Optimized query that Semantic Scholar can handle
+        """
+        # Parse AND parts
+        parts = self._parse_and_parts(query)
+
+        if len(parts) == 0:
+            return query
+
+        # Keep only first 2 AND parts
+        optimized_parts = []
+        simplified = False
+
+        for idx, part in enumerate(parts[:2]):  # Only first 2 parts
+            # Extract OR terms
+            or_terms = self._extract_or_terms(part)
+
+            if len(or_terms) > max_or_terms:
+                # Select best terms (prefer full phrases)
+                or_terms = self._select_best_terms(or_terms, max_or_terms)
+                simplified = True
+
+            # Reconstruct part
+            if len(or_terms) == 1:
+                optimized_parts.append(or_terms[0])
+            else:
+                optimized_parts.append(f"({' OR '.join(or_terms)})")
+
+        if len(parts) > 2:
+            simplified = True
+
+        # Combine parts
+        optimized_query = ' AND '.join(optimized_parts)
+
+        # Show simplification message
+        if simplified:
+            print(f"   ⚠️  Query optimized for Semantic Scholar API limitations")
+            print(f"   • Original: {len(parts)} AND parts, many OR terms")
+            print(f"   • Optimized: {len(optimized_parts)} AND parts, max {max_or_terms} OR terms each")
+            print(f"   • Strategy: Prioritized full phrases over abbreviations")
+            print(f"   • Note: Full query used for OpenAlex/arXiv (no restrictions)")
+
+        return optimized_query
 
     def fetch_semantic_scholar(
         self,
@@ -152,8 +299,18 @@ class PaperFetcher:
         Returns:
             DataFrame with paper metadata including PDF URLs
         """
+        # REQUIRE API key for Semantic Scholar
+        if not self.semantic_scholar_api_key:
+            self._show_api_key_requirement()
+            # Function above calls sys.exit(1), but return empty DataFrame as fallback
+            return pd.DataFrame()
+
         print(f"\n🔍 Searching Semantic Scholar...")
-        print(f"   Query: {query}")
+
+        # Optimize query for Semantic Scholar's API limitations
+        optimized_query = self._optimize_semantic_scholar_query(query, max_or_terms=3)
+
+        print(f"   Query: {optimized_query}")
         print(f"   Years: {year_start}-{year_end}")
 
         papers = []
@@ -162,7 +319,7 @@ class PaperFetcher:
 
         while len(papers) < limit:
             params = {
-                'query': query,
+                'query': optimized_query,  # Use optimized query
                 'year': f'{year_start}-{year_end}',
                 'fields': 'title,abstract,authors,year,citationCount,openAccessPdf,externalIds',
                 'limit': min(batch_size, limit - len(papers)),
@@ -433,6 +590,49 @@ class PaperFetcher:
 
         return df
 
+    def _convert_to_arxiv_query(self, query: str) -> str:
+        """
+        Convert complex Boolean query to arXiv format.
+
+        arXiv API doesn't support complex Boolean queries well.
+        Strategy: Extract key terms and create simple query.
+
+        Example:
+            "(AI OR ML) AND risk" -> "all:AI AND all:machine AND all:learning AND all:risk"
+
+        Args:
+            query: Original Boolean query
+
+        Returns:
+            Simple arXiv-compatible query
+        """
+        # Extract all significant terms (remove parentheses and Boolean operators)
+        import re
+
+        # Remove parentheses
+        clean_query = query.replace('(', '').replace(')', '')
+
+        # Split by AND and OR
+        terms = re.split(r'\s+(?:AND|OR)\s+', clean_query)
+
+        # Filter out short terms (< 3 chars) and common words
+        significant_terms = []
+        for term in terms:
+            term = term.strip()
+            if len(term) >= 3 and term.lower() not in ['and', 'or', 'the', 'a', 'an']:
+                significant_terms.append(term)
+
+        # Limit to first 8 terms (arXiv has query length limits)
+        significant_terms = significant_terms[:8]
+
+        # Create arXiv query with all: prefix
+        if significant_terms:
+            arxiv_query = ' AND '.join([f'all:"{term}"' for term in significant_terms])
+        else:
+            arxiv_query = 'all:machine learning'  # Fallback
+
+        return arxiv_query
+
     def fetch_all(
         self,
         query: str,
@@ -476,8 +676,8 @@ class PaperFetcher:
             print(f"   💾 Saved to {output_file}")
 
         if 'arxiv' in databases:
-            # Modify query for arXiv format
-            arxiv_query = f"all:{query.replace(' ', ' AND all:')}"
+            # Convert query to arXiv format
+            arxiv_query = self._convert_to_arxiv_query(query)
             results['arxiv'] = self.fetch_arxiv(
                 arxiv_query, year_start, year_end, max_results=5000
             )
@@ -499,17 +699,24 @@ class PaperFetcher:
 
         for db_name, df in results.items():
             papers = len(df)
-            with_pdf = df['pdf_url'].notna().sum()
+            # Check if pdf_url column exists and has data
+            with_pdf = df['pdf_url'].notna().sum() if 'pdf_url' in df.columns and papers > 0 else 0
             total_papers += papers
             total_with_pdf += with_pdf
 
             print(f"\n{db_name.upper()}:")
             print(f"  Papers found: {papers}")
-            print(f"  With PDF URLs: {with_pdf} ({with_pdf/papers*100:.1f}%)")
+            if papers > 0:
+                print(f"  With PDF URLs: {with_pdf} ({with_pdf/papers*100:.1f}%)")
+            else:
+                print(f"  With PDF URLs: 0 (0.0%)")
 
         print(f"\nTOTAL:")
         print(f"  Papers: {total_papers}")
-        print(f"  With PDF URLs: {total_with_pdf} ({total_with_pdf/total_papers*100:.1f}%)")
+        if total_papers > 0:
+            print(f"  With PDF URLs: {total_with_pdf} ({total_with_pdf/total_papers*100:.1f}%)")
+        else:
+            print(f"  With PDF URLs: 0 (0.0%)")
         print(f"\n✓ All results saved to: {self.output_dir}")
         print("="*60)
 
