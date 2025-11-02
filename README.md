@@ -224,9 +224,9 @@ Every score includes direct quotes from the abstract (no hallucinations).
 ```yaml
 ai_prisma_rubric:
   enabled: true
-  decision_confidence:
-    auto_include: 90  # Based on project_type
-    auto_exclude: 10
+  score_threshold:
+    auto_include: 40  # systematic_review: 40, knowledge_repository: 25
+    auto_exclude: 0
   notes: |
     Population: University or adult L2 learners (18+).
     Intervention: AI-enabled conversational agents (ChatGPT, GPT-4, LLMs).

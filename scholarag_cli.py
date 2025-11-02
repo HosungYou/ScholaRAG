@@ -401,14 +401,14 @@ def _create_template_free_config(project_folder, name, question, today, project_
 
     No keyword templates required - Claude interprets research question directly.
     """
-    # Set thresholds based on project type
+    # Set thresholds based on project type (v1.2.0+: score-based, not confidence-based)
     if project_type == 'knowledge_repository':
-        auto_include = 50
-        auto_exclude = 20
+        auto_include = 25  # 50% of max score (50 points)
+        auto_exclude = 0
         human_validation_required = False
     else:  # systematic_review
-        auto_include = 90
-        auto_exclude = 10
+        auto_include = 40  # 80% of max score (50 points)
+        auto_exclude = 0
         human_validation_required = True
 
     config = {
@@ -427,7 +427,7 @@ def _create_template_free_config(project_folder, name, question, today, project_
             'llm': 'claude-haiku-4-5',
             'temperature': 0.1,
 
-            'decision_confidence': {
+            'score_threshold': {
                 'auto_include': auto_include,
                 'auto_exclude': auto_exclude
             },
@@ -442,9 +442,9 @@ def _create_template_free_config(project_folder, name, question, today, project_
 Template-Free AI-PRISMA (v2.0):
 - Claude interprets your research question directly
 - No keyword templates needed
-- 6-dimension scoring: domain, intervention, method, outcomes, exclusion, title_bonus
+- 6-dimension scoring: domain, intervention, method, outcomes, exclusion, title_bonus (max 50 points)
 - Evidence grounding validates all AI quotes
-- Project type: {project_type} ({auto_include}/{auto_exclude} thresholds)
+- Project type: {project_type} (score_threshold: ≥{auto_include} auto-include, <{auto_exclude} auto-exclude)
             """
         },
 

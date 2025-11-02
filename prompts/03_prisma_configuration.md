@@ -18,9 +18,9 @@ validation_rules:
   ai_prisma_guidance:
     required: true
     validation: "ai_prisma_rubric.notes or guidance fields populated with domain-specific cues"
-  decision_confidence:
+  score_threshold:
     required: true
-    validation: "auto_include > auto_exclude and aligned with project_type defaults unless justified"
+    validation: "auto_include > auto_exclude and aligned with project_type defaults (40/0 for systematic_review, 25/0 for knowledge_repository)"
 cli_commands:
   - command: "python scripts/validate_config.py --config config.yaml"
     when: "After editing config.yaml to confirm schema compliance"
@@ -57,7 +57,7 @@ conversation_flow:
 validation_checklist:
   - "Research question in config.project.research_question confirmed and echoed in rubric notes"
   - "ai_prisma_rubric.notes (or guidance) captures population, intervention, outcomes, and exclusion cues in plain language"
-  - "decision_confidence.auto_include / auto_exclude align with project_type defaults or have justification documented"
+  - "score_threshold.auto_include / auto_exclude align with project_type defaults (40/0 for systematic_review, 25/0 for knowledge_repository) or have justification documented"
   - "Human validation expectations recorded (required?, sample size, reviewer role)"
   - "User understands 6-dimension scoring (domain, intervention, method, outcomes, exclusion, title bonus) and evidence requirements"
 -->
@@ -261,9 +261,9 @@ ai_prisma_rubric:
   enabled: true
   llm: claude-haiku-4-5
   temperature: 0.1
-  decision_confidence:
-    auto_include: 90
-    auto_exclude: 10
+  score_threshold:
+    auto_include: 40
+    auto_exclude: 0
   human_validation:
     required: true
     sample_size: 50
@@ -299,7 +299,7 @@ ai_prisma_rubric:
 You're ready for Stage 4 when:
 
 - [ ] `config.project.research_question` is confirmed and referenced in `ai_prisma_rubric.notes`
-- [ ] `ai_prisma_rubric.decision_confidence` uses `50/20` (knowledge repository) or `90/10` (systematic review) unless justified
+- [ ] `ai_prisma_rubric.score_threshold` uses `25/0` (knowledge repository) or `40/0` (systematic review) unless justified
 - [ ] Plain-language guidance for inclusion and exclusion signals is documented (`notes` and/or `guidance` keys)
 - [ ] Human validation requirements are explicit (`required`, `sample_size`, `kappa_threshold`, reviewer notes)
 - [ ] No keyword lists, template paths, or `research_profile.yaml` references remain
