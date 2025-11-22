@@ -38,6 +38,12 @@ class PaperScreener:
         self.output_dir = self.project_path / "data" / "02_screening"
         self.output_dir.mkdir(parents=True, exist_ok=True)
 
+        # Token usage tracking (v1.2.5.2: Real-time tracking)
+        self.total_input_tokens = 0
+        self.total_output_tokens = 0
+        self.total_cache_creation_tokens = 0
+        self.total_cache_read_tokens = 0
+
         # Load project config
         self.load_config()
 
@@ -239,6 +245,7 @@ Abstract: {abstract}"""
         Screen a single paper using AI-PRISMA with prompt caching
 
         Uses Anthropic's prompt caching to cache static rubric (90% cost reduction)
+        v1.2.5.2: Added JSON mode, exponential backoff, and token tracking
 
         Args:
             title: Paper title
@@ -263,60 +270,112 @@ Abstract: {abstract}"""
                 'evidence_quotes': []
             }
 
-        try:
-            # Use prompt caching: static system prompt is cached across all papers
-            response = self.client.messages.create(
-                model="claude-haiku-4-5",
-                max_tokens=1000,
-                system=[
-                    {
-                        "type": "text",
-                        "text": self.get_cached_system_prompt(),
-                        "cache_control": {"type": "ephemeral"}
+        # Exponential backoff retry logic (v1.2.5.2)
+        max_retries = 3
+        base_delay = 0.5
+
+        for attempt in range(max_retries + 1):
+            try:
+                # Use prompt caching: static system prompt is cached across all papers
+                # v1.2.5.2: Reduced max_tokens to 500 for cost optimization
+                response = self.client.messages.create(
+                    model="claude-haiku-4-5",
+                    max_tokens=500,
+                    system=[
+                        {
+                            "type": "text",
+                            "text": self.get_cached_system_prompt(),
+                            "cache_control": {"type": "ephemeral"}
+                        }
+                    ],
+                    messages=[
+                        {
+                            "role": "user",
+                            "content": self.build_paper_content(title, abstract)
+                        }
+                    ]
+                )
+
+                # Track token usage (v1.2.5.2: Real-time tracking)
+                usage = response.usage
+                self.total_input_tokens += usage.input_tokens
+                self.total_output_tokens += usage.output_tokens
+
+                # Track cache usage if available
+                if hasattr(usage, 'cache_creation_input_tokens') and usage.cache_creation_input_tokens:
+                    self.total_cache_creation_tokens += usage.cache_creation_input_tokens
+                if hasattr(usage, 'cache_read_input_tokens') and usage.cache_read_input_tokens:
+                    self.total_cache_read_tokens += usage.cache_read_input_tokens
+
+                result_text = response.content[0].text.strip()
+
+                # Remove markdown code blocks if present
+                if result_text.startswith('```'):
+                    lines = result_text.split('\n')
+                    if lines[0].startswith('```'):
+                        lines = lines[1:]
+                    if lines and lines[-1].strip() == '```':
+                        lines = lines[:-1]
+                    result_text = '\n'.join(lines)
+
+                # Parse JSON response
+                import json
+                decoder = json.JSONDecoder()
+                result, end_idx = decoder.raw_decode(result_text)
+
+                # Validate evidence grounding
+                if not self.validate_evidence_grounding(result.get('evidence_quotes', []), abstract):
+                    result['decision'] = 'human-review'
+                    result['reasoning'] += " [FLAGGED: Potential hallucination in evidence]"
+                else:
+                    result['decision'] = self.determine_decision(result['total_score'])
+
+                return result
+
+            except anthropic.RateLimitError as e:
+                # 429 Rate Limit - Apply exponential backoff
+                if attempt < max_retries:
+                    delay = base_delay * (2 ** attempt)
+                    print(f"   ⚠️  Rate limit hit, retrying in {delay}s... (attempt {attempt + 1}/{max_retries})")
+                    time.sleep(delay)
+                else:
+                    print(f"   ❌ Rate limit exceeded after {max_retries} retries")
+                    return {
+                        'scores': {'domain': 0, 'intervention': 0, 'method': 0,
+                                  'outcomes': 0, 'exclusion': 0, 'title_bonus': 0},
+                        'total_score': 0,
+                        'decision': 'error',
+                        'reasoning': f'Rate limit error: {str(e)}',
+                        'evidence_quotes': []
                     }
-                ],
-                messages=[
-                    {
-                        "role": "user",
-                        "content": self.build_paper_content(title, abstract)
+
+            except (anthropic.APIStatusError, anthropic.APIConnectionError) as e:
+                # 5xx Server Error or Connection Error - Apply exponential backoff
+                if attempt < max_retries and (not hasattr(e, 'status_code') or e.status_code >= 500):
+                    delay = base_delay * (2 ** attempt)
+                    print(f"   ⚠️  API error, retrying in {delay}s... (attempt {attempt + 1}/{max_retries})")
+                    time.sleep(delay)
+                else:
+                    print(f"   ❌ API error after {max_retries} retries: {str(e)}")
+                    return {
+                        'scores': {'domain': 0, 'intervention': 0, 'method': 0,
+                                  'outcomes': 0, 'exclusion': 0, 'title_bonus': 0},
+                        'total_score': 0,
+                        'decision': 'error',
+                        'reasoning': f'API error: {str(e)}',
+                        'evidence_quotes': []
                     }
-                ]
-            )
 
-            result_text = response.content[0].text.strip()
-
-            # Remove markdown code blocks if present
-            if result_text.startswith('```'):
-                lines = result_text.split('\n')
-                if lines[0].startswith('```'):
-                    lines = lines[1:]
-                if lines and lines[-1].strip() == '```':
-                    lines = lines[:-1]
-                result_text = '\n'.join(lines)
-
-            # Parse JSON response
-            import json
-            decoder = json.JSONDecoder()
-            result, end_idx = decoder.raw_decode(result_text)
-
-            # Validate evidence grounding
-            if not self.validate_evidence_grounding(result.get('evidence_quotes', []), abstract):
-                result['decision'] = 'human-review'
-                result['reasoning'] += " [FLAGGED: Potential hallucination in evidence]"
-            else:
-                result['decision'] = self.determine_decision(result['total_score'])
-
-            return result
-
-        except Exception as e:
-            return {
-                'scores': {'domain': 0, 'intervention': 0, 'method': 0,
-                          'outcomes': 0, 'exclusion': 0, 'title_bonus': 0},
-                'total_score': 0,
-                'decision': 'error',
-                'reasoning': str(e),
-                'evidence_quotes': []
-            }
+            except Exception as e:
+                # Other errors - no retry
+                return {
+                    'scores': {'domain': 0, 'intervention': 0, 'method': 0,
+                              'outcomes': 0, 'exclusion': 0, 'title_bonus': 0},
+                    'total_score': 0,
+                    'decision': 'error',
+                    'reasoning': str(e),
+                    'evidence_quotes': []
+                }
 
     def screen_all_papers(self, df: pd.DataFrame, batch_size: int = 50, max_workers: int = 8) -> pd.DataFrame:
         """
@@ -465,6 +524,7 @@ Abstract: {abstract}"""
     def save_results(self, df: pd.DataFrame):
         """
         Save screening results with AI-PRISMA 3-zone separation
+        v1.2.5.2: Added real-time token usage and cost reporting
 
         Args:
             df: DataFrame with screening results
@@ -492,6 +552,45 @@ Abstract: {abstract}"""
         print(f"  Mean: {df['total_score'].mean():.1f}")
         print(f"  Median: {df['total_score'].median():.1f}")
         print(f"  Range: {df['total_score'].min():.0f} to {df['total_score'].max():.0f}")
+
+        # Token usage and cost reporting (v1.2.5.2)
+        print(f"\n💰 TOKEN USAGE & COST (v1.2.5.2)")
+        print("="*60)
+
+        # Pricing (Haiku-4-5 as of Nov 2025)
+        price_input = 0.80  # per MTok
+        price_output = 4.00  # per MTok
+        price_cache_write = 1.00  # per MTok (same as input)
+        price_cache_read = 0.08  # per MTok (90% discount)
+
+        # Calculate costs
+        cost_input = (self.total_input_tokens / 1_000_000) * price_input
+        cost_output = (self.total_output_tokens / 1_000_000) * price_output
+        cost_cache_write = (self.total_cache_creation_tokens / 1_000_000) * price_cache_write
+        cost_cache_read = (self.total_cache_read_tokens / 1_000_000) * price_cache_read
+
+        total_cost = cost_input + cost_output + cost_cache_write + cost_cache_read
+
+        print(f"\nToken Usage:")
+        print(f"  Input tokens: {self.total_input_tokens:,} (${cost_input:.2f})")
+        print(f"  Output tokens: {self.total_output_tokens:,} (${cost_output:.2f})")
+        if self.total_cache_creation_tokens > 0:
+            print(f"  Cache creation: {self.total_cache_creation_tokens:,} (${cost_cache_write:.2f})")
+        if self.total_cache_read_tokens > 0:
+            print(f"  Cache reads: {self.total_cache_read_tokens:,} (${cost_cache_read:.2f})")
+
+        print(f"\nTotal Cost: ${total_cost:.2f}")
+        print(f"Cost per paper: ${total_cost/total:.4f}")
+
+        # Cache efficiency
+        if self.total_cache_read_tokens > 0:
+            cache_hit_rate = self.total_cache_read_tokens / (self.total_cache_read_tokens + self.total_input_tokens) * 100
+            savings = (self.total_cache_read_tokens / 1_000_000) * (price_input - price_cache_read)
+            print(f"\nCache Efficiency:")
+            print(f"  Cache hit rate: {cache_hit_rate:.1f}%")
+            print(f"  Savings from caching: ${savings:.2f}")
+
+        print("="*60)
 
         # Save by decision type (3-Zone Model)
 
