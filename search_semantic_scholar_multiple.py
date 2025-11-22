@@ -1,67 +1,29 @@
 #!/usr/bin/env python3
 """
 Multiple query strategy for Semantic Scholar to overcome API limitations
+
+Usage:
+    python search_semantic_scholar_multiple.py --project projects/your-project
+
+With custom queries:
+    python search_semantic_scholar_multiple.py --project projects/your-project \
+        --queries "AI AND innovation" "ML AND creativity"
+
+With year range:
+    python search_semantic_scholar_multiple.py --project projects/your-project \
+        --year-start 2020 --year-end 2025
 """
 
 import os
 import sys
 import time
+import argparse
 import requests
 import pandas as pd
 from pathlib import Path
 from dotenv import load_dotenv
 
-# Load environment variables
-project_dir = Path("projects/2025-11-21_AI-Tools-Workplace-Innovation")
-env_file = project_dir / ".env"
-if env_file.exists():
-    load_dotenv(env_file)
-
-API_KEY = os.getenv("SEMANTIC_SCHOLAR_API_KEY")
-if not API_KEY:
-    print("❌ ERROR: SEMANTIC_SCHOLAR_API_KEY not found")
-    sys.exit(1)
-
-# Multiple targeted queries to maximize coverage
-QUERIES = [
-    # Query 1: AI + innovation + workplace
-    {
-        "query": "artificial intelligence AND innovation AND workplace",
-        "description": "AI + innovation + workplace"
-    },
-    # Query 2: Machine learning + creativity + employee
-    {
-        "query": "machine learning AND creativity AND employee",
-        "description": "ML + creativity + employee"
-    },
-    # Query 3: AI adoption + innovative behavior
-    {
-        "query": "AI adoption AND innovative behavior",
-        "description": "AI adoption + innovative behavior"
-    },
-    # Query 4: Automation + innovative work behavior
-    {
-        "query": "automation AND innovative work behavior",
-        "description": "Automation + IWB"
-    },
-    # Query 5: AI use + employee innovation
-    {
-        "query": "artificial intelligence use AND employee innovation",
-        "description": "AI use + employee innovation"
-    },
-    # Query 6: Machine learning + idea generation + organization
-    {
-        "query": "machine learning AND idea generation AND organization",
-        "description": "ML + idea generation + org"
-    },
-    # Query 7: AI + creative performance + work
-    {
-        "query": "artificial intelligence AND creative performance AND work",
-        "description": "AI + creative performance + work"
-    },
-]
-
-def fetch_semantic_scholar(query: str, year_start: int = 2015, year_end: int = 2025):
+def fetch_semantic_scholar(query: str, api_key: str, year_start: int, year_end: int):
     """Fetch papers from Semantic Scholar with given query"""
 
     papers = []
@@ -70,7 +32,7 @@ def fetch_semantic_scholar(query: str, year_start: int = 2015, year_end: int = 2
     max_papers = 1000  # Per query
 
     headers = {
-        'x-api-key': API_KEY
+        'x-api-key': api_key
     }
 
     while len(papers) < max_papers:
@@ -144,27 +106,122 @@ def fetch_semantic_scholar(query: str, year_start: int = 2015, year_end: int = 2
 
     return papers
 
+def get_default_queries():
+    """Get default queries for AI + workplace innovation"""
+    return [
+        {
+            "query": "artificial intelligence AND innovation AND workplace",
+            "description": "AI + innovation + workplace"
+        },
+        {
+            "query": "machine learning AND creativity AND employee",
+            "description": "ML + creativity + employee"
+        },
+        {
+            "query": "AI adoption AND innovative behavior",
+            "description": "AI adoption + innovative behavior"
+        },
+        {
+            "query": "automation AND innovative work behavior",
+            "description": "Automation + IWB"
+        },
+        {
+            "query": "artificial intelligence use AND employee innovation",
+            "description": "AI use + employee innovation"
+        },
+        {
+            "query": "machine learning AND idea generation AND organization",
+            "description": "ML + idea generation + org"
+        },
+        {
+            "query": "artificial intelligence AND creative performance AND work",
+            "description": "AI + creative performance + work"
+        },
+    ]
+
 def main():
-    print("🔍 Searching Semantic Scholar with multiple targeted queries...")
-    print(f"   Total queries: {len(QUERIES)}")
+    parser = argparse.ArgumentParser(
+        description="Fetch papers from Semantic Scholar using multiple targeted queries"
+    )
+    parser.add_argument(
+        '--project',
+        required=True,
+        help='Path to project directory (e.g., projects/2025-10-13_AI-Chatbots)'
+    )
+    parser.add_argument(
+        '--queries',
+        nargs='+',
+        help='Custom query strings (e.g., "AI AND innovation" "ML AND creativity")'
+    )
+    parser.add_argument(
+        '--year-start',
+        type=int,
+        default=2015,
+        help='Start year for paper search (default: 2015)'
+    )
+    parser.add_argument(
+        '--year-end',
+        type=int,
+        default=2025,
+        help='End year for paper search (default: 2025)'
+    )
+
+    args = parser.parse_args()
+
+    # Validate project path
+    project_dir = Path(args.project)
+    if not project_dir.exists():
+        print(f"❌ ERROR: Project directory does not exist: {project_dir}")
+        sys.exit(1)
+
+    # Load environment variables
+    env_file = project_dir / ".env"
+    if env_file.exists():
+        load_dotenv(env_file, override=True)
+    else:
+        print(f"⚠️  WARNING: .env file not found at {env_file}")
+        print("   Trying to load from system environment...")
+
+    api_key = os.getenv("SEMANTIC_SCHOLAR_API_KEY")
+    if not api_key:
+        print("❌ ERROR: SEMANTIC_SCHOLAR_API_KEY not found")
+        print("   Please add it to .env file or set as environment variable")
+        sys.exit(1)
+
+    # Prepare queries
+    if args.queries:
+        queries = [{"query": q, "description": q} for q in args.queries]
+    else:
+        print("ℹ️  No custom queries provided, using default queries...")
+        queries = get_default_queries()
+
+    print("\n🔍 Searching Semantic Scholar with multiple targeted queries...")
+    print(f"   Project: {project_dir}")
+    print(f"   Year range: {args.year_start}-{args.year_end}")
+    print(f"   Total queries: {len(queries)}")
     print()
 
     all_papers = []
 
-    for idx, query_info in enumerate(QUERIES, 1):
+    for idx, query_info in enumerate(queries, 1):
         query = query_info["query"]
         desc = query_info["description"]
 
-        print(f"   [{idx}/{len(QUERIES)}] {desc}")
+        print(f"   [{idx}/{len(queries)}] {desc}")
         print(f"       Query: {query}")
 
-        papers = fetch_semantic_scholar(query)
+        papers = fetch_semantic_scholar(
+            query,
+            api_key,
+            args.year_start,
+            args.year_end
+        )
 
         print(f"       ✓ Found {len(papers)} papers")
         all_papers.extend(papers)
 
         # Delay between queries
-        if idx < len(QUERIES):
+        if idx < len(queries):
             time.sleep(1)
 
     print()
@@ -183,8 +240,12 @@ def main():
 
         print(f"   ✓ Unique papers: {len(df_unique)} (removed {len(df) - len(df_unique)} duplicates)")
 
+        # Create output directory if it doesn't exist
+        output_dir = project_dir / "data/01_identification"
+        output_dir.mkdir(parents=True, exist_ok=True)
+
         # Save to CSV
-        output_file = project_dir / "data/01_identification/semantic_scholar_results.csv"
+        output_file = output_dir / "semantic_scholar_results.csv"
         df_unique.to_csv(output_file, index=False)
 
         print(f"   💾 Saved to {output_file}")
@@ -199,7 +260,12 @@ def main():
         print("=" * 60)
         print(f"  Papers found: {len(df_unique)}")
         print(f"  With PDF URLs: {with_pdf} ({pdf_percentage:.1f}%)")
+        print(f"  Year range: {args.year_start}-{args.year_end}")
         print("=" * 60)
+
+        print("\n✨ Next step: Run deduplication")
+        print(f"   python scripts/02_deduplicate.py --project {args.project}")
+
     else:
         print("   ⚠️  No papers found")
 

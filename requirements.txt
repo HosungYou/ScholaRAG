@@ -18,6 +18,7 @@ pypdf>=3.17.0                  # Alternative PDF library
 # Data Processing
 pandas>=2.0.0                  # Data manipulation and CSV handling
 numpy>=1.24.0                  # Numerical operations
+rapidfuzz>=3.0.0               # Fast fuzzy string matching for deduplication
 
 # Web & API
 requests>=2.31.0               # HTTP requests for API calls
