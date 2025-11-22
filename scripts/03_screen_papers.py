@@ -92,10 +92,10 @@ class PaperScreener:
         """
         Get static system prompt for caching (unchanged across all papers)
         This is cached by Anthropic API to reduce latency and cost
-        """
-        return f"""You are a research assistant conducting PRISMA 2020 systematic literature review.
 
-Research Question: {self.research_question}
+        NOTE: Research question is now in user prompt to maximize caching efficiency
+        """
+        return """You are a research assistant conducting PRISMA 2020 systematic literature review.
 
 TASK: Score paper relevance using 6-dimension rubric. Respond in JSON only.
 
@@ -145,8 +145,11 @@ JSON format:
     def build_paper_content(self, title: str, abstract: str) -> str:
         """
         Build dynamic paper content (changes for each paper)
+        Includes research question for context
         """
-        return f"""Title: {title}
+        return f"""Research Question: {self.research_question}
+
+Title: {title}
 
 Abstract: {abstract}"""
 
@@ -336,13 +339,25 @@ Abstract: {abstract}"""
         print(f"Total papers to screen: {len(df)}")
         print(f"⚡ Parallel workers: {max_workers}")
         print(f"⚡ Estimated time: {len(df) / (max_workers * 20):.1f} minutes (optimized)")
-        print(f"💰 Estimated cost: ${len(df) * 0.002:.2f} (with caching)")
+
+        # Cost estimation with prompt caching
+        # Haiku-4-5: Input $0.80/MTok, Output $4.00/MTok, Cached $0.08/MTok
+        # ~30 cached tokens + 150 user tokens input, 200 tokens output per paper
+        cost_per_paper = 0.000944  # Optimized with caching
+        print(f"💰 Estimated cost: ${len(df) * cost_per_paper:.2f} (with 90% cache discount)")
 
         # Check if screening already in progress
         progress_file = self.output_dir / "screening_progress.csv"
         if progress_file.exists():
             print(f"\n✓ Found existing progress file")
             df_progress = pd.read_csv(progress_file)
+
+            # Remove duplicates (keep last occurrence)
+            initial_rows = len(df_progress)
+            df_progress = df_progress.drop_duplicates(subset='title', keep='last')
+            if initial_rows > len(df_progress):
+                print(f"  ⚠️  Removed {initial_rows - len(df_progress)} duplicate rows from progress file")
+
             print(f"  Already screened: {len(df_progress)} papers")
 
             # Merge with original dataframe
@@ -407,28 +422,37 @@ Abstract: {abstract}"""
                     emoji = decision_emoji.get(result['decision'], '?')
                     print(f"   [{screened_count}/{len(df)}] {result['title'][:50]}... → {emoji} {result['decision']} (score: {result['total_score']})")
 
-                    # Save progress periodically
+                    # Save progress periodically (OPTIMIZED: append only new batch)
                     if len(results) % batch_size == 0:
-                        df_batch = pd.DataFrame(results)
-                        if already_screened > 0:
-                            df_existing = pd.read_csv(progress_file)
-                            df_batch = pd.concat([df_existing, df_batch], ignore_index=True)
-                        df_batch.to_csv(progress_file, index=False)
+                        # Only save the last batch_size results
+                        df_batch = pd.DataFrame(results[-batch_size:])
+
+                        # Use append mode to avoid reading entire file
+                        mode = 'a' if progress_file.exists() else 'w'
+                        header = not progress_file.exists()
+                        df_batch.to_csv(progress_file, mode=mode, header=header, index=False)
                         print(f"   💾 Progress saved ({screened_count}/{len(df)})")
 
                 except Exception as e:
                     print(f"   ❌ Error processing paper: {e}")
 
-        # Save final results
-        df_results = pd.DataFrame(results)
-        if already_screened > 0:
-            df_existing = pd.read_csv(progress_file)
-            df_results = pd.concat([df_existing, df_results], ignore_index=True)
-        df_results.to_csv(progress_file, index=False)
+        # Save final results (remaining items not yet saved)
+        remaining = len(results) % batch_size
+        if remaining > 0:
+            df_batch = pd.DataFrame(results[-remaining:])
+            mode = 'a' if progress_file.exists() else 'w'
+            header = not progress_file.exists()
+            df_batch.to_csv(progress_file, mode=mode, header=header, index=False)
+
+        # Load all screened results from file (avoiding memory overhead)
+        df_all_screened = pd.read_csv(progress_file)
+
+        # Remove any duplicates that might have accumulated
+        df_all_screened = df_all_screened.drop_duplicates(subset='title', keep='last')
 
         # Merge with original dataframe
         df = df.merge(
-            df_results[['title', 'total_score', 'decision', 'reasoning',
+            df_all_screened[['title', 'total_score', 'decision', 'reasoning',
                        'domain_score', 'intervention_score', 'method_score',
                        'outcomes_score', 'exclusion_score', 'title_bonus']],
             on='title',

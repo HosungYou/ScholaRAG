@@ -13,12 +13,14 @@ Example:
 """
 
 import argparse
-import pandas as pd
-import sys
-from pathlib import Path
-from typing import List, Dict, Tuple
-from difflib import SequenceMatcher
 import re
+import sys
+from collections import defaultdict
+from pathlib import Path
+from typing import Dict, List, Tuple
+
+import pandas as pd
+from rapidfuzz import fuzz
 
 
 class PaperDeduplicator:
@@ -64,9 +66,15 @@ class PaperDeduplicator:
         # Load arXiv results
         arxiv_file = self.input_dir / "arxiv_results.csv"
         if arxiv_file.exists():
-            df_arxiv = pd.read_csv(arxiv_file)
-            print(f"   ✓ arXiv: {len(df_arxiv)} papers")
-            all_papers.append(df_arxiv)
+            try:
+                df_arxiv = pd.read_csv(arxiv_file)
+                if len(df_arxiv) > 0:
+                    print(f"   ✓ arXiv: {len(df_arxiv)} papers")
+                    all_papers.append(df_arxiv)
+                else:
+                    print(f"   ⚠️  arXiv results file is empty")
+            except pd.errors.EmptyDataError:
+                print(f"   ⚠️  arXiv results file is empty")
         else:
             print(f"   ⚠️  arXiv results not found")
 
@@ -107,7 +115,7 @@ class PaperDeduplicator:
 
     def calculate_title_similarity(self, title1: str, title2: str) -> float:
         """
-        Calculate similarity ratio between two titles using SequenceMatcher
+        Calculate similarity ratio between two titles using RapidFuzz
 
         Args:
             title1: First title
@@ -122,7 +130,7 @@ class PaperDeduplicator:
         if not norm1 or not norm2:
             return 0.0
 
-        return SequenceMatcher(None, norm1, norm2).ratio()
+        return fuzz.token_set_ratio(norm1, norm2) / 100.0
 
     def deduplicate_by_doi(self, df: pd.DataFrame) -> Tuple[pd.DataFrame, int]:
         """
@@ -215,18 +223,47 @@ class PaperDeduplicator:
 
         initial_count = len(df)
 
-        # Create list to track which papers to keep
-        keep_indices = []
+        if initial_count == 0:
+            print("   No papers to process.")
+            return df, 0
+
+        df = df.copy().reset_index(drop=True)
+        df['normalized_title'] = df['title'].apply(self.normalize_title)
+        df['title_prefix'] = df['normalized_title'].str[:10].fillna('')
+
+        def build_signature(text: str) -> str:
+            if not text:
+                return ""
+            tokens = sorted(text.split())
+            signature = ' '.join(tokens[:8])
+            return signature[:80]
+
+        df['title_signature'] = df['normalized_title'].apply(build_signature)
+
+        keep_indices: List[int] = []
         removed_count = 0
 
-        # Compare each paper with all previous papers
+        prefix_map: Dict[str, List[int]] = defaultdict(list)
+        signature_map: Dict[str, List[int]] = defaultdict(list)
+
         for i in range(len(df)):
             title_i = df.iloc[i]['title']
-            is_duplicate = False
+            prefix_key = df.iloc[i]['title_prefix']
+            signature_key = df.iloc[i]['title_signature']
 
-            for j in keep_indices:
-                title_j = df.iloc[j]['title']
-                similarity = self.calculate_title_similarity(title_i, title_j)
+            is_duplicate = False
+            candidate_indices = set()
+
+            if prefix_key:
+                candidate_indices.update(prefix_map.get(prefix_key, []))
+            if signature_key:
+                candidate_indices.update(signature_map.get(signature_key, []))
+
+            for j in candidate_indices:
+                similarity = self.calculate_title_similarity(
+                    title_i,
+                    df.iloc[j]['title']
+                )
 
                 if similarity >= self.title_similarity_threshold:
                     is_duplicate = True
@@ -235,15 +272,21 @@ class PaperDeduplicator:
 
             if not is_duplicate:
                 keep_indices.append(i)
+                if prefix_key:
+                    prefix_map[prefix_key].append(i)
+                if signature_key:
+                    signature_map[signature_key].append(i)
 
-            # Progress indicator for large datasets
-            if (i + 1) % 100 == 0:
+            if (i + 1) % 500 == 0:
                 print(f"   Processed {i + 1}/{len(df)} papers...", end='\r')
 
         print(f"   Processed {len(df)}/{len(df)} papers...     ")
 
         # Keep only non-duplicate papers
         df_dedup = df.iloc[keep_indices].copy()
+        df_dedup = df_dedup.drop(
+            columns=['normalized_title', 'title_prefix', 'title_signature']
+        )
 
         print(f"   Removed {removed_count} title fuzzy duplicates")
         print(f"   Remaining papers: {len(df_dedup)}")

@@ -461,6 +461,7 @@ class PaperFetcher:
                         'authors': '; '.join([
                             a['author']['display_name']
                             for a in work.get('authorships', [])
+                            if a.get('author') and a['author'].get('display_name')
                         ]),
                         'year': work.get('publication_year'),
                         'citations': work.get('cited_by_count', 0),
