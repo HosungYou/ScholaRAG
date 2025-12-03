@@ -48,13 +48,20 @@ class PaperFetcher:
         else:
             self.config = {}
 
-        # API endpoints
+        # API endpoints - Open Access
         self.semantic_scholar_api = "https://api.semanticscholar.org/graph/v1/paper/search"
         self.openalex_api = "https://api.openalex.org/works"
         self.arxiv_api = "http://export.arxiv.org/api/query"
 
+        # API endpoints - Institutional
+        self.scopus_api = "https://api.elsevier.com/content/search/scopus"
+        self.wos_api = "https://api.clarivate.com/apis/wos-starter/v1/documents"
+
         # API keys
         self.semantic_scholar_api_key = os.getenv('SEMANTIC_SCHOLAR_API_KEY')
+        self.scopus_api_key = os.getenv('SCOPUS_API_KEY')
+        self.scopus_inst_token = os.getenv('SCOPUS_INST_TOKEN')
+        self.wos_api_key = os.getenv('WOS_API_KEY')
 
     def _show_api_key_requirement(self):
         """
@@ -591,6 +598,309 @@ class PaperFetcher:
 
         return df
 
+    def fetch_scopus(
+        self,
+        query: str,
+        year_start: int = 2015,
+        year_end: int = 2025,
+        limit: int = 10000
+    ) -> pd.DataFrame:
+        """
+        Fetch papers from Scopus API (Elsevier)
+
+        REQUIRES: SCOPUS_API_KEY and optionally SCOPUS_INST_TOKEN in .env
+        NOTE: Scopus provides metadata only - NO direct PDF access
+
+        Args:
+            query: Search query string
+            year_start: Start year for publication filter
+            year_end: End year for publication filter
+            limit: Maximum number of papers to fetch
+
+        Returns:
+            DataFrame with paper metadata (NO pdf_url - metadata only)
+        """
+        if not self.scopus_api_key:
+            print("\n" + "="*60)
+            print("❌ SCOPUS_API_KEY not found in .env")
+            print("="*60)
+            print("\n📋 How to get Scopus API key:")
+            print("   1. Visit: https://dev.elsevier.com/")
+            print("   2. Create an account or sign in")
+            print("   3. Request API access (requires institutional affiliation)")
+            print("\n💾 Add to .env:")
+            print(f"   SCOPUS_API_KEY=your_key_here")
+            print("   SCOPUS_INST_TOKEN=your_inst_token  # Optional, for full access")
+            print("="*60 + "\n")
+            return pd.DataFrame()
+
+        print(f"\n🔍 Searching Scopus...")
+        print(f"   Query: {query}")
+        print(f"   Years: {year_start}-{year_end}")
+        print(f"   ⚠️  Note: Scopus provides METADATA only (no PDF URLs)")
+
+        papers = []
+        start = 0
+        batch_size = 25  # Scopus recommends 25 per request
+
+        # Convert Boolean query to Scopus format
+        scopus_query = self._convert_to_scopus_query(query, year_start, year_end)
+
+        while len(papers) < limit:
+            params = {
+                'query': scopus_query,
+                'start': start,
+                'count': min(batch_size, limit - len(papers)),
+                'sort': '-coverDate',  # Newest first
+                'view': 'COMPLETE'
+            }
+
+            headers = {
+                'X-ELS-APIKey': self.scopus_api_key,
+                'Accept': 'application/json'
+            }
+
+            if self.scopus_inst_token:
+                headers['X-ELS-Insttoken'] = self.scopus_inst_token
+
+            try:
+                response = requests.get(
+                    self.scopus_api,
+                    params=params,
+                    headers=headers,
+                    timeout=30
+                )
+                response.raise_for_status()
+                data = response.json()
+
+                results = data.get('search-results', {})
+                entries = results.get('entry', [])
+
+                if not entries or (len(entries) == 1 and entries[0].get('@_fa') == 'p'):
+                    break
+
+                for entry in entries:
+                    # Skip error entries
+                    if entry.get('error'):
+                        continue
+
+                    # Get authors
+                    authors = ''
+                    if entry.get('author'):
+                        authors = '; '.join([
+                            f"{a.get('authname', '')}"
+                            for a in entry.get('author', [])
+                        ])
+
+                    papers.append({
+                        'title': entry.get('dc:title', ''),
+                        'abstract': entry.get('dc:description', ''),
+                        'authors': authors,
+                        'year': int(entry.get('prism:coverDate', '2000')[:4]),
+                        'citations': int(entry.get('citedby-count', 0)),
+                        'doi': entry.get('prism:doi'),
+                        'pdf_url': None,  # Scopus does NOT provide PDF URLs
+                        'source': 'Scopus',
+                        'scopus_id': entry.get('dc:identifier', '').replace('SCOPUS_ID:', ''),
+                        'eid': entry.get('eid')
+                    })
+
+                print(f"   Retrieved {len(papers)} papers so far...")
+
+                start += batch_size
+                time.sleep(0.5)  # Rate limiting for Scopus
+
+                # Check if we've reached the end
+                if len(entries) < batch_size:
+                    break
+
+                # Check total results
+                total = int(results.get('opensearch:totalResults', 0))
+                if start >= total:
+                    break
+
+            except requests.exceptions.RequestException as e:
+                print(f"   ⚠️  Error: {e}")
+                break
+
+        df = pd.DataFrame(papers)
+        if len(df) > 0:
+            print(f"   ✓ Found {len(df)} papers (metadata only, 0 PDF URLs)")
+        else:
+            print(f"   ⚠️  No papers found")
+
+        return df
+
+    def _convert_to_scopus_query(self, query: str, year_start: int, year_end: int) -> str:
+        """
+        Convert Boolean query to Scopus format
+
+        Scopus uses:
+        - TITLE-ABS-KEY() for searching title/abstract/keywords
+        - PUBYEAR for year filtering
+        - AND, OR, AND NOT operators
+
+        Args:
+            query: Original Boolean query
+            year_start: Start year
+            year_end: End year
+
+        Returns:
+            Scopus-formatted query
+        """
+        # Wrap query in TITLE-ABS-KEY and add year filter
+        scopus_query = f"TITLE-ABS-KEY({query}) AND PUBYEAR >= {year_start} AND PUBYEAR <= {year_end}"
+        return scopus_query
+
+    def fetch_wos(
+        self,
+        query: str,
+        year_start: int = 2015,
+        year_end: int = 2025,
+        limit: int = 10000
+    ) -> pd.DataFrame:
+        """
+        Fetch papers from Web of Science API (Clarivate)
+
+        REQUIRES: WOS_API_KEY in .env
+        NOTE: Web of Science provides metadata only - NO direct PDF access
+
+        Args:
+            query: Search query string
+            year_start: Start year for publication filter
+            year_end: End year for publication filter
+            limit: Maximum number of papers to fetch
+
+        Returns:
+            DataFrame with paper metadata (NO pdf_url - metadata only)
+        """
+        if not self.wos_api_key:
+            print("\n" + "="*60)
+            print("❌ WOS_API_KEY not found in .env")
+            print("="*60)
+            print("\n📋 How to get Web of Science API key:")
+            print("   1. Visit: https://developer.clarivate.com/apis")
+            print("   2. Sign up for Web of Science Starter API")
+            print("   3. Get API key (requires institutional subscription)")
+            print("\n💾 Add to .env:")
+            print(f"   WOS_API_KEY=your_key_here")
+            print("="*60 + "\n")
+            return pd.DataFrame()
+
+        print(f"\n🔍 Searching Web of Science...")
+        print(f"   Query: {query}")
+        print(f"   Years: {year_start}-{year_end}")
+        print(f"   ⚠️  Note: Web of Science provides METADATA only (no PDF URLs)")
+
+        papers = []
+        page = 1
+        per_page = 50  # WoS Starter API max is 50
+
+        # Convert Boolean query to WoS format
+        wos_query = self._convert_to_wos_query(query, year_start, year_end)
+
+        while len(papers) < limit:
+            params = {
+                'q': wos_query,
+                'page': page,
+                'limit': min(per_page, limit - len(papers)),
+                'sortField': 'PY',  # Sort by publication year
+                'order': 'desc'  # Newest first
+            }
+
+            headers = {
+                'X-ApiKey': self.wos_api_key,
+                'Accept': 'application/json'
+            }
+
+            try:
+                response = requests.get(
+                    self.wos_api,
+                    params=params,
+                    headers=headers,
+                    timeout=30
+                )
+                response.raise_for_status()
+                data = response.json()
+
+                hits = data.get('hits', [])
+
+                if not hits:
+                    break
+
+                for hit in hits:
+                    # Get source info
+                    source = hit.get('source', {})
+
+                    # Get authors
+                    authors = ''
+                    names = hit.get('names', {}).get('authors', [])
+                    if names:
+                        authors = '; '.join([
+                            n.get('displayName', n.get('wosStandard', ''))
+                            for n in names
+                        ])
+
+                    papers.append({
+                        'title': source.get('title', hit.get('title', '')),
+                        'abstract': source.get('abstract', ''),
+                        'authors': authors,
+                        'year': int(source.get('publishYear', hit.get('publicationDate', {}).get('year', 2000))),
+                        'citations': int(hit.get('citations', {}).get('count', 0)),
+                        'doi': hit.get('identifiers', {}).get('doi'),
+                        'pdf_url': None,  # WoS does NOT provide PDF URLs
+                        'source': 'Web of Science',
+                        'wos_id': hit.get('uid', ''),
+                        'accession_number': hit.get('identifiers', {}).get('issn')
+                    })
+
+                print(f"   Retrieved {len(papers)} papers so far...")
+
+                page += 1
+                time.sleep(0.5)  # Rate limiting for WoS
+
+                # Check if we've reached the end
+                if len(hits) < per_page:
+                    break
+
+                # Check total results
+                total = data.get('metadata', {}).get('total', 0)
+                if page * per_page >= total:
+                    break
+
+            except requests.exceptions.RequestException as e:
+                print(f"   ⚠️  Error: {e}")
+                break
+
+        df = pd.DataFrame(papers)
+        if len(df) > 0:
+            print(f"   ✓ Found {len(df)} papers (metadata only, 0 PDF URLs)")
+        else:
+            print(f"   ⚠️  No papers found")
+
+        return df
+
+    def _convert_to_wos_query(self, query: str, year_start: int, year_end: int) -> str:
+        """
+        Convert Boolean query to Web of Science format
+
+        WoS Starter API uses:
+        - TS= for topic search (title/abstract/keywords)
+        - PY= for publication year
+        - AND, OR, NOT operators
+
+        Args:
+            query: Original Boolean query
+            year_start: Start year
+            year_end: End year
+
+        Returns:
+            WoS-formatted query
+        """
+        # Wrap query in TS= and add year filter
+        wos_query = f"TS=({query}) AND PY={year_start}-{year_end}"
+        return wos_query
+
     def _convert_to_arxiv_query(self, query: str) -> str:
         """
         Convert complex Boolean query to arXiv format.
@@ -644,9 +954,13 @@ class PaperFetcher:
         """
         Fetch papers from all selected databases
 
+        Supports both Open Access and Institutional databases:
+        - Open Access: semantic_scholar, openalex, arxiv (provide PDF URLs)
+        - Institutional: scopus, wos (metadata only, NO PDF URLs)
+
         Args:
             query: Search query
-            databases: List of databases to search (default: all)
+            databases: List of databases to search (default: open access only)
             year_start: Start year
             year_end: End year
 
@@ -657,6 +971,10 @@ class PaperFetcher:
             databases = ['semantic_scholar', 'openalex', 'arxiv']
 
         results = {}
+
+        # ═══════════════════════════════════════════════════════════════
+        # OPEN ACCESS DATABASES (PDF URLs available)
+        # ═══════════════════════════════════════════════════════════════
 
         if 'semantic_scholar' in databases:
             results['semantic_scholar'] = self.fetch_semantic_scholar(
@@ -686,6 +1004,28 @@ class PaperFetcher:
             output_file = self.output_dir / "arxiv_results.csv"
             results['arxiv'].to_csv(output_file, index=False)
             print(f"   💾 Saved to {output_file}")
+
+        # ═══════════════════════════════════════════════════════════════
+        # INSTITUTIONAL DATABASES (Metadata only - NO PDF URLs)
+        # ═══════════════════════════════════════════════════════════════
+
+        if 'scopus' in databases:
+            results['scopus'] = self.fetch_scopus(
+                query, year_start, year_end
+            )
+            if len(results['scopus']) > 0:
+                output_file = self.output_dir / "scopus_results.csv"
+                results['scopus'].to_csv(output_file, index=False)
+                print(f"   💾 Saved to {output_file}")
+
+        if 'wos' in databases:
+            results['wos'] = self.fetch_wos(
+                query, year_start, year_end
+            )
+            if len(results['wos']) > 0:
+                output_file = self.output_dir / "wos_results.csv"
+                results['wos'].to_csv(output_file, index=False)
+                print(f"   💾 Saved to {output_file}")
 
         return results
 
@@ -739,9 +1079,9 @@ def main():
     parser.add_argument(
         '--databases',
         nargs='+',
-        choices=['semantic_scholar', 'openalex', 'arxiv'],
+        choices=['semantic_scholar', 'openalex', 'arxiv', 'scopus', 'wos'],
         default=['semantic_scholar', 'openalex', 'arxiv'],
-        help='Databases to search (default: all)'
+        help='Databases to search. Open Access: semantic_scholar, openalex, arxiv (default). Institutional: scopus, wos (metadata only, requires API keys)'
     )
     parser.add_argument(
         '--year-start',

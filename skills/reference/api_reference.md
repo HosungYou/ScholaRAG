@@ -6,16 +6,29 @@
 
 ## Overview
 
-ScholaRAG uses 3 academic databases for automated paper retrieval:
+ScholaRAG supports **5 academic databases** for paper retrieval:
+
+### Open Access Databases (PDF URLs available)
 1. **Semantic Scholar** (~40% open access PDF availability)
 2. **OpenAlex** (~50% open access)
 3. **arXiv** (~100% PDF access for preprints)
 
-**Why these databases?**
-- All provide **REST APIs** with generous rate limits
-- All offer **PDF URLs** (direct download, no manual intervention)
-- **No API keys required** (Semantic Scholar, arXiv)
-- **No institutional subscriptions** needed
+### Institutional Databases (Metadata only - NO PDF URLs)
+4. **Scopus** (Elsevier) - Requires API key + institutional access
+5. **Web of Science** (Clarivate) - Requires API key
+
+**Open Access vs Institutional:**
+| Feature | Open Access (SS, OA, arXiv) | Institutional (Scopus, WoS) |
+|---------|---------------------------|---------------------------|
+| API Keys | Free/Optional | Required (institutional) |
+| PDF URLs | Yes (40-100%) | **NO** (metadata only) |
+| Rate Limits | Generous | Moderate |
+| Coverage | CS, Engineering, Biomedical | Comprehensive, all fields |
+
+**Why this distinction?**
+- Open access databases provide **automated PDF retrieval**
+- Institutional databases provide **metadata** but require manual PDF download
+- For full-text RAG analysis, open access databases are preferred
 
 ---
 
@@ -283,6 +296,157 @@ https://arxiv.org/help/api/
 
 ---
 
+## 4. Scopus API (Elsevier)
+
+> ⚠️ **INSTITUTIONAL DATABASE**: Provides metadata only - NO PDF URLs
+
+### Base URL
+```
+https://api.elsevier.com/content/search/scopus
+```
+
+### Authentication
+- ✅ **API key REQUIRED**: `SCOPUS_API_KEY`
+- ✅ **Optional**: `SCOPUS_INST_TOKEN` (for full institutional access)
+
+### How to Get API Key
+1. Visit: https://dev.elsevier.com/
+2. Create an account or sign in
+3. Request API access (requires institutional affiliation)
+4. Add to `.env`:
+   ```bash
+   SCOPUS_API_KEY=your_key_here
+   SCOPUS_INST_TOKEN=your_inst_token  # Optional
+   ```
+
+### Rate Limits
+- **Standard**: 6 requests/second
+- **With Inst Token**: Higher limits available
+
+### Request Parameters
+
+| Parameter | Type | Description | Example |
+|-----------|------|-------------|---------|
+| `query` | string | Scopus search query | `TITLE-ABS-KEY(chatbot)` |
+| `start` | integer | Pagination offset | `0`, `25`, `50`, ... |
+| `count` | integer | Results per request (max 25) | `25` |
+| `sort` | string | Sort order | `-coverDate` (newest first) |
+| `view` | string | Response detail level | `COMPLETE` |
+
+### Example Request (Bash)
+```bash
+curl -X GET \
+  'https://api.elsevier.com/content/search/scopus?query=TITLE-ABS-KEY(chatbot)%20AND%20PUBYEAR%20>%202015&start=0&count=25&sort=-coverDate&view=COMPLETE' \
+  -H 'X-ELS-APIKey: YOUR_API_KEY' \
+  -H 'Accept: application/json'
+```
+
+### Key Fields
+- `dc:title`: Paper title
+- `dc:description`: Abstract
+- `prism:coverDate`: Publication date
+- `prism:doi`: DOI
+- `citedby-count`: Citation count
+- **NO `pdf_url`**: Scopus does NOT provide PDF URLs
+
+### ScholaRAG Usage
+```python
+# scripts/01_fetch_papers.py
+response = requests.get(
+    "https://api.elsevier.com/content/search/scopus",
+    params={
+        'query': f"TITLE-ABS-KEY({query}) AND PUBYEAR >= {year_start}",
+        'start': offset,
+        'count': 25,
+        'sort': '-coverDate',
+        'view': 'COMPLETE'
+    },
+    headers={
+        'X-ELS-APIKey': os.getenv('SCOPUS_API_KEY'),
+        'Accept': 'application/json'
+    }
+)
+```
+
+### Official Docs
+https://dev.elsevier.com/documentation/SCOPUSSearchAPI.wadl
+
+---
+
+## 5. Web of Science API (Clarivate)
+
+> ⚠️ **INSTITUTIONAL DATABASE**: Provides metadata only - NO PDF URLs
+
+### Base URL
+```
+https://api.clarivate.com/apis/wos-starter/v1/documents
+```
+
+### Authentication
+- ✅ **API key REQUIRED**: `WOS_API_KEY`
+
+### How to Get API Key
+1. Visit: https://developer.clarivate.com/apis
+2. Sign up for Web of Science Starter API
+3. Get API key (requires institutional subscription)
+4. Add to `.env`:
+   ```bash
+   WOS_API_KEY=your_key_here
+   ```
+
+### Rate Limits
+- **Starter API**: 5 requests/second, 50 results/request
+
+### Request Parameters
+
+| Parameter | Type | Description | Example |
+|-----------|------|-------------|---------|
+| `q` | string | WoS search query | `TS=(chatbot AND learning)` |
+| `page` | integer | Page number (1-indexed) | `1`, `2`, `3`, ... |
+| `limit` | integer | Results per page (max 50) | `50` |
+| `sortField` | string | Sort field | `PY` (publication year) |
+| `order` | string | Sort order | `desc` |
+
+### Example Request (Bash)
+```bash
+curl -X GET \
+  'https://api.clarivate.com/apis/wos-starter/v1/documents?q=TS=(chatbot%20AND%20learning)%20AND%20PY=2015-2024&page=1&limit=50&sortField=PY&order=desc' \
+  -H 'X-ApiKey: YOUR_API_KEY' \
+  -H 'Accept: application/json'
+```
+
+### Key Fields
+- `source.title`: Paper title
+- `source.abstract`: Abstract
+- `source.publishYear`: Publication year
+- `identifiers.doi`: DOI
+- `citations.count`: Citation count
+- **NO `pdf_url`**: WoS does NOT provide PDF URLs
+
+### ScholaRAG Usage
+```python
+# scripts/01_fetch_papers.py
+response = requests.get(
+    "https://api.clarivate.com/apis/wos-starter/v1/documents",
+    params={
+        'q': f"TS=({query}) AND PY={year_start}-{year_end}",
+        'page': page,
+        'limit': 50,
+        'sortField': 'PY',
+        'order': 'desc'
+    },
+    headers={
+        'X-ApiKey': os.getenv('WOS_API_KEY'),
+        'Accept': 'application/json'
+    }
+)
+```
+
+### Official Docs
+https://developer.clarivate.com/apis/wos-starter/swagger
+
+---
+
 ## Common Workflows
 
 ### Workflow 1: Fetch Papers from All 3 Databases
@@ -398,13 +562,21 @@ query_formatted = "all:" + " AND all:".join(query.split())
 
 ## Performance Benchmarks
 
+### Open Access Databases
 | Database | Papers/Request | Requests/Min | Papers/Hour | PDF Success |
 |----------|----------------|--------------|-------------|-------------|
 | Semantic Scholar | 100 | 20 | ~12,000 | 40% |
 | OpenAlex (polite) | 200 | 60 | ~72,000 | 50% |
 | arXiv | 100 | 20 (3s delay) | ~12,000 | 100% |
 
-**Total throughput**: ~30,000 papers/hour (if running all 3 in parallel)
+### Institutional Databases (Metadata Only)
+| Database | Papers/Request | Requests/Min | Papers/Hour | PDF Success |
+|----------|----------------|--------------|-------------|-------------|
+| Scopus | 25 | 120 | ~30,000 | **0%** ⚠️ |
+| Web of Science | 50 | 120 | ~60,000 | **0%** ⚠️ |
+
+**Open Access throughput**: ~30,000 papers/hour (if running all 3 in parallel)
+**Total with institutional**: ~120,000 papers/hour (metadata only for Scopus/WoS)
 
 ---
 
@@ -416,15 +588,31 @@ query_formatted = "all:" + " AND all:".join(query.split())
 - **Education/Social Science**: Semantic Scholar + OpenAlex (broader coverage)
 - **Medicine/Health**: OpenAlex (includes PubMed Central)
 
-### Q2: Why not use PubMed/Scopus/Web of Science?
-**A**: Those APIs **do not provide PDF URLs**. You'd need:
-1. Institutional subscription ($$)
-2. Manual PDF download (defeats automation purpose)
-3. Copyright restrictions (can't redistribute)
+### Q2: When should I use Scopus/Web of Science?
+**A**: Use institutional databases when:
+1. **Comprehensive coverage is critical** (e.g., systematic review for publication)
+2. **Your institution provides API access** (check with your library)
+3. **You can manually download PDFs** from your institution's portal
 
-ScholaRAG prioritizes **automation** → Only use APIs with direct PDF access.
+**Trade-offs**:
+- ✅ **Pro**: More comprehensive coverage than open access alone
+- ❌ **Con**: No automated PDF download (metadata only)
+- ❌ **Con**: Requires API keys + institutional subscription
 
-### Q3: How to get Semantic Scholar API key?
+**Recommendation**: Start with open access (semantic_scholar, openalex, arxiv). Add Scopus/WoS if coverage is insufficient.
+
+### Q3: How do I enable Scopus or Web of Science?
+**A**:
+1. Get API keys from your institution
+2. Add to `.env`:
+   ```bash
+   SCOPUS_API_KEY=your_key
+   SCOPUS_INST_TOKEN=your_token  # Optional
+   WOS_API_KEY=your_key
+   ```
+3. Initialize with: `scholarag init --databases semantic_scholar openalex arxiv scopus wos`
+
+### Q4: How to get Semantic Scholar API key?
 Visit: https://www.semanticscholar.org/product/api#api-key
 
 Add to `.env`:

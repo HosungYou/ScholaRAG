@@ -38,7 +38,12 @@ def cli():
               default='systematic_review',
               prompt='Project type (systematic_review for publication, knowledge_repository for exploration)',
               help='Project type: systematic_review (strict, 50-300 papers) or knowledge_repository (lenient, 15K+ papers)')
-def init(name, question, project_type):
+@click.option('--databases',
+              multiple=True,
+              type=click.Choice(['semantic_scholar', 'openalex', 'arxiv', 'scopus', 'wos']),
+              default=['semantic_scholar', 'openalex', 'arxiv'],
+              help='Databases to search. Open Access: semantic_scholar, openalex, arxiv. Institutional: scopus, wos (metadata only)')
+def init(name, question, project_type, databases):
     """
     Initialize a new ScholaRAG project with standardized folder structure.
 
@@ -89,8 +94,11 @@ def init(name, question, project_type):
     # 4. Create config.yaml (template-free AI-PRISMA)
     click.echo(f"\n📝 Creating configuration files...\n")
 
+    # Convert databases tuple to list
+    databases_list = list(databases) if databases else ['semantic_scholar', 'openalex', 'arxiv']
+
     # Create template-free config
-    _create_template_free_config(project_folder, name, question, today, project_type)
+    _create_template_free_config(project_folder, name, question, today, project_type, databases_list)
     click.echo(f"   ✓ config.yaml (template-free AI-PRISMA)")
 
     # 5. Create README.md
@@ -195,8 +203,8 @@ def status(project_path):
 
     click.echo(f"📅 Created: {metadata['created']}")
     click.echo(f"📝 Question: {metadata['research_question']}")
-    click.echo(f"🏷️  Domain: {metadata['domain']}")
-    click.echo(f"📍 Stage: {metadata.get('current_stage', 1)}/6")
+    click.echo(f"🏷️  Type: {metadata.get('project_type', 'systematic_review')}")
+    click.echo(f"📍 Stage: {metadata.get('current_stage', 1)}/7")
     if 'last_updated' in metadata:
         click.echo(f"🔄 Last Updated: {metadata['last_updated']}")
     click.echo()
@@ -228,9 +236,11 @@ def status(project_path):
 
     stage_files = {
         '1. Identification': [
-            ('data/01_identification/pubmed_results.csv', 'PubMed results'),
-            ('data/01_identification/scopus_results.csv', 'Scopus results'),
+            ('data/01_identification/semantic_scholar_results.csv', 'Semantic Scholar results'),
             ('data/01_identification/openalex_results.csv', 'OpenAlex results'),
+            ('data/01_identification/arxiv_results.csv', 'arXiv results'),
+            ('data/01_identification/scopus_results.csv', 'Scopus results (institutional)'),
+            ('data/01_identification/wos_results.csv', 'Web of Science results (institutional)'),
             ('data/01_identification/deduplicated.csv', 'Deduplicated dataset')
         ],
         '2. Screening': [
@@ -373,7 +383,7 @@ def list():
 
             click.echo(f"{status_emoji} {project}")
             click.echo(f"   📝 {metadata['research_question'][:65]}{'...' if len(metadata['research_question']) > 65 else ''}")
-            click.echo(f"   📊 {status_text} • Domain: {metadata['domain']} • Created: {metadata['created']}")
+            click.echo(f"   📊 {status_text} • Type: {metadata.get('project_type', 'systematic_review')} • Created: {metadata['created']}")
 
             # Show quick stats
             stats = _calculate_project_stats(os.path.join(projects_dir, project))
@@ -395,12 +405,24 @@ def list():
 # Helper Functions
 # ============================================================================
 
-def _create_template_free_config(project_folder, name, question, today, project_type):
+def _create_template_free_config(project_folder, name, question, today, project_type, databases=None):
     """
     Create template-free config.yaml for AI-PRISMA v2.0
 
     No keyword templates required - Claude interprets research question directly.
+
+    Args:
+        project_folder: Path to project folder
+        name: Project name
+        question: Research question
+        today: Creation date
+        project_type: systematic_review or knowledge_repository
+        databases: List of databases to enable (semantic_scholar, openalex, arxiv, scopus, wos)
     """
+    # Default databases if not specified
+    if databases is None:
+        databases = ['semantic_scholar', 'openalex', 'arxiv']
+
     # Set thresholds based on project type (v1.2.0+: score-based, not confidence-based)
     if project_type == 'knowledge_repository':
         auto_include = 25  # 50% of max score (50 points)
@@ -410,6 +432,10 @@ def _create_template_free_config(project_folder, name, question, today, project_
         auto_include = 40  # 80% of max score (50 points)
         auto_exclude = 0
         human_validation_required = True
+
+    # Determine which databases are enabled
+    oa_dbs = ['semantic_scholar', 'openalex', 'arxiv']
+    inst_dbs = ['scopus', 'wos']
 
     config = {
         'project': {
@@ -451,13 +477,19 @@ Template-Free AI-PRISMA (v2.0):
         # Database Configuration
         'databases': {
             'open_access': {
-                'semantic_scholar': {'enabled': True},
-                'openalex': {'enabled': True},
-                'arxiv': {'enabled': True}
+                'semantic_scholar': {'enabled': 'semantic_scholar' in databases},
+                'openalex': {'enabled': 'openalex' in databases},
+                'arxiv': {'enabled': 'arxiv' in databases}
             },
             'institutional': {
-                'scopus': {'enabled': False, 'note': 'Requires API key'},
-                'web_of_science': {'enabled': False, 'note': 'Requires API key'}
+                'scopus': {
+                    'enabled': 'scopus' in databases,
+                    'note': 'Requires SCOPUS_API_KEY in .env. Provides metadata only (no PDF URLs).'
+                },
+                'web_of_science': {
+                    'enabled': 'wos' in databases,
+                    'note': 'Requires WOS_API_KEY in .env. Provides metadata only (no PDF URLs).'
+                }
             }
         },
 

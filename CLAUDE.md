@@ -290,16 +290,28 @@ ScholaRAG implements a 7-stage automated systematic literature review pipeline f
 
 ### Database Strategy
 
-**Primary Databases** (chosen for API access and PDF availability):
+ScholaRAG supports **5 databases** across two categories:
+
+**Open Access Databases** (PDF URLs available):
 1. **Semantic Scholar** (~40% open access PDF URLs)
 2. **OpenAlex** (~50% open access)
 3. **arXiv** (100% PDF access)
 
-**Why These Databases?**
-- Traditional databases (PubMed, Scopus, ERIC) don't provide automated PDF access
-- Semantic Scholar + OpenAlex + arXiv = ~50-60% overall PDF retrieval success
-- All three provide REST APIs with generous rate limits
-- No institutional subscriptions required
+**Institutional Databases** (metadata only - NO PDF URLs):
+4. **Scopus** (Elsevier) - Requires `SCOPUS_API_KEY`
+5. **Web of Science** (Clarivate) - Requires `WOS_API_KEY`
+
+**Database Selection Protocol** (Stage 1, Turn 3):
+```
+Claude MUST ask: "Do you have institutional access to Scopus or Web of Science?"
+- If Yes → Enable scopus/wos in config, show API key requirements
+- If No → Use default open access databases only
+```
+
+**Why This Strategy?**
+- Open access: Provides automated PDF retrieval for RAG
+- Institutional: Provides comprehensive metadata coverage
+- Best of both worlds when institutional access available
 
 ## CLI Tool
 
@@ -314,6 +326,13 @@ python scholarag_cli.py init \
   --name "AI-Chatbots-Learning" \
   --question "How do AI chatbots improve language learning?" \
   --project-type systematic_review
+
+# ✅ With institutional databases (v1.2.6+)
+python scholarag_cli.py init \
+  --name "AI-Healthcare" \
+  --question "How does AI improve clinical decision-making?" \
+  --project-type systematic_review \
+  --databases semantic_scholar openalex arxiv scopus wos
 
 # ❌ WRONG: Interactive mode (blocks automation)
 python scholarag_cli.py init  # Don't do this
@@ -347,6 +366,33 @@ ScholaRAG supports **two project types** to serve different research goals:
 - **Use cases**: Meta-analysis, systematic review publication, clinical guidelines, dissertation
 - **Filtering**: Strict - detailed inclusion/exclusion criteria
 
+### Project Type Selection Protocol (v1.2.5.3+)
+
+**CRITICAL: Claude MUST explicitly ask for project type selection in Stage 1, Turn 2:**
+
+```
+Claude MUST ask:
+"Which project type matches your research goals?
+
+**Option A: Knowledge Repository**
+- 50% confidence threshold (lenient)
+- Retains 15,000-20,000 papers
+- Best for: Teaching, exploration, AI assistant
+
+**Option B: Systematic Review**
+- 90% confidence threshold (strict)
+- Retains 50-300 papers
+- Best for: Publication, meta-analysis, dissertation
+
+Please choose Option A or Option B."
+```
+
+**Rules:**
+- ❌ NEVER auto-infer project_type from user description
+- ❌ NEVER skip this question
+- ✅ ALWAYS present both options explicitly
+- ✅ ALWAYS wait for user's explicit choice
+
 **When to choose which:**
 - Publishing systematic review? → `systematic_review` ✅
 - Comprehensive domain coverage? → `knowledge_repository` ✅
@@ -354,8 +400,18 @@ ScholaRAG supports **two project types** to serve different research goals:
 ## Environment Variables
 
 Projects require these API keys:
+
+**Required:**
 - `ANTHROPIC_API_KEY`: Claude API for screening (Stage 3)
+
+**Optional:**
 - `OPENAI_API_KEY`: OpenAI embeddings (optional, can use local models)
+- `SEMANTIC_SCHOLAR_API_KEY`: Higher rate limits for Semantic Scholar
+
+**Institutional (if enabled):**
+- `SCOPUS_API_KEY`: Scopus API access (requires institutional affiliation)
+- `SCOPUS_INST_TOKEN`: Scopus institutional token (optional, for full access)
+- `WOS_API_KEY`: Web of Science API access
 
 ## Testing and Development
 

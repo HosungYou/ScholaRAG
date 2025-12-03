@@ -7,6 +7,56 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.2.6] - 2025-12-03
+
+### Added
+
+#### Full Scopus & Web of Science Implementation (Option A)
+
+**New Feature**: Complete implementation of institutional database support.
+
+**Problem**: v1.2.5.4 added database selection protocol but actual API implementation was missing in `01_fetch_papers.py`.
+
+**Solution**: Full implementation of Scopus and Web of Science APIs:
+
+1. **`scripts/01_fetch_papers.py` Updates**:
+   - Added `fetch_scopus()` method with Elsevier API integration
+   - Added `fetch_wos()` method with Clarivate API integration
+   - Updated `fetch_all()` to support 5 databases (semantic_scholar, openalex, arxiv, scopus, wos)
+   - Added `_convert_to_scopus_query()` and `_convert_to_wos_query()` helpers
+   - API endpoints and authentication for SCOPUS_API_KEY, SCOPUS_INST_TOKEN, WOS_API_KEY
+
+2. **`scholarag_cli.py` Updates**:
+   - Added `--databases` option to `init` command
+   - Fixed `metadata['domain']` KeyError (now uses `project_type`)
+   - Updated stage_files to reference correct database filenames
+
+3. **`skills/reference/api_reference.md` Updates**:
+   - Added Section 4: Scopus API documentation
+   - Added Section 5: Web of Science API documentation
+   - Updated Performance Benchmarks table
+   - Updated FAQ with institutional database guidance
+
+4. **`CLAUDE.md` Updates**:
+   - Added Project Type Selection Protocol (v1.2.5.3+)
+   - Added Database Selection Protocol (Stage 1, Turn 3)
+   - Updated Database Strategy section with 5 databases
+   - Updated Environment Variables section
+   - Added CLI example with `--databases` option
+
+### Fixed
+
+- **scholarag_cli.py**: `metadata['domain']` KeyError on status command
+- **scholarag_cli.py**: Stage file references now match actual database names
+- **skills/reference/api_reference.md**: FAQ numbering
+
+### Changed
+
+- Database configuration in `config.yaml` now reflects user's actual database selection
+- CLI help text updated for `--databases` option
+
+---
+
 ## [1.2.5.5] - 2025-12-03
 
 ### Changed
