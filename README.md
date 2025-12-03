@@ -203,7 +203,7 @@ Issues, PRs, and template contributions welcome:
   title = {ScholaRAG: Conversation-Based Systematic Literature Review Automation},
   year = {2025},
   url = {https://github.com/HosungYou/ScholaRAG},
-  version = {1.2.5}
+  version = {1.2.5.3}
 }
 ```
 

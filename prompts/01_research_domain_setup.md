@@ -42,6 +42,9 @@ next_stage:
   prompt_file: "02_query_strategy.md"
 divergence_handling:
   common_divergences:
+    - pattern: "User does not explicitly choose Option A or Option B"
+      response: "Before we proceed, I need you to choose your project type: **Option A (Knowledge Repository)** for broad exploration (15K-20K papers, 50% filtering) or **Option B (Systematic Review)** for publication-ready PRISMA review (50-300 papers, 90% filtering). Which do you need?"
+      priority: "CRITICAL - must resolve before any other questions"
     - pattern: "User asks about downloading PDFs"
       response: "PDF downloading happens in Stage 4. Let's first define your research scope in Stage 1, then design search queries in Stage 2-3."
     - pattern: "User asks about RAG implementation details"
@@ -51,20 +54,24 @@ divergence_handling:
     - pattern: "User wants to skip systematic review"
       response: "This system is designed for systematic PRISMA reviews. If you need quick exploratory search, consider using Google Scholar or Connected Papers instead."
 conversation_flow:
-  expected_turns: 4-8
+  expected_turns: 5-9
   typical_pattern:
     - turn: 1
-      user_action: "Provides initial research topic and scope"
-      claude_action: "Ask clarifying questions about specificity, constraints, and goals"
-    - turn: 2-3
+      user_action: "Pastes Stage 1 prompt template with research topic"
+      claude_action: "MUST explicitly ask: 'Which project type do you need? Option A (Knowledge Repository) or Option B (Systematic Review)?' Do NOT infer from context - require explicit user selection."
+    - turn: 2
+      user_action: "Explicitly chooses Option A or Option B"
+      claude_action: "Confirm project type selection, explain implications (paper counts, filtering strictness, human review requirements), then ask clarifying questions about research scope"
+    - turn: 3-4
       user_action: "Answers clarifying questions, refines scope"
-      claude_action: "Translate scope into AI-PRISMA rubric context (population, intervention, outcomes), validate feasibility, estimate paper counts"
-    - turn: 4-5
+      claude_action: "Translate scope into AI-PRISMA rubric context (population, intervention, outcomes), validate feasibility, estimate paper counts aligned with chosen project type"
+    - turn: 5-6
       user_action: "Confirms scope or requests adjustments"
       claude_action: "Provide data source recommendations, explain next stages"
     - turn: "final"
       user_action: "Ready to proceed"
-      claude_action: "Summarize decisions, initialize project structure, show Stage 2 prompt"
+      claude_action: "Summarize decisions including project_type, initialize project structure, show Stage 2 prompt"
+  critical_rule: "NEVER auto-infer project_type. Always require explicit user selection between Option A and Option B before proceeding."
 validation_checklist:
   - "Project type is clearly chosen (knowledge repository vs systematic review)"
   - "Research question is specific and answerable"

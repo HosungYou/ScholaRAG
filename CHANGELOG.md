@@ -7,6 +7,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.2.5.3] - 2025-12-03
+
+### Fixed
+
+#### Stage 1 Project Type Selection Protocol
+
+**Problem**: Claude was auto-inferring `project_type` (Knowledge Repository vs Systematic Review) from conversation context instead of explicitly asking users to choose.
+
+**Impact**: Users might end up with incorrect project configuration without realizing their intended project type wasn't properly set.
+
+**Solution**: Updated `prompts/01_research_domain_setup.md` metadata to enforce explicit selection:
+
+1. **conversation_flow** updated:
+   - Turn 1 now requires Claude to explicitly ask "Option A or Option B?"
+   - Turn 2 requires user's explicit choice before proceeding
+   - Added `critical_rule`: "NEVER auto-infer project_type"
+
+2. **divergence_handling** updated:
+   - Added CRITICAL priority pattern for missing Option A/B selection
+   - Claude must redirect to project type selection before any other questions
+
+### Changed
+
+- `prompts/01_research_domain_setup.md`: conversation_flow expected_turns 4-8 → 5-9
+- README.md: Streamlined documentation with improved mermaid architecture diagram
+
+---
+
 ## [1.2.0] - 2025-10-31
 
 ### 🎯 Major Change: Confidence Mechanism Removal
