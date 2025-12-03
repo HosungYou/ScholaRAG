@@ -51,6 +51,8 @@ echo "Identification:"
 echo "  Semantic Scholar: $(grep -c 'semantic_scholar' data/01_identification/combined.csv)"
 echo "  OpenAlex: $(grep -c 'openalex' data/01_identification/combined.csv)"
 echo "  arXiv: $(grep -c 'arxiv' data/01_identification/combined.csv)"
+echo "  Scopus: $(grep -c 'scopus' data/01_identification/combined.csv)"  # if enabled
+echo "  Web of Science: $(grep -c 'wos' data/01_identification/combined.csv)"  # if enabled
 echo "  Total: $(wc -l < data/01_identification/combined.csv)"
 echo ""
 echo "After deduplication: $(wc -l < data/01_identification/deduplicated.csv)"
@@ -67,7 +69,7 @@ YOU: "Here's your PRISMA 2020 flowchart:
 [Display: outputs/prisma_flowchart.png]
 
 **Verification**:
-- ✅ Identification: 2,273 papers (S2: 1,247 | OA: 892 | arXiv: 134)
+- ✅ Identification: 2,273-3,041 papers (S2: 1,247 | OA: 892 | arXiv: 134 | Scopus: if enabled | WoS: if enabled)
 - ✅ After deduplication: 1,586 unique papers (687 duplicates removed, 30%)
 - ✅ After screening (90% threshold): 142 relevant papers (1,444 excluded, 9% retention)
 - ✅ PDFs downloaded: 58 papers (84 no PDF available, 41% success)
@@ -100,6 +102,8 @@ search_doc = f"""
 
 ## Databases Searched
 
+### Open Access Databases (PDF URLs available)
+
 1. **Semantic Scholar** (https://www.semanticscholar.org/)
    - Date searched: {datetime.now().strftime('%Y-%m-%d')}
    - Years covered: {config['year_start']}-{config['year_end']}
@@ -114,6 +118,18 @@ search_doc = f"""
    - Date searched: {datetime.now().strftime('%Y-%m-%d')}
    - Categories: cs.CL, cs.AI, cs.HC
    - Papers retrieved: 134
+
+### Institutional Databases (metadata only, if enabled)
+
+4. **Scopus** (https://www.scopus.com/) - Optional
+   - Date searched: {datetime.now().strftime('%Y-%m-%d')}
+   - Years covered: {config['year_start']}-{config['year_end']}
+   - Papers retrieved: [if enabled]
+
+5. **Web of Science** (https://www.webofscience.com/) - Optional
+   - Date searched: {datetime.now().strftime('%Y-%m-%d')}
+   - Years covered: {config['year_start']}-{config['year_end']}
+   - Papers retrieved: [if enabled]
 
 ## Search Query
 
@@ -197,10 +213,16 @@ We conducted a systematic review following PRISMA 2020 guidelines (Page et al., 
 
 ### Information Sources
 
-We searched three academic databases on {datetime.now().strftime('%B %d, %Y')}:
+We searched up to five academic databases on {datetime.now().strftime('%B %d, %Y')}:
+
+**Open Access (with PDF retrieval)**:
 - Semantic Scholar (general scholarly literature)
 - OpenAlex (comprehensive academic coverage)
 - arXiv (preprints and conference proceedings in computer science and linguistics)
+
+**Institutional (metadata only, if available)**:
+- Scopus (Elsevier) - comprehensive citation database
+- Web of Science (Clarivate) - multidisciplinary citation index
 
 No publication date restrictions were applied. We limited our search to English-language publications.
 
@@ -368,4 +390,4 @@ Congratulations on completing your systematic literature review with ScholaRAG! 
 
 ---
 
-**Version**: 2.0 | **Token Budget**: ~350 lines
+**Version**: 2.1 (5-database support added) | **Token Budget**: ~380 lines

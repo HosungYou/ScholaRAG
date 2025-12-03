@@ -201,10 +201,20 @@ YOU: "Based on your education + linguistics domain, I recommend:
 **Estimated combined coverage**: 20,000-30,000 papers initially
 **After screening (90% threshold)**: ~50-200 highly relevant
 
+**Optional (if institutional access available)**:
+4. **Scopus** (metadata only, no PDF URLs)
+   - Requires: `SCOPUS_API_KEY` + institutional affiliation
+   - Good for: Comprehensive metadata coverage
+
+5. **Web of Science** (metadata only, no PDF URLs)
+   - Requires: `WOS_API_KEY` + institutional subscription
+   - Good for: Citation analysis, impact factors
+
 **Not using**:
 - ❌ PubMed (medicine-focused, low AI coverage)
 - ❌ ERIC (education-focused but weak on AI)
-- ❌ Scopus/Web of Science (require institutional access, no API automation)
+
+⚠️ **Note**: Institutional databases (Scopus/WoS) provide metadata only - PDFs must still come from open access sources.
 
 Ready to initialize your project?"
 ```
@@ -223,20 +233,21 @@ Ready to initialize your project?"
 ✅ research_field: "Education"
 ✅ project_type: "systematic_review"
 ✅ year_range: [2015, 2024]
-✅ databases: ["semantic_scholar", "openalex", "arxiv"]
+✅ databases: ["semantic_scholar", "openalex", "arxiv"]  # + scopus, wos if institutional access
 ✅ target_papers: "50-200 (final, after screening)"
 
 # Validate constraints
 ✅ Research question length: 20-500 chars
 ✅ project_type: Valid value (knowledge_repository or systematic_review)
 ✅ Year range: Realistic (9 years, appropriate for AI research)
-✅ Databases: At least 1 selected
+✅ Databases: At least 1 selected (5 available: 3 open access + 2 institutional)
 ```
 
 **Execute**:
 ```bash
-cd "/Volumes/External SSD/Projects/Research/ScholaRAG"
+cd "/Volumes/External SSD/Projects/ScholaRAG"
 
+# Open Access only (default)
 python scholarag_cli.py init \
   --name "AI-Chatbots-Speaking-Proficiency" \
   --question "How do AI chatbots improve speaking proficiency in university-level language learners?" \
@@ -245,6 +256,16 @@ python scholarag_cli.py init \
   --year-start 2015 \
   --year-end 2024 \
   --databases semantic_scholar openalex arxiv
+
+# With institutional databases (if available)
+python scholarag_cli.py init \
+  --name "AI-Chatbots-Speaking-Proficiency" \
+  --question "How do AI chatbots improve speaking proficiency in university-level language learners?" \
+  --field "Education" \
+  --project-type "systematic_review" \
+  --year-start 2015 \
+  --year-end 2024 \
+  --databases semantic_scholar openalex arxiv scopus wos
 ```
 
 **Expected output**:
@@ -538,6 +559,6 @@ See [skills/example_conversations/stage1_example.md](../example_conversations/st
 
 ---
 
-**Last Updated**: 2025-10-24
-**Version**: 2.0
-**Token Budget**: ~300 lines
+**Last Updated**: 2025-12-03
+**Version**: 2.1 (5-database support added)
+**Token Budget**: ~350 lines

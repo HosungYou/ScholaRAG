@@ -11,13 +11,15 @@
 ## Quick Overview
 
 **5 Scripts Execute Automatically**:
-1. `01_fetch_papers.py` (30-60 min) - Fetch from 3 APIs
+1. `01_fetch_papers.py` (30-60 min) - Fetch from 3-5 APIs (3 open access + optional 2 institutional)
 2. `02_deduplicate.py` (5-10 min) - Remove duplicates
 3. `03_screen_papers.py` (60-120 min) - AI screening with Claude
-4. `04_download_pdfs.py` (120-240 min) - Download PDFs
+4. `04_download_pdfs.py` (120-240 min) - Download PDFs (from open access sources only)
 5. `05_build_rag.py` (30-60 min) - Build vector database
 
 **Total**: ~4-8 hours (run overnight)
+
+**Note**: If using institutional databases (Scopus/WoS), they provide metadata only - PDFs still come from open access sources.
 
 ---
 
@@ -31,7 +33,8 @@ YOU: "Before we execute the pipeline, let's verify everything is configured:
 **Configuration Summary**:
 - ✅ Project: AI-Chatbots-Speaking-Proficiency
 - ✅ Query: (chatbot OR agent) AND (language learning) AND speaking
-- ✅ Databases: Semantic Scholar, OpenAlex, arXiv (3)
+- ✅ Databases: Semantic Scholar, OpenAlex, arXiv (3 open access)
+  - Optional: + Scopus, Web of Science (2 institutional, metadata only)
 - ✅ project_type: systematic_review (90% threshold)
 - ✅ PRISMA criteria: Defined
 - ✅ RAG config: Saved
@@ -123,7 +126,9 @@ print("\n🎯 Next: Stage 6 - Research Conversation")
 ├─ Semantic Scholar: 1,247 papers
 ├─ OpenAlex: 892 papers
 ├─ arXiv: 134 papers
-└─ Total: 2,273 papers
+├─ Scopus: 456 papers (if enabled, metadata only)
+├─ Web of Science: 312 papers (if enabled, metadata only)
+└─ Total: 2,273-3,041 papers
 
 🔍 Stage 2/5 Complete: Deduplication
 ├─ Before: 2,273 papers
@@ -246,4 +251,4 @@ Shall we proceed to Stage 6 (RAG analysis) with these 50 papers?"
 
 ---
 
-**Version**: 2.0 | **Token Budget**: ~300 lines
+**Version**: 2.1 (5-database support added) | **Token Budget**: ~320 lines
