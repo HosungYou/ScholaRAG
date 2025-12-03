@@ -7,6 +7,42 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.2.5.4] - 2025-12-03
+
+### Added
+
+#### Institutional Database Selection Protocol
+
+**New Feature**: Explicit database access confirmation workflow in Stage 1-2.
+
+**Problem**: README Architecture showed only 3 open access APIs, but config.yaml had institutional database structure (Scopus, Web of Science) without a selection pipeline.
+
+**Solution**: Added explicit database access selection workflow:
+
+1. **Stage 1 Updates** (`prompts/01_research_domain_setup.md`):
+   - Added `database_access` to outputs and validation_rules
+   - New "Step 1: Database Access" section in prompt template
+   - conversation_flow now includes explicit database access question (turn 3)
+   - Added critical_rule: "NEVER assume database access"
+
+2. **Stage 2 Updates** (`prompts/02_query_strategy.md`):
+   - Data Sources section now shows both Open Access and Institutional options
+   - Institutional databases marked with "only if confirmed in Stage 1"
+   - Added divergence_handling for Scopus/WoS without Stage 1 confirmation
+
+3. **README Updates**:
+   - Architecture mermaid diagram now shows 5 databases (3 open + 2 institutional)
+   - Added Data Sources comparison table (PDF access, API key requirements)
+   - Institutional databases shown with dashed line (metadata only)
+
+### Changed
+
+- `prompts/01_research_domain_setup.md`: expected_turns 5-9 → 6-10
+- `prompts/02_query_strategy.md`: Data Sources section restructured
+- `README.md`: Architecture diagram enhanced with institutional databases
+
+---
+
 ## [1.2.5.3] - 2025-12-03
 
 ### Fixed

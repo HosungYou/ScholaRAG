@@ -38,6 +38,9 @@ next_stage:
   prompt_file: "03_prisma_configuration.md"
 divergence_handling:
   common_divergences:
+    - pattern: "User selects Scopus/WoS without confirming access in Stage 1"
+      response: "I notice you selected Scopus/Web of Science, but I don't have your database access confirmation from Stage 1. Do you have institutional access to these databases? If yes, you'll need API keys. If not, let's use open access databases (Semantic Scholar, OpenAlex, arXiv)."
+      priority: "HIGH - must validate before proceeding"
     - pattern: "User wants to start fetching papers immediately"
       response: "Great enthusiasm! But we need to complete Stage 3 (PRISMA configuration) first to set up inclusion/exclusion criteria. This ensures we screen papers systematically."
     - pattern: "User asks about API keys or technical setup"
@@ -111,18 +114,26 @@ Now that we've defined my research scope, please help me design effective search
    - [ ] Balanced (recommended for SLR) - Quality papers without too much noise (500-800 papers)
    - [ ] Narrow (high precision) - Only the most relevant papers (100-300 papers)
 
-2. **Data Sources**:
-   - [ ] Semantic Scholar (CS, Engineering, Sciences - 40% open access PDFs)
+2. **Data Sources** (based on your Stage 1 database access confirmation):
 
+   **Open Access Databases** 🌐
+   - [ ] Semantic Scholar (CS, Engineering, Sciences - 40% open access PDFs)
      ⚠️  **Performance Tip**: Get a free API key for 10x faster retrieval
      - Without key: 100 requests/5 min (slower, ~60-120 minutes for 10K papers)
      - With key: 1,000 requests/5 min (faster, ~10-20 minutes)
      - Get free key: https://www.semanticscholar.org/product/api#api-key
-     - You'll be prompted to enter it when fetching papers (optional)
-
    - [ ] OpenAlex (All fields, comprehensive - 50% open access)
    - [ ] arXiv (STEM preprints - 100% PDF access)
-   - [ ] Let Claude recommend the best combination for my field
+
+   **Institutional Databases** 🏛️ *(only if confirmed in Stage 1)*
+   - [ ] Scopus (Requires API key + institutional token)
+     - Comprehensive citation database, all fields
+     - ⚠️ Metadata only - PDFs must be downloaded via library portal
+   - [ ] Web of Science (Requires API key)
+     - High-quality curated journals
+     - ⚠️ Metadata only - PDFs must be downloaded via library portal
+
+   - [ ] Let Claude recommend the best combination for my field and access level
 
 3. **Technical Comfort**:
    - [ ] I'm comfortable with boolean operators (AND, OR, NOT)

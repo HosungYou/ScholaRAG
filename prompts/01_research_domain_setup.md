@@ -8,6 +8,7 @@ outputs:
   - project_type: "knowledge_repository or systematic_review"
   - research_question: "Clear, answerable research question"
   - research_scope: "Year range, publication types, languages, study designs"
+  - database_access: "Open access only OR institutional (Scopus/WoS) available"
   - feasibility_assessment: "Estimated paper count and data source recommendations"
 validation_rules:
   project_type:
@@ -22,6 +23,10 @@ validation_rules:
   research_field:
     required: true
     examples: ["Education", "Medicine", "Psychology", "Computer Science"]
+  database_access:
+    required: true
+    allowed_values: ["open_access_only", "institutional_available"]
+    validation: "Must explicitly confirm whether user has institutional access to Scopus/Web of Science"
   year_range:
     required: false
     default: "no constraint"
@@ -54,31 +59,38 @@ divergence_handling:
     - pattern: "User wants to skip systematic review"
       response: "This system is designed for systematic PRISMA reviews. If you need quick exploratory search, consider using Google Scholar or Connected Papers instead."
 conversation_flow:
-  expected_turns: 5-9
+  expected_turns: 6-10
   typical_pattern:
     - turn: 1
       user_action: "Pastes Stage 1 prompt template with research topic"
       claude_action: "MUST explicitly ask: 'Which project type do you need? Option A (Knowledge Repository) or Option B (Systematic Review)?' Do NOT infer from context - require explicit user selection."
     - turn: 2
       user_action: "Explicitly chooses Option A or Option B"
-      claude_action: "Confirm project type selection, explain implications (paper counts, filtering strictness, human review requirements), then ask clarifying questions about research scope"
-    - turn: 3-4
-      user_action: "Answers clarifying questions, refines scope"
-      claude_action: "Translate scope into AI-PRISMA rubric context (population, intervention, outcomes), validate feasibility, estimate paper counts aligned with chosen project type"
-    - turn: 5-6
+      claude_action: "Confirm project type selection, explain implications (paper counts, filtering strictness, human review requirements), then ask about database access"
+    - turn: 3
+      user_action: "Responds to database access question"
+      claude_action: "MUST explicitly ask: 'Do you have institutional access to Scopus or Web of Science? (Yes/No)' This determines available databases in Stage 2. If Yes, ask which ones (Scopus, WoS, or both). If No, confirm open access databases (Semantic Scholar, OpenAlex, arXiv) will be used."
+    - turn: 4-5
+      user_action: "Confirms database access, answers clarifying questions about research scope"
+      claude_action: "Translate scope into AI-PRISMA rubric context (population, intervention, outcomes), validate feasibility, estimate paper counts aligned with chosen project type and available databases"
+    - turn: 6-7
       user_action: "Confirms scope or requests adjustments"
-      claude_action: "Provide data source recommendations, explain next stages"
+      claude_action: "Provide data source recommendations based on confirmed access, explain next stages"
     - turn: "final"
       user_action: "Ready to proceed"
-      claude_action: "Summarize decisions including project_type, initialize project structure, show Stage 2 prompt"
-  critical_rule: "NEVER auto-infer project_type. Always require explicit user selection between Option A and Option B before proceeding."
+      claude_action: "Summarize decisions including project_type AND database_access, initialize project structure, show Stage 2 prompt"
+  critical_rules:
+    - "NEVER auto-infer project_type. Always require explicit user selection between Option A and Option B."
+    - "NEVER assume database access. Always ask if user has institutional access to Scopus/Web of Science."
+    - "Record database_access in config.yaml for Stage 2 to display appropriate options."
 validation_checklist:
   - "Project type is clearly chosen (knowledge repository vs systematic review)"
+  - "Database access is explicitly confirmed (open_access_only OR institutional_available)"
   - "Research question is specific and answerable"
   - "Scope constraints are realistic and clearly defined"
   - "Expected paper count aligns with project type (10K-20K for repository, 50-300 for SLR)"
   - "User understands systematic review process and time commitment"
-  - "Data sources have been recommended based on field"
+  - "Data sources have been recommended based on field AND confirmed access"
 -->
 
 # Stage 1: Research Domain Setup
@@ -125,6 +137,27 @@ I want to conduct a PRISMA 2020 systematic literature review enhanced with RAG a
 - **Use cases**: Meta-analysis, systematic review publication, clinical guidelines, dissertation
 
 **Which option describes your project?** [Choose A or B]
+
+---
+
+## 🗄️ Step 1: Database Access
+
+**Do you have institutional access to academic databases?**
+
+### Open Access Databases (Available to Everyone) 🌐
+- **Semantic Scholar** - CS, AI, Engineering, Sciences (~40% PDF access)
+- **OpenAlex** - All fields, comprehensive coverage (~50% PDF access)
+- **arXiv** - STEM preprints (100% PDF access)
+
+### Institutional Databases (Requires University/Organization Access) 🏛️
+- **Scopus** - Comprehensive citation database (metadata only, no PDFs)
+- **Web of Science** - High-quality curated journals (metadata only, no PDFs)
+
+**My Database Access**:
+- [ ] Open access only (Semantic Scholar, OpenAlex, arXiv)
+- [ ] I have institutional access to: [ ] Scopus [ ] Web of Science [ ] Both
+
+⚠️ **Note**: Institutional databases provide broader metadata coverage but NO direct PDF access. You'll need to download PDFs through your library portal separately.
 
 ---
 

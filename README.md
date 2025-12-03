@@ -71,9 +71,15 @@ Collect → Deduplicate → PRISMA Screen → PDF/OCR → Chunk → Embed → Ve
 ```mermaid
 flowchart TB
     subgraph Data["1. Data Collection"]
-        A1[Semantic Scholar API]
-        A2[OpenAlex API]
-        A3[arXiv API]
+        subgraph OpenAccess["Open Access 🌐"]
+            A1[Semantic Scholar]
+            A2[OpenAlex]
+            A3[arXiv]
+        end
+        subgraph Institutional["Institutional 🏛️"]
+            A4[Scopus]
+            A5[Web of Science]
+        end
     end
 
     subgraph Process["2. Processing Pipeline"]
@@ -95,9 +101,17 @@ flowchart TB
         K[Export Data]
     end
 
-    A1 & A2 & A3 --> B --> C --> D --> E --> F --> G --> H
+    A1 & A2 & A3 --> B
+    A4 & A5 -.->|metadata only| B
+    B --> C --> D --> E --> F --> G --> H
     H --> I & J & K
 ```
+
+**Data Sources:**
+| Type | Databases | PDF Access | API Key |
+|------|-----------|------------|---------|
+| **Open Access** | Semantic Scholar, OpenAlex, arXiv | 40-100% | Free/Optional |
+| **Institutional** | Scopus, Web of Science | Metadata only | Required |
 
 **Core Stack:**
 - **Vector DB:** ChromaDB (local, zero-cost)
@@ -203,7 +217,7 @@ Issues, PRs, and template contributions welcome:
   title = {ScholaRAG: Conversation-Based Systematic Literature Review Automation},
   year = {2025},
   url = {https://github.com/HosungYou/ScholaRAG},
-  version = {1.2.5.3}
+  version = {1.2.5.4}
 }
 ```
 
