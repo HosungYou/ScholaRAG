@@ -21,28 +21,29 @@
 
 ---
 
-## Quick Start
+## Quick Start (VS Code + Claude Code)
 
-### Option A: Conversation Mode (Recommended)
+### First-Time Setup
 
-> **VS Code + Claude Code** — paste this prompt:
+Copy-paste this to Claude Code:
 
 ```
-Set up ScholaRAG for my systematic review on "<your topic>".
-Initialize with --template <domain> and guide me through each stage.
+Please set up ScholaRAG for me:
+1. Clone https://github.com/HosungYou/ScholaRAG.git
+2. Create Python virtual environment
+3. Install dependencies
+4. Run: python scholarag_cli.py init
+5. Guide me through Stage 1
 ```
 
-*Install details: [CLAUDE.md](CLAUDE.md)*
+### Returning Users
 
-### Option B: CLI Mode
-
-```bash
-git clone https://github.com/HosungYou/ScholaRAG.git && cd ScholaRAG
-python3 -m venv venv && source venv/bin/activate
-pip install -r requirements.txt
-python scholarag_cli.py init --template education  # or: medicine, social_science, hrm
-python scholarag_cli.py status && python scholarag_cli.py next
 ```
+Continue my ScholaRAG project in [project_folder].
+Show current status and guide me to the next stage.
+```
+
+*Full setup guide: [CLAUDE.md](CLAUDE.md)*
 
 ---
 
@@ -133,16 +134,6 @@ flowchart TB
 
 ---
 
-## Interfaces
-
-| Interface | Command | Best For |
-|-----------|---------|----------|
-| **Claude Chat** | Paste Stage 6 prompt | Conversational Q&A with citations |
-| **Streamlit** | `streamlit run interfaces/streamlit_app/app.py` | Browser-based GUI |
-| **FastAPI** | `uvicorn interfaces/fastapi_server/main:app` | API integration, batch queries |
-
----
-
 ## Templates
 
 Pre-configured domain profiles in `templates/research_profiles/`:
@@ -217,7 +208,7 @@ Issues, PRs, and template contributions welcome:
   title = {ScholaRAG: Conversation-Based Systematic Literature Review Automation},
   year = {2025},
   url = {https://github.com/HosungYou/ScholaRAG},
-  version = {1.2.5.4}
+  version = {1.2.5.5}
 }
 ```
 

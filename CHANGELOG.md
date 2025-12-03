@@ -7,6 +7,40 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.2.5.5] - 2025-12-03
+
+### Changed
+
+#### Standardize on VS Code + Claude Code Interface
+
+- **Quick Start** restructured:
+  - **First-Time Setup**: Explicit step-by-step prompt for Claude Code auto-execution
+  - **Returning Users**: Simple prompt to continue existing projects
+- **Removed Interfaces section**: Streamlit/FastAPI options removed from README (code remains in repo)
+- Interface standardized to VS Code + Claude Code Extension only
+
+#### Quick Start Prompt Improvement
+
+Old prompt (abstract):
+```
+Set up ScholaRAG for my systematic review on "<your topic>".
+Initialize with --template <domain> and guide me through each stage.
+```
+
+New prompt (explicit, auto-executable):
+```
+Please set up ScholaRAG for me:
+1. Clone https://github.com/HosungYou/ScholaRAG.git
+2. Create Python virtual environment
+3. Install dependencies
+4. Run: python scholarag_cli.py init
+5. Guide me through Stage 1
+```
+
+**Rationale**: Explicit steps enable Claude Code to auto-execute without interpretation, better serving researchers with limited coding experience.
+
+---
+
 ## [1.2.5.4] - 2025-12-03
 
 ### Added
