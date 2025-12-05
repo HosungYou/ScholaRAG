@@ -81,7 +81,6 @@ flowchart TB
         end
         subgraph Institutional["Institutional 🏛️"]
             A6[Scopus]
-            A7[Web of Science]
         end
     end
 
@@ -105,12 +104,12 @@ flowchart TB
     end
 
     A1 & A2 & A3 & A4 & A5 --> B
-    A6 & A7 -.->|metadata only| B
+    A6 -.->|metadata only| B
     B --> C --> D --> E --> F --> G --> H
     H --> I & J & K
 ```
 
-**Data Sources (7 Databases):**
+**Data Sources (6 Databases):**
 | Database | Type | Papers | PDF Access | API Key |
 |----------|------|--------|------------|---------|
 | **Semantic Scholar** | Open Access | 200M+ | ~40% OA | Free (recommended) |
@@ -119,7 +118,6 @@ flowchart TB
 | **ERIC** | Open Access | 1.8M+ | ~60% | Free |
 | **CrossRef** | Open Access | 156M+ | Variable | Free |
 | **Scopus** | Institutional | 90M+ | Metadata only | Required |
-| **Web of Science** | Institutional | 90M+ | Metadata only | Required |
 
 **Core Stack:**
 - **Vector DB:** ChromaDB (local, zero-cost)
