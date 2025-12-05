@@ -72,14 +72,14 @@ Collect → Deduplicate → PRISMA Screen → PDF/OCR → Chunk → Embed → Ve
 ```mermaid
 flowchart TB
     subgraph Data["1. Data Collection"]
-        subgraph OpenAccess["Open Access 🌐"]
+        subgraph FreeAPIs["Free APIs 🌐"]
             A1[Semantic Scholar]
             A2[OpenAlex]
             A3[arXiv]
             A4[ERIC]
             A5[CrossRef]
         end
-        subgraph Institutional["Institutional 🏛️"]
+        subgraph InstitutionalAPIs["Institutional API 🏛️"]
             A6[Scopus]
         end
     end
@@ -110,14 +110,16 @@ flowchart TB
 ```
 
 **Data Sources (6 Databases):**
-| Database | Type | Papers | PDF Access | API Key |
-|----------|------|--------|------------|---------|
-| **Semantic Scholar** | Open Access | 200M+ | ~40% OA | Free (recommended) |
-| **OpenAlex** | Open Access | 260M+ | ~50% OA | Free |
-| **arXiv** | Open Access | 2M+ | 100% | Free |
-| **ERIC** | Open Access | 1.8M+ | ~60% | Free |
-| **CrossRef** | Open Access | 156M+ | Variable | Free |
+| Database | Access | Papers | PDF Access | API Key |
+|----------|--------|--------|------------|---------|
+| **Semantic Scholar** | Free | 200M+ | ~40% OA | Optional (recommended) |
+| **OpenAlex** | Free | 260M+ | ~50% OA | Not required |
+| **arXiv** | Free | 2M+ | 100% | Not required |
+| **ERIC** | Free | 1.8M+ | ~60% | Not required |
+| **CrossRef** | Free | 156M+ | Variable | Not required |
 | **Scopus** | Institutional | 90M+ | Metadata only | Required |
+
+> **Note:** "Free" = 누구나 무료 접근 가능. "Institutional" = 기관 소속/구독 필요.
 
 **Core Stack:**
 - **Vector DB:** ChromaDB (local, zero-cost)
@@ -182,6 +184,76 @@ Pre-configured domain profiles in `templates/research_profiles/`:
 | **Total** | **~$20/mo** | **67–75% time savings** |
 
 *Traditional systematic review: 6–8 weeks → ScholaRAG: 2–3 weeks*
+
+---
+
+## API Key Setup
+
+ScholaRAG은 6개 학술 데이터베이스를 지원합니다. 대부분은 API 키 없이 사용 가능하지만, 일부는 API 키를 통해 성능을 향상시킬 수 있습니다.
+
+### Free APIs (누구나 무료 사용 가능)
+
+| Database | API Key | Rate Limit | Setup |
+|----------|---------|------------|-------|
+| **Semantic Scholar** | Optional | 100 req/5min → 1,000 req/5min (with key) | [Get free key](https://www.semanticscholar.org/product/api#api-key) |
+| **OpenAlex** | Not required | 100K req/day (polite pool) | Add `mailto` param for priority |
+| **arXiv** | Not required | 3 sec delay required | No setup needed |
+| **ERIC** | Not required | 2,000 results max | No setup needed |
+| **CrossRef** | Not required | Unlimited (polite pool) | Add `mailto` param for priority |
+
+### Institutional APIs (기관 소속 필요)
+
+| Database | Requirement | Setup |
+|----------|-------------|-------|
+| **Scopus** | Elsevier 개발자 계정 + 기관 소속 | [dev.elsevier.com](https://dev.elsevier.com/) |
+
+### Setup Instructions
+
+**1. Semantic Scholar (권장)**
+```bash
+# 1. Visit: https://www.semanticscholar.org/product/api#api-key
+# 2. Sign up with email
+# 3. Copy API key
+# 4. Add to project .env:
+SEMANTIC_SCHOLAR_API_KEY=your_key_here
+```
+
+**2. OpenAlex (설정 불필요)**
+- API 키 없이 사용 가능
+- 코드에서 자동으로 `mailto` 파라미터 설정 (polite pool)
+
+**3. arXiv (설정 불필요)**
+- API 키 없이 사용 가능
+- 3초 딜레이 자동 적용
+
+**4. ERIC (설정 불필요)**
+- API 키 없이 사용 가능
+- 쿼리당 최대 2,000개 결과 제한
+
+**5. CrossRef (설정 불필요)**
+- API 키 없이 사용 가능
+- 코드에서 자동으로 `mailto` 파라미터 설정
+
+**6. Scopus (기관 전용)**
+```bash
+# 1. Visit: https://dev.elsevier.com/
+# 2. Create account (requires institutional email)
+# 3. Request API access
+# 4. Add to project .env:
+SCOPUS_API_KEY=your_key_here
+```
+
+### .env File Example
+```env
+# Required for PRISMA screening
+ANTHROPIC_API_KEY=sk-ant-...
+
+# Optional: Faster Semantic Scholar access
+SEMANTIC_SCHOLAR_API_KEY=your_key_here
+
+# Institutional: Scopus access
+SCOPUS_API_KEY=your_key_here
+```
 
 ---
 
