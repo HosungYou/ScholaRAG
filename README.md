@@ -76,10 +76,12 @@ flowchart TB
             A1[Semantic Scholar]
             A2[OpenAlex]
             A3[arXiv]
+            A4[ERIC]
+            A5[CrossRef]
         end
         subgraph Institutional["Institutional 🏛️"]
-            A4[Scopus]
-            A5[Web of Science]
+            A6[Scopus]
+            A7[Web of Science]
         end
     end
 
@@ -102,17 +104,22 @@ flowchart TB
         K[Export Data]
     end
 
-    A1 & A2 & A3 --> B
-    A4 & A5 -.->|metadata only| B
+    A1 & A2 & A3 & A4 & A5 --> B
+    A6 & A7 -.->|metadata only| B
     B --> C --> D --> E --> F --> G --> H
     H --> I & J & K
 ```
 
-**Data Sources:**
-| Type | Databases | PDF Access | API Key |
-|------|-----------|------------|---------|
-| **Open Access** | Semantic Scholar, OpenAlex, arXiv | 40-100% | Free/Optional |
-| **Institutional** | Scopus, Web of Science | Metadata only | Required |
+**Data Sources (7 Databases):**
+| Database | Type | Papers | PDF Access | API Key |
+|----------|------|--------|------------|---------|
+| **Semantic Scholar** | Open Access | 200M+ | ~40% OA | Free (recommended) |
+| **OpenAlex** | Open Access | 260M+ | ~50% OA | Free |
+| **arXiv** | Open Access | 2M+ | 100% | Free |
+| **ERIC** | Open Access | 1.8M+ | ~60% | Free |
+| **CrossRef** | Open Access | 156M+ | Variable | Free |
+| **Scopus** | Institutional | 90M+ | Metadata only | Required |
+| **Web of Science** | Institutional | 90M+ | Metadata only | Required |
 
 **Core Stack:**
 - **Vector DB:** ChromaDB (local, zero-cost)
@@ -208,7 +215,7 @@ Issues, PRs, and template contributions welcome:
   title = {ScholaRAG: Conversation-Based Systematic Literature Review Automation},
   year = {2025},
   url = {https://github.com/HosungYou/ScholaRAG},
-  version = {1.2.6}
+  version = {1.3.0}
 }
 ```
 

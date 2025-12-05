@@ -52,16 +52,16 @@ class PaperFetcher:
         self.semantic_scholar_api = "https://api.semanticscholar.org/graph/v1/paper/search"
         self.openalex_api = "https://api.openalex.org/works"
         self.arxiv_api = "http://export.arxiv.org/api/query"
+        self.eric_api = "https://api.ies.ed.gov/eric/"
+        self.crossref_api = "https://api.crossref.org/works"
 
         # API endpoints - Institutional
         self.scopus_api = "https://api.elsevier.com/content/search/scopus"
-        self.wos_api = "https://api.clarivate.com/apis/wos-starter/v1/documents"
 
         # API keys
         self.semantic_scholar_api_key = os.getenv('SEMANTIC_SCHOLAR_API_KEY')
         self.scopus_api_key = os.getenv('SCOPUS_API_KEY')
         self.scopus_inst_token = os.getenv('SCOPUS_INST_TOKEN')
-        self.wos_api_key = os.getenv('WOS_API_KEY')
 
     def _show_api_key_requirement(self):
         """
@@ -598,6 +598,242 @@ class PaperFetcher:
 
         return df
 
+    def fetch_eric(
+        self,
+        query: str,
+        year_start: int = 2015,
+        year_end: int = 2025,
+        limit: int = 2000
+    ) -> pd.DataFrame:
+        """
+        Fetch papers from ERIC (Education Resources Information Center) API
+
+        FREE API - No API key required
+        NOTE: ERIC specializes in education research (max 2000 results per query)
+
+        Args:
+            query: Search query string
+            year_start: Start year for publication filter
+            year_end: End year for publication filter
+            limit: Maximum number of papers to fetch (ERIC max is 2000)
+
+        Returns:
+            DataFrame with paper metadata including PDF URLs when available
+        """
+        print(f"\n🔍 Searching ERIC...")
+        print(f"   Query: {query}")
+        print(f"   Years: {year_start}-{year_end}")
+        print(f"   ℹ️  Note: ERIC specializes in education research")
+
+        papers = []
+        start = 0
+        batch_size = 200  # ERIC allows up to 200 per request
+
+        # ERIC uses slightly different query format
+        # Convert Boolean query to ERIC format
+        eric_query = self._convert_to_eric_query(query)
+
+        while len(papers) < min(limit, 2000):  # ERIC hard limit is 2000
+            params = {
+                'search': eric_query,
+                'start': start,
+                'rows': min(batch_size, limit - len(papers)),
+                'format': 'json',
+                'publicationdateyear': f'{year_start}:{year_end}'
+            }
+
+            try:
+                response = requests.get(
+                    self.eric_api,
+                    params=params,
+                    timeout=30
+                )
+                response.raise_for_status()
+                data = response.json()
+
+                docs = data.get('response', {}).get('docs', [])
+
+                if not docs:
+                    break
+
+                for doc in docs:
+                    # Get PDF URL if available (ERIC provides direct links for many docs)
+                    pdf_url = None
+                    if doc.get('url'):
+                        url = doc['url']
+                        if url.endswith('.pdf') or 'fulltext' in url.lower():
+                            pdf_url = url
+
+                    papers.append({
+                        'title': doc.get('title', ''),
+                        'abstract': doc.get('description', ''),
+                        'authors': doc.get('author', [''])[0] if doc.get('author') else '',
+                        'year': int(doc.get('publicationdateyear', year_start)),
+                        'citations': 0,  # ERIC doesn't provide citation counts
+                        'doi': None,
+                        'pdf_url': pdf_url,
+                        'source': 'ERIC',
+                        'eric_id': doc.get('id', '')
+                    })
+
+                print(f"   Retrieved {len(papers)} papers so far...")
+
+                start += batch_size
+                time.sleep(0.5)  # Rate limiting
+
+                # Check if we've reached the end
+                if len(docs) < batch_size:
+                    break
+
+            except requests.exceptions.RequestException as e:
+                print(f"   ⚠️  Error: {e}")
+                break
+
+        df = pd.DataFrame(papers)
+        if len(df) > 0:
+            pdf_count = df['pdf_url'].notna().sum()
+            print(f"   ✓ Found {len(df)} papers ({pdf_count} with PDF URLs, {pdf_count/len(df)*100:.1f}%)")
+        else:
+            print(f"   ⚠️  No papers found")
+
+        return df
+
+    def _convert_to_eric_query(self, query: str) -> str:
+        """
+        Convert Boolean query to ERIC format
+
+        ERIC uses standard Boolean operators but with different syntax.
+        Supports: AND, OR, NOT operators with parentheses.
+
+        Args:
+            query: Original Boolean query
+
+        Returns:
+            ERIC-formatted query
+        """
+        # ERIC accepts standard Boolean syntax, just clean up
+        eric_query = query.replace('"', '')  # ERIC doesn't need quotes for phrases
+        return eric_query
+
+    def fetch_crossref(
+        self,
+        query: str,
+        year_start: int = 2015,
+        year_end: int = 2025,
+        limit: int = 10000
+    ) -> pd.DataFrame:
+        """
+        Fetch papers from CrossRef API
+
+        FREE API - No API key required (polite pool with mailto for higher rate limits)
+        NOTE: CrossRef provides 156M+ metadata records, uses cursor pagination
+
+        Args:
+            query: Search query string
+            year_start: Start year for publication filter
+            year_end: End year for publication filter
+            limit: Maximum number of papers to fetch
+
+        Returns:
+            DataFrame with paper metadata (PDF URLs when available via Open Access)
+        """
+        print(f"\n🔍 Searching CrossRef...")
+        print(f"   Query: {query}")
+        print(f"   Years: {year_start}-{year_end}")
+
+        papers = []
+        cursor = '*'  # CrossRef uses cursor pagination
+        batch_size = 100  # CrossRef recommends 100 per request
+
+        # Add polite pool email for higher rate limits
+        mailto = "newhosung@gmail.com"
+
+        while len(papers) < limit:
+            params = {
+                'query': query,
+                'filter': f'from-pub-date:{year_start},until-pub-date:{year_end}',
+                'rows': min(batch_size, limit - len(papers)),
+                'cursor': cursor,
+                'mailto': mailto
+            }
+
+            try:
+                response = requests.get(
+                    self.crossref_api,
+                    params=params,
+                    timeout=30
+                )
+                response.raise_for_status()
+                data = response.json()
+
+                items = data.get('message', {}).get('items', [])
+
+                if not items:
+                    break
+
+                for item in items:
+                    # Get PDF URL from links if available
+                    pdf_url = None
+                    links = item.get('link', [])
+                    for link in links:
+                        if link.get('content-type') == 'application/pdf':
+                            pdf_url = link.get('URL')
+                            break
+
+                    # Get authors
+                    authors = ''
+                    author_list = item.get('author', [])
+                    if author_list:
+                        authors = '; '.join([
+                            f"{a.get('given', '')} {a.get('family', '')}".strip()
+                            for a in author_list
+                        ])
+
+                    # Get year from published-print or published-online
+                    year = None
+                    for date_field in ['published-print', 'published-online', 'created']:
+                        if item.get(date_field):
+                            date_parts = item[date_field].get('date-parts', [[]])[0]
+                            if date_parts:
+                                year = date_parts[0]
+                                break
+                    if not year:
+                        year = year_start
+
+                    papers.append({
+                        'title': item.get('title', [''])[0] if item.get('title') else '',
+                        'abstract': item.get('abstract', ''),
+                        'authors': authors,
+                        'year': year,
+                        'citations': item.get('is-referenced-by-count', 0),
+                        'doi': item.get('DOI'),
+                        'pdf_url': pdf_url,
+                        'source': 'CrossRef',
+                        'crossref_type': item.get('type', '')
+                    })
+
+                print(f"   Retrieved {len(papers)} papers so far...")
+
+                # Get next cursor
+                cursor = data.get('message', {}).get('next-cursor')
+                if not cursor:
+                    break
+
+                time.sleep(0.1)  # Polite rate limiting
+
+            except requests.exceptions.RequestException as e:
+                print(f"   ⚠️  Error: {e}")
+                break
+
+        df = pd.DataFrame(papers)
+        if len(df) > 0:
+            pdf_count = df['pdf_url'].notna().sum()
+            print(f"   ✓ Found {len(df)} papers ({pdf_count} with PDF URLs, {pdf_count/len(df)*100:.1f}%)")
+        else:
+            print(f"   ⚠️  No papers found")
+
+        return df
+
     def fetch_scopus(
         self,
         query: str,
@@ -955,7 +1191,7 @@ class PaperFetcher:
         Fetch papers from all selected databases
 
         Supports both Open Access and Institutional databases:
-        - Open Access: semantic_scholar, openalex, arxiv (provide PDF URLs)
+        - Open Access: semantic_scholar, openalex, arxiv, eric, crossref (provide PDF URLs)
         - Institutional: scopus, wos (metadata only, NO PDF URLs)
 
         Args:
@@ -1004,6 +1240,24 @@ class PaperFetcher:
             output_file = self.output_dir / "arxiv_results.csv"
             results['arxiv'].to_csv(output_file, index=False)
             print(f"   💾 Saved to {output_file}")
+
+        if 'eric' in databases:
+            results['eric'] = self.fetch_eric(
+                query, year_start, year_end
+            )
+            if len(results['eric']) > 0:
+                output_file = self.output_dir / "eric_results.csv"
+                results['eric'].to_csv(output_file, index=False)
+                print(f"   💾 Saved to {output_file}")
+
+        if 'crossref' in databases:
+            results['crossref'] = self.fetch_crossref(
+                query, year_start, year_end
+            )
+            if len(results['crossref']) > 0:
+                output_file = self.output_dir / "crossref_results.csv"
+                results['crossref'].to_csv(output_file, index=False)
+                print(f"   💾 Saved to {output_file}")
 
         # ═══════════════════════════════════════════════════════════════
         # INSTITUTIONAL DATABASES (Metadata only - NO PDF URLs)
@@ -1064,7 +1318,7 @@ class PaperFetcher:
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Fetch papers from automation-friendly databases (Semantic Scholar, OpenAlex, arXiv)"
+        description="Fetch papers from 7 academic databases (Semantic Scholar, OpenAlex, arXiv, ERIC, CrossRef, Scopus, WoS)"
     )
     parser.add_argument(
         '--project',
@@ -1079,9 +1333,9 @@ def main():
     parser.add_argument(
         '--databases',
         nargs='+',
-        choices=['semantic_scholar', 'openalex', 'arxiv', 'scopus', 'wos'],
+        choices=['semantic_scholar', 'openalex', 'arxiv', 'eric', 'crossref', 'scopus', 'wos'],
         default=['semantic_scholar', 'openalex', 'arxiv'],
-        help='Databases to search. Open Access: semantic_scholar, openalex, arxiv (default). Institutional: scopus, wos (metadata only, requires API keys)'
+        help='Databases to search. Open Access: semantic_scholar, openalex, arxiv, eric, crossref. Institutional: scopus, wos (metadata only, requires API keys)'
     )
     parser.add_argument(
         '--year-start',
