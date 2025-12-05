@@ -121,6 +121,8 @@ flowchart TB
 
 > **Note:** "Free" = 누구나 무료 접근 가능. "Institutional" = 기관 소속/구독 필요.
 
+> **Note:** "Free" = Freely accessible to anyone. "Institutional" = Requires institutional affiliation or subscription.
+
 **Core Stack:**
 - **Vector DB:** ChromaDB (local, zero-cost)
 - **Orchestration:** LangGraph for multi-step retrieval
