@@ -119,8 +119,6 @@ flowchart TB
 | **CrossRef** | Free | 156M+ | Variable | Not required |
 | **Scopus** | Institutional | 90M+ | Metadata only | Required |
 
-> **Note:** "Free" = 누구나 무료 접근 가능. "Institutional" = 기관 소속/구독 필요.
-
 > **Note:** "Free" = Freely accessible to anyone. "Institutional" = Requires institutional affiliation or subscription.
 
 **Core Stack:**
@@ -191,9 +189,9 @@ Pre-configured domain profiles in `templates/research_profiles/`:
 
 ## API Key Setup
 
-ScholaRAG은 6개 학술 데이터베이스를 지원합니다. 대부분은 API 키 없이 사용 가능하지만, 일부는 API 키를 통해 성능을 향상시킬 수 있습니다.
+ScholaRAG supports 6 academic databases. Most work without an API key, but some can improve performance with one.
 
-### Free APIs (누구나 무료 사용 가능)
+### Free APIs (Freely Accessible)
 
 | Database | API Key | Rate Limit | Setup |
 |----------|---------|------------|-------|
@@ -203,15 +201,15 @@ ScholaRAG은 6개 학술 데이터베이스를 지원합니다. 대부분은 API
 | **ERIC** | Not required | 2,000 results max | No setup needed |
 | **CrossRef** | Not required | Unlimited (polite pool) | Add `mailto` param for priority |
 
-### Institutional APIs (기관 소속 필요)
+### Institutional APIs (Requires Affiliation)
 
 | Database | Requirement | Setup |
 |----------|-------------|-------|
-| **Scopus** | Elsevier 개발자 계정 + 기관 소속 | [dev.elsevier.com](https://dev.elsevier.com/) |
+| **Scopus** | Elsevier developer account + institutional affiliation | [dev.elsevier.com](https://dev.elsevier.com/) |
 
 ### Setup Instructions
 
-**1. Semantic Scholar (권장)**
+**1. Semantic Scholar (Recommended)**
 ```bash
 # 1. Visit: https://www.semanticscholar.org/product/api#api-key
 # 2. Sign up with email
@@ -220,23 +218,23 @@ ScholaRAG은 6개 학술 데이터베이스를 지원합니다. 대부분은 API
 SEMANTIC_SCHOLAR_API_KEY=your_key_here
 ```
 
-**2. OpenAlex (설정 불필요)**
-- API 키 없이 사용 가능
-- 코드에서 자동으로 `mailto` 파라미터 설정 (polite pool)
+**2. OpenAlex (No Setup Required)**
+- Works without API key
+- Code automatically sets `mailto` parameter (polite pool)
 
-**3. arXiv (설정 불필요)**
-- API 키 없이 사용 가능
-- 3초 딜레이 자동 적용
+**3. arXiv (No Setup Required)**
+- Works without API key
+- 3-second delay automatically applied
 
-**4. ERIC (설정 불필요)**
-- API 키 없이 사용 가능
-- 쿼리당 최대 2,000개 결과 제한
+**4. ERIC (No Setup Required)**
+- Works without API key
+- Max 2,000 results per query
 
-**5. CrossRef (설정 불필요)**
-- API 키 없이 사용 가능
-- 코드에서 자동으로 `mailto` 파라미터 설정
+**5. CrossRef (No Setup Required)**
+- Works without API key
+- Code automatically sets `mailto` parameter
 
-**6. Scopus (기관 전용)**
+**6. Scopus (Institutional Only)**
 ```bash
 # 1. Visit: https://dev.elsevier.com/
 # 2. Create account (requires institutional email)
